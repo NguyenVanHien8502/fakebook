@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
+import 'package:fakebook/src/pages/forgotPassword_page.dart';
 import 'package:fakebook/src/pages/home_page.dart';
 import 'package:fakebook/src/pages/register_page.dart';
 import 'package:flutter/material.dart';
@@ -74,16 +75,25 @@ class LoginPage extends StatelessWidget {
                 ),
 
                 //forgot password
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
-                        'Forgot password?',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ForgotPasswordPage()));
+                        },
+                        child: const Text(
+                          'Forgot password?',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      )
                     ],
                   ),
                 ),
