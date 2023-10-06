@@ -34,6 +34,7 @@ class WelcomePage extends StatelessWidget {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },
+                icon: const Icon(Icons.arrow_right),
               )
             ],
           ),

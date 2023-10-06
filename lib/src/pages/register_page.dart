@@ -1,3 +1,4 @@
+import 'package:fakebook/src/components/my_appbar.dart';
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/pages/login_page.dart';
@@ -18,6 +19,7 @@ class RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: const MyAppBar(),
       body: SafeArea(
           child: SingleChildScrollView(
         child: Center(
@@ -25,7 +27,7 @@ class RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
-                height: 50,
+                height: 10,
               ),
               const Text(
                 'Sign Up',
@@ -36,7 +38,7 @@ class RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 10,
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
