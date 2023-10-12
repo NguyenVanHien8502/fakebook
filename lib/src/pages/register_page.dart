@@ -1,4 +1,3 @@
-import 'package:fakebook/src/components/my_appbar.dart';
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/pages/login_page.dart';
@@ -19,7 +18,9 @@ class RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const MyAppBar(),
+      appBar: AppBar(
+        title: const Text("Back"),
+      ),
       body: SafeArea(
           child: SingleChildScrollView(
         child: Center(

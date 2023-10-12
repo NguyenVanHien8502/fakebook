@@ -1,4 +1,3 @@
-import 'package:fakebook/src/components/my_appBar.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
@@ -6,9 +5,11 @@ class ForgotPasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: MyAppBar(),
-      body: SafeArea(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Back"),
+      ),
+      body: const SafeArea(
         child: SingleChildScrollView(
           child: Center(
             child: Column(

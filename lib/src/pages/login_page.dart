@@ -1,9 +1,7 @@
-import 'dart:math';
-
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/pages/forgot_password_page.dart';
-import 'package:fakebook/src/pages/home_page.dart';
+import 'package:fakebook/src/pages/app.dart';
 import 'package:fakebook/src/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
@@ -105,7 +103,7 @@ class LoginPage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const HomePage()));
+                              builder: (context) => const App()));
                     }),
 
                 const SizedBox(height: 50),

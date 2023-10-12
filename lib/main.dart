@@ -1,4 +1,7 @@
+import 'package:fakebook/src/pages/about.dart';
+import 'package:fakebook/src/pages/app.dart';
 import 'package:fakebook/src/pages/login_page.dart';
+import 'package:fakebook/src/pages/secret.dart';
 import 'package:fakebook/src/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
 
@@ -11,9 +14,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomePage(),
+      routes: <String, WidgetBuilder>{
+        "/about": (BuildContext context) => const About(),
+        "/app": (BuildContext context) => const App(),
+        "/other-page": (BuildContext context) => const SecretPage(),
+        "/login": (BuildContext context) => LoginPage(),
+      },
+      initialRoute: "/app",
+      // title: 'Flutter Navigation',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const WelcomePage(),
     );
   }
 }
