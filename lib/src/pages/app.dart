@@ -1,4 +1,5 @@
-import 'package:fakebook/src/pages/tabs/setting_page.dart';
+import 'package:fakebook/src/pages/tabs/menu_page.dart';
+import 'package:fakebook/src/pages/tabs/watch_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
 import 'package:fakebook/src/pages/tabs/home_page.dart';
 import 'package:fakebook/src/pages/tabs/notification_page.dart';
@@ -15,24 +16,40 @@ class AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
-        drawer: const MyDrawer(),
+          drawer: const MyDrawer(),
           appBar: AppBar(
             title: const Text("Fakebook"),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  print("Search");
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.chat_outlined),
+                onPressed: () {
+                  print("Messenger");
+                },
+              ),
+            ],
             bottom: const TabBar(
               tabs: [
                 Tab(icon: Icon(Icons.home)),
+                Tab(icon: Icon(Icons.ondemand_video)),
                 Tab(icon: Icon(Icons.notifications)),
-                Tab(icon: Icon(Icons.settings)),
+                Tab(icon: Icon(Icons.menu)),
               ],
             ),
           ),
           body: const TabBarView(
             children: <Widget>[
               HomePage(),
+              WatchPage(),
               NotificationPage(),
-              SettingPage()
+              MenuPage()
             ],
           )),
     );
