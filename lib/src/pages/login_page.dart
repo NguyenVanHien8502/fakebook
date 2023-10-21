@@ -30,21 +30,14 @@ class LoginPage extends StatelessWidget {
                 //logo
                 Image(
                   image: const AssetImage('lib/src/assets/images/fakebook.png'),
-                  height: h * 0.4,
-                  width: w * 0.4,
+                  height: h * 0.15,
+                  width: w * 0.15,
                 ),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5.0),
-                    child: const Text(
-                      'Please log in to use the service',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                    ),
+                    margin: const EdgeInsets.symmetric(vertical: 25.0),
                   ),
                 ),
 
@@ -52,32 +45,34 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 25),
                 MyTextField(
                   controller: usernameController,
-                  hintText: 'Email',
-                  prefixIcon: const Icon(
-                    Icons.email,
-                    color: Colors.deepOrangeAccent,
-                  ),
+                  hintText: 'Số di động hoặc email',
                   obscureText: false,
+                  hintPading: EdgeInsets.only(left: 20.0),
                 ),
 
                 //password text-field
                 const SizedBox(height: 15),
                 MyTextField(
                   controller: passwordController,
-                  hintText: 'Password',
-                  prefixIcon: const Icon(
-                    Icons.password,
-                    color: Colors.deepOrangeAccent,
-                  ),
+                  hintText: 'Mật khẩu',
                   obscureText: true,
+                  hintPading: EdgeInsets.only(left: 20.0),
                 ),
 
+                const SizedBox(height: 25),
+                MyButton(
+                    nameButton: "Sign in",
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const App()));
+                    }),
+
                 //forgot password
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -88,51 +83,16 @@ class LoginPage extends StatelessWidget {
                                       const ForgotPasswordPage()));
                         },
                         child: const Text(
-                          'Forgot password?',
-                          style: TextStyle(color: Colors.grey),
+                          'Bạn quên mật khẩu ư?',
+                          style: TextStyle(color: Colors.black),
                         ),
                       )
                     ],
                   ),
                 ),
                 //sign in button
-                const SizedBox(height: 20),
-                MyButton(
-                    nameButton: "Sign in",
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const App()));
-                    }),
 
                 const SizedBox(height: 50),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                //   child: Row(
-                //     children: [
-                //       Expanded(
-                //         child: Divider(
-                //           thickness: 0.5,
-                //           color: Colors.grey[400],
-                //         ),
-                //       ),
-                //       Padding(
-                //         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                //         child: Text(
-                //           'Or continue with',
-                //           style: TextStyle(color: Colors.grey[700]),
-                //         ),
-                //       ),
-                //       Expanded(
-                //         child: Divider(
-                //           thickness: 0.5,
-                //           color: Colors.grey[400],
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
 
                 //Haven't you already account? Register now
                 Row(

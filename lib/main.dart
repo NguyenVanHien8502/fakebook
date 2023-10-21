@@ -2,6 +2,8 @@ import 'package:fakebook/src/pages/about.dart';
 import 'package:fakebook/src/pages/app.dart';
 import 'package:fakebook/src/pages/login_page.dart';
 import 'package:fakebook/src/pages/secret.dart';
+import 'package:fakebook/src/pages/tabs/personal_page.dart';
+import 'package:fakebook/src/pages/tabs/setting_page.dart';
 import 'package:fakebook/src/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +23,8 @@ class MyApp extends StatelessWidget {
         "/app": (BuildContext context) => const App(),
         "/other-page": (BuildContext context) => const SecretPage(),
         "/login": (BuildContext context) => LoginPage(),
+        "/settings": (BuildContext context) => const SettingPage(),
+        "/personal-page": (BuildContext context) => const PersonalPage()
       },
       initialRoute: "/app",
       // title: 'Flutter Navigation',

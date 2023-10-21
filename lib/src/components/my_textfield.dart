@@ -5,6 +5,7 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final Icon? prefixIcon;
+  final EdgeInsets hintPading;
 
   const MyTextField({
     super.key,
@@ -12,6 +13,7 @@ class MyTextField extends StatelessWidget {
     required this.hintText,
     required this.obscureText,
     this.prefixIcon,
+    this.hintPading = EdgeInsets.zero,
   });
 
   @override
@@ -34,6 +36,7 @@ class MyTextField extends StatelessWidget {
           fillColor: Colors.white10,
           filled: true,
           hintText: hintText,
+          contentPadding: hintPading,
           hintStyle: TextStyle(color: Colors.grey[500]),
         ),
       ),
