@@ -27,7 +27,7 @@ class InfoPage extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.settings, size: 30),
                     onPressed: () {
-                      Navigator.pushNamed(context, "/settings");
+                      Navigator.pushNamed(context, "/about");
                     },
                   ),
                   const Padding(

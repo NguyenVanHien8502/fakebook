@@ -40,14 +40,19 @@ class AppState extends State<App> {
             bottom: const TabBar(
               tabs: [
                 Tab(icon: Icon(Icons.home)),
-                Tab(icon: Icon(Icons.ondemand_video)),
+                Tab(icon: Icon(Icons.people)),
                 Tab(icon: Icon(Icons.notifications)),
                 Tab(icon: Icon(Icons.menu)),
               ],
             ),
           ),
           body: const TabBarView(
-            children: <Widget>[],
+            children: <Widget>[
+              HomePage(),
+              FriendPage(),
+              NotificationPage(),
+              InfoPage()
+            ],
           )),
     );
   }
