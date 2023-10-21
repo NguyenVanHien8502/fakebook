@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class WatchPage extends StatelessWidget {
-  const WatchPage({super.key});
+class FriendPage extends StatelessWidget {
+  const FriendPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +10,7 @@ class WatchPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const Text("Watch Page"),
+          const Text("Friend Page"),
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: ElevatedButton(

@@ -1,5 +1,5 @@
 import 'package:fakebook/src/pages/tabs/menu_page.dart';
-import 'package:fakebook/src/pages/tabs/watch_page.dart';
+import 'package:fakebook/src/pages/tabs/friend_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
 import 'package:fakebook/src/pages/tabs/home_page.dart';
 import 'package:fakebook/src/pages/tabs/notification_page.dart';
@@ -38,7 +38,7 @@ class AppState extends State<App> {
             bottom: const TabBar(
               tabs: [
                 Tab(icon: Icon(Icons.home)),
-                Tab(icon: Icon(Icons.ondemand_video)),
+                Tab(icon: Icon(Icons.people_alt_rounded)),
                 Tab(icon: Icon(Icons.notifications)),
                 Tab(icon: Icon(Icons.menu)),
               ],
@@ -47,7 +47,7 @@ class AppState extends State<App> {
           body: const TabBarView(
             children: <Widget>[
               HomePage(),
-              WatchPage(),
+              FriendPage(),
               NotificationPage(),
               MenuPage()
             ],
