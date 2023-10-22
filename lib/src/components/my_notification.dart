@@ -5,7 +5,7 @@ class MyNotification extends StatelessWidget {
   final String content;
   final String timeAgo;
 
-  MyNotification({
+  const MyNotification({super.key,
     required this.avatarUrl,
     required this.content,
     required this.timeAgo,

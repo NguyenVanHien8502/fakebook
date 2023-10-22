@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         "/personal-page": (BuildContext context) => const PersonalPage(),
         '/notifications': (BuildContext context) => const NotificationPage(),
       },
-      initialRoute: "/app",
+      initialRoute: "/",
       // title: 'Flutter Navigation',
       theme: ThemeData(
         primarySwatch: Colors.blue,
