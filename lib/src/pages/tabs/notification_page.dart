@@ -7,12 +7,12 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<MyNotification> notifications = [
-      MyNotification(
+       const MyNotification(
         avatarUrl: 'https://example.com/avatar1.jpg',
         content: 'Thông báo 1',
         timeAgo: '5 phút trước',
       ),
-      MyNotification(
+       const MyNotification(
         avatarUrl: 'https://example.com/avatar2.jpg',
         content: 'Thông báo 2',
         timeAgo: '10 phút trước',
