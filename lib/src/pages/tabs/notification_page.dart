@@ -7,6 +7,15 @@ class NotificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<MyNotification> notifications = [
+      const MyNotification(
+        avatarUrl: 'https://example.com/avatar1.jpg',
+        content: 'Thông báo 1',
+        timeAgo: '5 phút trước',
+      ),
+      // Thêm các thông báo khác tại đây
+    ];
+
     return Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(32),
