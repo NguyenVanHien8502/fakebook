@@ -1,4 +1,3 @@
-import 'package:fakebook/src/pages/tabs/info_page.dart';
 import 'package:fakebook/src/pages/tabs/menu_page.dart';
 import 'package:fakebook/src/pages/tabs/friend_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
@@ -22,7 +21,13 @@ class AppState extends State<App> {
           drawer: const MyDrawer(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: const Text("Fakebook"),
+            title: const Text(
+              "Fakebook",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold),
+            ),
             actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.search),
@@ -51,7 +56,7 @@ class AppState extends State<App> {
               HomePage(),
               FriendPage(),
               NotificationPage(),
-              InfoPage()
+              MenuPage()
             ],
           )),
     );

@@ -47,7 +47,7 @@ class LoginPage extends StatelessWidget {
                   controller: usernameController,
                   hintText: 'Số di động hoặc email',
                   obscureText: false,
-                  hintPading: EdgeInsets.only(left: 20.0),
+                  hintPading: const EdgeInsets.only(left: 20.0),
                 ),
 
                 //password text-field
@@ -56,7 +56,7 @@ class LoginPage extends StatelessWidget {
                   controller: passwordController,
                   hintText: 'Mật khẩu',
                   obscureText: true,
-                  hintPading: EdgeInsets.only(left: 20.0),
+                  hintPading: const EdgeInsets.only(left: 20.0),
                 ),
 
                 const SizedBox(height: 25),
@@ -84,9 +84,10 @@ class LoginPage extends StatelessWidget {
                         },
                         child: const Text(
                           'Bạn quên mật khẩu ư?',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
