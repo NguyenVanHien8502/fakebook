@@ -1,4 +1,3 @@
-import 'package:fakebook/src/pages/tabs/info_page.dart';
 import 'package:fakebook/src/pages/tabs/menu_page.dart';
 import 'package:fakebook/src/pages/tabs/friend_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
@@ -51,7 +50,7 @@ class AppState extends State<App> {
               HomePage(),
               FriendPage(),
               NotificationPage(),
-              InfoPage()
+              MenuPage()
             ],
           )),
     );
