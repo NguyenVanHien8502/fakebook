@@ -21,7 +21,13 @@ class AppState extends State<App> {
           drawer: const MyDrawer(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: const Text("Fakebook"),
+            title: const Text(
+              "Fakebook",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold),
+            ),
             actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.search),
