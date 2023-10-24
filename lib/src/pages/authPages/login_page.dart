@@ -27,53 +27,49 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //logo
                 Image(
                   image: const AssetImage('lib/src/assets/images/fakebook.png'),
-                  height: h * 0.15,
-                  width: w * 0.15,
+                  height: h * 0.35,
+                  width: w * 0.35,
                 ),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 25.0),
                   ),
                 ),
-
-                // username text-field
                 const SizedBox(height: 25),
                 MyTextField(
                   controller: usernameController,
-                  hintText: 'Số di động hoặc email',
+                  hintText: 'Phone number or email',
                   obscureText: false,
-                  hintPading: const EdgeInsets.only(left: 20.0),
+                  hintPadding: const EdgeInsets.only(left: 20.0),
+                  prefixIcon: const Icon(
+                    Icons.email,
+                    color: Colors.black54,
+                  ),
                 ),
-
-                //password text-field
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 MyTextField(
                   controller: passwordController,
-                  hintText: 'Mật khẩu',
+                  hintText: 'Password',
                   obscureText: true,
-                  hintPading: const EdgeInsets.only(left: 20.0),
+                  hintPadding: const EdgeInsets.only(left: 20.0),
+                  prefixIcon: const Icon(
+                    Icons.password,
+                    color: Colors.black54,
+                  ),
                 ),
-
-                const SizedBox(height: 25),
-                MyButton(
-                    nameButton: "Sign in",
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const App()));
-                    }),
-
-                //forgot password
-                const SizedBox(height: 15),
+                const SizedBox(height: 15.0),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const Text(
+                        "Did you forget your password? ",
+                        style: TextStyle(color: Colors.grey),
+                      ),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -83,7 +79,7 @@ class LoginPage extends StatelessWidget {
                                       const ForgotPasswordPage()));
                         },
                         child: const Text(
-                          'Bạn quên mật khẩu ư?',
+                          'Click here',
                           style: TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
@@ -91,11 +87,14 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                //sign in button
-
+                const SizedBox(height: 45),
+                MyButton(
+                    nameButton: "Sign in",
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const App()));
+                    }),
                 const SizedBox(height: 50),
-
-                //Haven't you already account? Register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
