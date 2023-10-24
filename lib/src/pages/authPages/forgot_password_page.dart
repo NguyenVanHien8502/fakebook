@@ -31,25 +31,31 @@ class ForgotPasswordPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 25),
                 Container(
-                  margin: const EdgeInsets.only(top:10.0),
+                  margin: const EdgeInsets.only(top: 10.0),
                   child: const Column(
                     children: [
-                      Text("Nhập số điện thoại hoặc email đăng ký:"),
-                      SizedBox(height: 10.0,),
+                      Text("Enter phone number or registered email"),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       MyTextField(
-                        hintText: 'Số di động hoặc email',
+                        hintText: 'Phone number or email',
                         obscureText: false,
-                        hintPading: EdgeInsets.only(left: 20.0),
+                        hintPadding: EdgeInsets.only(left: 20.0),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 50.0,),
+                const SizedBox(
+                  height: 50.0,
+                ),
                 MyButton(
                     nameButton: "Submit",
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const ResetPasswordPage()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ResetPasswordPage()));
                     }),
               ],
             ),
