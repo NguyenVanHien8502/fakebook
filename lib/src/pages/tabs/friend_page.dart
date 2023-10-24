@@ -1,3 +1,4 @@
+import 'package:fakebook/src/components/my_notification.dart';
 import 'package:flutter/material.dart';
 
 class FriendPage extends StatelessWidget {
