@@ -1,4 +1,4 @@
-import '../utils/drawer.dart';
+import '../../utils/drawer.dart';
 import 'package:flutter/material.dart';
 
 class About extends StatelessWidget {

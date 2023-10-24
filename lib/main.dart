@@ -1,10 +1,10 @@
-import 'package:fakebook/src/pages/about.dart';
+import 'package:fakebook/src/pages/authPages/login_page.dart';
+import 'package:fakebook/src/pages/otherPages/about.dart';
 import 'package:fakebook/src/pages/app.dart';
-import 'package:fakebook/src/pages/login_page.dart';
-import 'package:fakebook/src/pages/secret.dart';
-import 'package:fakebook/src/pages/page_info/personal_page.dart';
+import 'package:fakebook/src/pages/otherPages/secret.dart';
+import 'package:fakebook/src/pages/otherPages/personal_page.dart';
 import 'package:fakebook/src/pages/tabs/notification_page.dart';
-import 'package:fakebook/src/pages/welcome_page.dart';
+import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
