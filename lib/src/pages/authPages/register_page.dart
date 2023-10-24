@@ -1,6 +1,6 @@
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
-import 'package:fakebook/src/pages/login_page.dart';
+import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
-import 'package:fakebook/src/pages/forgot_password_page.dart';
+import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
 import 'package:fakebook/src/pages/app.dart';
-import 'package:fakebook/src/pages/register_page.dart';
+import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {

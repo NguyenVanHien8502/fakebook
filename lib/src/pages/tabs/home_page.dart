@@ -74,36 +74,64 @@ class HomePageState extends State<HomePage> {
                           ),
                         ),
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                                 margin: const EdgeInsets.only(left: 16.0),
                                 child: Container(
-                                  margin: const EdgeInsets.only(bottom: 10.0),
+                                  margin: const EdgeInsets.only(bottom: 8.0),
                                   child: const Text(
-                                    "Top Comment",
+                                    "Lời thì thầm của đá",
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16),
                                   ),
                                 )),
-                            const Text("1 day ago")
+                            Container(
+                                margin: const EdgeInsets.only(left: 16.0),
+                                child: const Text(
+                                  "1 day ago",
+                                  style: TextStyle(color: Colors.black),
+                                )),
                           ],
                         ),
                         const Spacer(),
                         // dùng cái này để icon xuống phía bên phải cùng của row
                         Container(
                           margin: const EdgeInsets.only(right: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              print("Options");
-                            },
-                            child: const Icon(
-                              Icons.more_horiz,
-                              size: 30.0,
-                              color: Colors.blue,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  print("Blocked status");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 8.0),
+                                  child: const Icon(
+                                    IconData(0x2716,
+                                        fontFamily: 'MaterialIcons'),
+                                    size: 20.0,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  print("Options");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      top: 10.0, left: 8.0),
+                                  child: const Icon(
+                                    Icons.more_horiz,
+                                    size: 30.0,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         )
                       ],
@@ -131,7 +159,7 @@ class HomePageState extends State<HomePage> {
                           child: const Row(
                             children: [
                               Icon(
-                                Icons.emoji_emotions_outlined,
+                                Icons.emoji_emotions,
                                 size: 20.0,
                               ),
                               Icon(
@@ -139,7 +167,7 @@ class HomePageState extends State<HomePage> {
                                 size: 20.0,
                               ),
                               Icon(
-                                Icons.favorite_outline,
+                                Icons.favorite,
                                 size: 20.0,
                               ),
                               Text("99")
@@ -151,8 +179,18 @@ class HomePageState extends State<HomePage> {
                           child: Row(
                             children: [
                               Container(
-                                margin: const EdgeInsets.only(right: 10.0),
+                                margin: const EdgeInsets.only(right: 6.0),
                                 child: const Text("123 comments"),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    bottom: 6.0, right: 6.0),
+                                child: const Text(
+                                  ".",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                               Container(
                                 margin: const EdgeInsets.only(right: 16.0),
@@ -180,10 +218,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I liked this post");
                             },
-                            child: const Text(
-                              "Like",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.thumb_up_alt_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -193,10 +242,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I commented this post");
                             },
-                            child: const Text(
-                              "Comment",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Comment",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -206,10 +266,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I shared this post");
                             },
-                            child: const Text(
-                              "Share",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.share,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Share",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         )
@@ -246,7 +317,7 @@ class HomePageState extends State<HomePage> {
                                 child: Container(
                                   margin: const EdgeInsets.only(bottom: 10.0),
                                   child: const Text(
-                                    "Top Comment",
+                                    "Lời thì thầm của đá",
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
@@ -260,15 +331,38 @@ class HomePageState extends State<HomePage> {
                         // dùng cái này để icon xuống phía bên phải cùng của row
                         Container(
                           margin: const EdgeInsets.only(right: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              print("Options");
-                            },
-                            child: const Icon(
-                              Icons.more_horiz,
-                              size: 30.0,
-                              color: Colors.blue,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  print("Blocked status");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 8.0),
+                                  child: const Icon(
+                                    IconData(0x2716,
+                                        fontFamily: 'MaterialIcons'),
+                                    size: 20.0,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  print("Options");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      top: 10.0, left: 8.0),
+                                  child: const Icon(
+                                    Icons.more_horiz,
+                                    size: 30.0,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         )
                       ],
@@ -296,7 +390,7 @@ class HomePageState extends State<HomePage> {
                           child: const Row(
                             children: [
                               Icon(
-                                Icons.emoji_emotions_outlined,
+                                Icons.emoji_emotions,
                                 size: 20.0,
                               ),
                               Icon(
@@ -304,7 +398,7 @@ class HomePageState extends State<HomePage> {
                                 size: 20.0,
                               ),
                               Icon(
-                                Icons.favorite_outline,
+                                Icons.favorite,
                                 size: 20.0,
                               ),
                               Text("99")
@@ -316,8 +410,18 @@ class HomePageState extends State<HomePage> {
                           child: Row(
                             children: [
                               Container(
-                                margin: const EdgeInsets.only(right: 10.0),
+                                margin: const EdgeInsets.only(right: 6.0),
                                 child: const Text("123 comments"),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    bottom: 6.0, right: 6.0),
+                                child: const Text(
+                                  ".",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                               Container(
                                 margin: const EdgeInsets.only(right: 16.0),
@@ -345,10 +449,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I liked this post");
                             },
-                            child: const Text(
-                              "Like",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.thumb_up_alt_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -358,10 +473,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I commented this post");
                             },
-                            child: const Text(
-                              "Comment",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Comment",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -371,10 +497,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I shared this post");
                             },
-                            child: const Text(
-                              "Share",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.share,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Share",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         )
@@ -411,7 +548,7 @@ class HomePageState extends State<HomePage> {
                                 child: Container(
                                   margin: const EdgeInsets.only(bottom: 10.0),
                                   child: const Text(
-                                    "Top Comment",
+                                    "Lời thì thầm của đá",
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
@@ -425,15 +562,38 @@ class HomePageState extends State<HomePage> {
                         // dùng cái này để icon xuống phía bên phải cùng của row
                         Container(
                           margin: const EdgeInsets.only(right: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              print("Options");
-                            },
-                            child: const Icon(
-                              Icons.more_horiz,
-                              size: 30.0,
-                              color: Colors.blue,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  print("Blocked status");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 8.0),
+                                  child: const Icon(
+                                    IconData(0x2716,
+                                        fontFamily: 'MaterialIcons'),
+                                    size: 20.0,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  print("Options");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      top: 10.0, left: 8.0),
+                                  child: const Icon(
+                                    Icons.more_horiz,
+                                    size: 30.0,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         )
                       ],
@@ -461,7 +621,7 @@ class HomePageState extends State<HomePage> {
                           child: const Row(
                             children: [
                               Icon(
-                                Icons.emoji_emotions_outlined,
+                                Icons.emoji_emotions,
                                 size: 20.0,
                               ),
                               Icon(
@@ -469,7 +629,7 @@ class HomePageState extends State<HomePage> {
                                 size: 20.0,
                               ),
                               Icon(
-                                Icons.favorite_outline,
+                                Icons.favorite,
                                 size: 20.0,
                               ),
                               Text("99")
@@ -481,8 +641,18 @@ class HomePageState extends State<HomePage> {
                           child: Row(
                             children: [
                               Container(
-                                margin: const EdgeInsets.only(right: 10.0),
+                                margin: const EdgeInsets.only(right: 6.0),
                                 child: const Text("123 comments"),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    bottom: 6.0, right: 6.0),
+                                child: const Text(
+                                  ".",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                               Container(
                                 margin: const EdgeInsets.only(right: 16.0),
@@ -510,10 +680,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I liked this post");
                             },
-                            child: const Text(
-                              "Like",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.thumb_up_alt_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -523,10 +704,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I commented this post");
                             },
-                            child: const Text(
-                              "Comment",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Comment",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -536,10 +728,21 @@ class HomePageState extends State<HomePage> {
                             onTap: () {
                               print("I shared this post");
                             },
-                            child: const Text(
-                              "Share",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.share,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Share",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         )
