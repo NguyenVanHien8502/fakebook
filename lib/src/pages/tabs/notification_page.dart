@@ -1,5 +1,4 @@
-import 'package:fakebook/src/components/my_button.dart';
-import 'package:fakebook/src/components/my_notification.dart';
+import 'package:fakebook/src/components/custom_notification.dart';
 import 'package:flutter/material.dart';
 
 class NotificationPage extends StatelessWidget {
@@ -7,16 +6,11 @@ class NotificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<MyNotification> notifications = [
-      const MyNotification(
-        avatarUrl: 'https://example.com/avatar1.jpg',
-        content: 'Thông báo 1',
-        timeAgo: '5 phút trước',
-      ),
-      // Thêm các thông báo khác tại đây
-    ];
+    double w = MediaQuery.of(context).size.width;
+    double h = MediaQuery.of(context).size.height;
 
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(32),
           child: AppBar(
@@ -32,8 +26,92 @@ class NotificationPage extends StatelessWidget {
         ),
 
         //Body - phần thân thông báo
-        body: const Column(
-          children: <Widget>[MyButton(onTap: null, nameButton: "nameButton")],
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, "/personal-page",
+                          arguments: {"name": "Nguyen Ngoc Linh", "age": "22"});
+                    },
+                    child: Container(
+                      height: h * 0.12,
+                      padding: const EdgeInsets.only(left: 16),
+                      child: const Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: AssetImage(
+                                'lib/src/assets/images/fakebook.png'),
+                            radius: 32,
+                          ),
+                          SizedBox(
+                            width: 16,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                  "Bạn có thể thay đổi giá trị 40 thành bất kỳ giá trị nào bạn muốn để điều chỉnh kích thước của avatar",
+                                  style: TextStyle(fontSize: 18),
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text("Hôm qua lúc 23:27")
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const CustomListItem(
+                      onTap: null,
+                      name: "Linh",
+                      text: "Nguyen Ngoc Linh",
+                      time: "Hôm qua lúc 23:23",
+                      linkAvatar: "lib/src/assets/images/fakebook.png"),
+                  const CustomListItem(
+                      onTap: null,
+                      name: "Linh",
+                      text: "Nguyen Ngoc Linh",
+                      time: "Hôm qua lúc 23:23",
+                      linkAvatar: "lib/src/assets/images/fakebook.png"),
+                  const CustomListItem(
+                      onTap: null,
+                      name: "Linh",
+                      text: "Nguyen Ngoc Linh",
+                      time: "Hôm qua lúc 23:23",
+                      linkAvatar: "lib/src/assets/images/fakebook.png"),
+                  const CustomListItem(
+                      onTap: null,
+                      name: "Linh",
+                      text: "Nguyen Ngoc Linh",
+                      time: "Hôm qua lúc 23:23",
+                      linkAvatar: "lib/src/assets/images/fakebook.png"),
+                  const CustomListItem(
+                      onTap: null,
+                      name: "Linh",
+                      text: "Nguyen Ngoc Linh",
+                      time: "Hôm qua lúc 23:23",
+                      linkAvatar: "lib/src/assets/images/fakebook.png"),
+                  const CustomListItem(
+                      onTap: null,
+                      name: "Linh",
+                      text: "Nguyen Ngoc Linh",
+                      time: "Hôm qua lúc 23:23",
+                      linkAvatar: "lib/src/assets/images/fakebook.png"),
+                ],
+              ),
+            ),
+          ),
         ));
   }
 }
