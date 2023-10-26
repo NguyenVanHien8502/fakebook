@@ -23,7 +23,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   child: Container(
                     margin: const EdgeInsets.only(top: 40.0),
                     child: const Text(
-                      "Please complete all information below to reset your password",
+                      "Please enter your registered email in the box below to reset your password",
                       style: TextStyle(color: Colors.black, fontSize: 18),
                       textAlign: TextAlign.center,
                     ),
@@ -34,12 +34,8 @@ class ForgotPasswordPage extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 10.0),
                   child: const Column(
                     children: [
-                      Text("Enter phone number or registered email"),
-                      SizedBox(
-                        height: 10.0,
-                      ),
                       MyTextField(
-                        hintText: 'Phone number or email',
+                        hintText: 'Enter registered email',
                         obscureText: false,
                         hintPadding: EdgeInsets.only(left: 20.0),
                       ),
