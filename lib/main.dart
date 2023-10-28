@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         "/app": (BuildContext context) => const App(),
         "/other-page": (BuildContext context) => const SecretPage(),
         "/login": (BuildContext context) => LoginPage(),
-        "/personal-page": (BuildContext context) => const PersonalPage(),
+        '/personal-page': (context) => PersonalPage(),
         '/notifications': (BuildContext context) => const NotificationPage(),
       },
       initialRoute: "/",

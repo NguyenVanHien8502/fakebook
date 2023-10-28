@@ -1,3 +1,4 @@
+import 'package:fakebook/src/pages/otherPages/personal_page.dart';
 import 'package:flutter/material.dart';
 
 class MenuPage extends StatelessWidget {
@@ -48,7 +49,9 @@ class MenuPage extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Navigator.pushNamed(context, "/personal-page",
-                        arguments: {"name": "Nguyen Ngoc Linh", "age": "22"});
+                        arguments: ArgumentMenu(
+                            'lib/src/assets/images/fakebook.png',
+                            "Nguyen Ngoc Linh"));
                   },
                   child: Container(
                     height: 60,
@@ -200,7 +203,10 @@ class MenuPage extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, "/personal-page");
+                        Navigator.pushNamed(context, "/personal-page",
+                            arguments: ArgumentMenu(
+                                'lib/src/assets/images/fakebook.png',
+                                "Settings"));
                       },
                       child: Container(
                         decoration: const BoxDecoration(
@@ -287,4 +293,10 @@ class MenuPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class ArgumentMenu {
+  String linkAvatar;
+  String name;
+  ArgumentMenu(this.linkAvatar, this.name);
 }
