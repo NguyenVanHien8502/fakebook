@@ -1,9 +1,14 @@
 import 'package:fakebook/src/pages/tabs/menu_page.dart';
 import 'package:flutter/material.dart';
 
-class PersonalPage extends StatelessWidget {
+class PersonalPage extends StatefulWidget {
   const PersonalPage({super.key});
 
+  @override
+  PersonalPagesState createState() => PersonalPagesState();
+}
+
+class PersonalPagesState extends State<PersonalPage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as ArgumentMenu;
@@ -20,9 +25,40 @@ class PersonalPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                CircleAvatar(
-                  backgroundImage: AssetImage(args.linkAvatar),
-                  radius: 60,
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Ảnh bìa
+                    Container(
+                      width: double.infinity,
+                      height: 200, // Đặt chiều cao của ảnh bìa
+                      color: Colors.blue, // Màu nền của ảnh bìa
+                      child: const Center(
+                        child: Text(
+                          "Ảnh bìa",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    // Avatar
+                    Positioned(
+                      top: 100,
+                      left: 40,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 3,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(args.linkAvatar),
+                          radius: 60,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 //Name - Intro
                 Container(
@@ -67,6 +103,25 @@ class PersonalPage extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 20, bottom: 16, top: 6),
                   child: Column(
                     children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.paid, color: Colors.yellow, size: 30),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Flexible(
+                              child: Text(
+                                'Số dư tài khoản:',
+                                style: TextStyle(fontSize: 18),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       Container(
                         margin: const EdgeInsets.only(top: 10),
                         child: const Row(

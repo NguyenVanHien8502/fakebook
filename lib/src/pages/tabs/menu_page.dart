@@ -1,9 +1,15 @@
-import 'package:fakebook/src/pages/otherPages/personal_page.dart';
+import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
 
-class MenuPage extends StatelessWidget {
-  const MenuPage({super.key});
+class MenuPage extends StatefulWidget {
+  const MenuPage({Key? key}) : super(key: key);
 
+  @override
+  MenuPageState createState() => MenuPageState();
+}
+
+class MenuPageState extends State<MenuPage> {
+  bool isExpanded = false;
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -27,6 +33,7 @@ class MenuPage extends StatelessWidget {
                         "Menu",
                         style: TextStyle(
                           fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Row(
@@ -34,7 +41,10 @@ class MenuPage extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.settings, size: 30),
                             onPressed: () {
-                              Navigator.pushNamed(context, "/about");
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const PostPage()));
                             },
                           ),
                           const Padding(
@@ -79,18 +89,18 @@ class MenuPage extends StatelessWidget {
                 Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          height: 100,
-                          width: w * 0.4,
+                          height: 80,
+                          width: w * 0.45,
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 213, 213, 213),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          padding: const EdgeInsets.all(20),
+                          margin:
+                              const EdgeInsets.only(left: 5, right: 3, top: 10),
+                          padding: const EdgeInsets.all(10),
                           child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -105,14 +115,15 @@ class MenuPage extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          height: 100,
-                          width: w * 0.4,
+                          height: 80,
+                          width: w * 0.45,
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 213, 213, 213),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.all(20),
+                          margin:
+                              const EdgeInsets.only(left: 5, right: 3, top: 10),
+                          padding: const EdgeInsets.all(10),
                           child: const Column(
                             children: [
                               Icon(Icons.watch_later,
@@ -129,18 +140,18 @@ class MenuPage extends StatelessWidget {
                     ),
                     //Hàng 2
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          height: 100,
-                          width: w * 0.4,
+                          height: 80,
+                          width: w * 0.45,
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 213, 213, 213),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 16),
-                          padding: const EdgeInsets.all(20),
+                          margin:
+                              const EdgeInsets.only(left: 5, right: 3, top: 10),
+                          padding: const EdgeInsets.all(10),
                           child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -155,14 +166,18 @@ class MenuPage extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          height: 100,
-                          width: w * 0.4,
+                          height: 80,
+                          width: w * 0.45,
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 213, 213, 213),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.all(20),
+                          margin: const EdgeInsets.only(
+                            left: 5,
+                            right: 3,
+                            top: 10,
+                          ),
+                          padding: const EdgeInsets.all(10),
                           child: const Column(
                             children: [
                               Icon(Icons.video_call,
@@ -185,18 +200,35 @@ class MenuPage extends StatelessWidget {
                     Container(
                       decoration: const BoxDecoration(
                         border: Border(
-                          top: BorderSide(width: 1.0, color: Colors.black),
+                          top: BorderSide(width: 0.3, color: Colors.black),
                         ),
                       ),
+                      margin: const EdgeInsets.only(top: 15),
                       padding: const EdgeInsets.only(
                           left: 24, right: 12, top: 8, bottom: 8),
-                      child: const Row(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(Icons.help, color: Colors.grey, size: 38.0),
-                          SizedBox(width: 16.0),
-                          Text(
-                            'Trợ giúp và hỗ trợ',
-                            style: TextStyle(fontSize: 22.0),
+                          const Row(
+                            children: [
+                              Icon(Icons.help, color: Colors.grey, size: 38.0),
+                              SizedBox(width: 16.0),
+                              Text(
+                                'Trợ giúp và hỗ trợ',
+                                style: TextStyle(fontSize: 22.0),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: Icon(isExpanded
+                                ? Icons.expand_less
+                                : Icons.expand_more),
+                            onPressed: () {
+                              setState(() {
+                                isExpanded = !isExpanded;
+                                print(isExpanded);
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -211,7 +243,7 @@ class MenuPage extends StatelessWidget {
                       child: Container(
                         decoration: const BoxDecoration(
                           border: Border(
-                            top: BorderSide(width: 0.6, color: Colors.black),
+                            top: BorderSide(width: 0.3, color: Colors.black),
                           ),
                         ),
                         padding: const EdgeInsets.only(
@@ -232,7 +264,7 @@ class MenuPage extends StatelessWidget {
                     Container(
                       decoration: const BoxDecoration(
                         border: Border(
-                          top: BorderSide(width: 1.0, color: Colors.black),
+                          top: BorderSide(width: 0.3, color: Colors.black),
                         ),
                       ),
                       padding: const EdgeInsets.only(
@@ -252,7 +284,7 @@ class MenuPage extends StatelessWidget {
                     Container(
                       decoration: const BoxDecoration(
                         border: Border(
-                          top: BorderSide(width: 0.6, color: Colors.black),
+                          top: BorderSide(width: 0.3, color: Colors.black),
                         ),
                       ),
                       padding: const EdgeInsets.only(
