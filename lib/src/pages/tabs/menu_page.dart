@@ -215,7 +215,7 @@ class MenuPageState extends State<MenuPage> {
                               SizedBox(width: 16.0),
                               Text(
                                 'Trợ giúp và hỗ trợ',
-                                style: TextStyle(fontSize: 22.0),
+                                style: TextStyle(fontSize: 20.0),
                               ),
                             ],
                           ),
@@ -276,7 +276,7 @@ class MenuPageState extends State<MenuPage> {
                           SizedBox(width: 16.0),
                           Text(
                             'Quyền truy cập chuyên nghiệp',
-                            style: TextStyle(fontSize: 22.0),
+                            style: TextStyle(fontSize: 20.0),
                           ),
                         ],
                       ),

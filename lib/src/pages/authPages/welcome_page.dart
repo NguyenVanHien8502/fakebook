@@ -1,5 +1,6 @@
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
+import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
 import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +22,7 @@ class WelcomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  margin: const EdgeInsets.only(top: 72),
-                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(top: 40),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -34,101 +34,64 @@ class WelcomePage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  height: h * 0.085,
-                  width: w * 0.88,
-                  margin: const EdgeInsets.only(left: 15, right: 15, top: 40),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(
-                        255, 205, 205, 205), // Đặt màu nền ở đây
-                    borderRadius:
-                        BorderRadius.circular(23), // Đặt độ cong của góc
-                  ),
-                  child: const Row(
-                    children: [
-                      SizedBox(
-                        width: 16,
-                      ),
-                      CircleAvatar(
-                        backgroundImage:
-                            AssetImage('lib/src/assets/images/fakebook.png'),
-                        radius: 26,
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Text(
-                        "Nguyen Ngoc Linh",
-                        style: TextStyle(fontSize: 18),
-                      )
-                    ],
-                  ),
+                const SizedBox(
+                  height: 20,
                 ),
-                Container(
-                  height: h * 0.085,
-                  width: w * 0.88,
-                  margin: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(
-                        255, 205, 205, 205), // Đặt màu nền ở đây
-                    borderRadius:
-                        BorderRadius.circular(23), // Đặt độ cong của góc
-                  ),
-                  child: const Row(
-                    children: [
-                      SizedBox(
-                        width: 16,
-                      ),
-                      CircleAvatar(
-                        backgroundImage:
-                            AssetImage('lib/src/assets/images/fakebook.png'),
-                        radius: 26,
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Text(
-                        "Nguyen Ngoc Linh",
-                        style: TextStyle(fontSize: 18),
-                      )
-                    ],
-                  ),
+                const Image(
+                  image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                  height: 200,
+                  width: 200,
                 ),
-                Container(
-                  height: h * 0.085,
-                  width: w * 0.88,
-                  margin: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(
-                        255, 205, 205, 205), // Đặt màu nền ở đây
-                    borderRadius:
-                        BorderRadius.circular(23), // Đặt độ cong của góc
-                  ),
-                  child: const Row(
-                    children: [
-                      SizedBox(
-                        width: 16,
-                      ),
-                      CircleAvatar(
-                        backgroundImage:
-                            AssetImage('lib/src/assets/images/fakebook.png'),
-                        radius: 26,
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Text(
-                        "Nguyen Ngoc Linh",
-                        style: TextStyle(fontSize: 18),
-                      )
-                    ],
-                  ),
+                const SizedBox(
+                  height: 30,
                 ),
-                //Đăng nhập
-                const Padding(padding: EdgeInsets.only(top: 50)),
+                const Text(
+                  "Nguyen Van Hien",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(
+                  height: 30,
+                ),
+                //login current account
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "/login");
+                    Navigator.pushNamed(context, "/app");
+                  },
+                  style: ElevatedButton.styleFrom(
+                      maximumSize: Size(w * 0.85, 50),
+                      padding:
+                          EdgeInsets.zero, // Loại bỏ padding mặc định của nút
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(50), // Đặt độ cong của góc
+                      ),
+                      backgroundColor: Colors.blue // Đặt màu nền của nút
+                      ),
+                  child: const Center(
+                    child: Text(
+                      "Đăng nhập",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                //navigate login page
+                const SizedBox(
+                  height: 40,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()));
                   },
                   style: ElevatedButton.styleFrom(
                     maximumSize: Size(w * 0.85, 50),
@@ -149,18 +112,18 @@ class WelcomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Padding(padding: EdgeInsets.only(top: 100)),
+                const Padding(padding: EdgeInsets.only(top: 80)),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const RegisterPage()));
+                            builder: (context) => const PreRegisterPage()));
                   },
                   style: ElevatedButton.styleFrom(
                     maximumSize: Size(w * 0.85, 50),
-                    padding:
-                        EdgeInsets.zero, // Loại bỏ padding mặc định của nút
+                    padding: EdgeInsets.zero,
+                    // Loại bỏ padding mặc định của nút
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(50), // Đặt độ cong của góc
@@ -180,6 +143,23 @@ class WelcomePage extends StatelessWidget {
                           color: Color.fromARGB(255, 1, 107, 245)),
                     ),
                   ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image(
+                      image: AssetImage('lib/src/assets/images/meta_icon.jpg'),
+                      height: 20,
+                      width: 20,
+                    ),
+                    Text(
+                      "Meta",
+                      style: TextStyle(color: Colors.blueAccent, fontSize: 14),
+                    )
+                  ],
                 ),
               ],
             ),
