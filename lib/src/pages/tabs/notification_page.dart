@@ -1,9 +1,14 @@
 import 'package:fakebook/src/components/custom_notification.dart';
 import 'package:flutter/material.dart';
 
-class NotificationPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
 
+  @override
+  NotificationPageState createState() => NotificationPageState();
+}
+
+class NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
