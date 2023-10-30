@@ -2,6 +2,7 @@ import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
 import 'package:fakebook/src/pages/app.dart';
+import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
 import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
@@ -45,6 +46,9 @@ class LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text("Back"),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -53,86 +57,60 @@ class LoginPageState extends State<LoginPage> {
               children: [
                 Image(
                   image: const AssetImage('lib/src/assets/images/fakebook.png'),
-                  height: h * 0.35,
-                  width: w * 0.35,
+                  height: h * 0.2,
+                  width: w * 0.2,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 25.0),
-                  ),
-                ),
+
                 const SizedBox(height: 25),
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                  hintPadding: const EdgeInsets.only(left: 20.0),
-                  prefixIcon: const Icon(
-                    Icons.email,
-                    color: Colors.black54,
-                  ),
-                ),
-                if (emailError)
-                  Container(
-                    margin: const EdgeInsets.only(right: 165.0, top: 5.0),
-                    child: const Text(
-                      'Invalid email address',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                const SizedBox(height: 25),
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                  hintPadding: const EdgeInsets.only(left: 20.0),
-                  prefixIcon: const Icon(
-                    Icons.password,
-                    color: Colors.black54,
-                  ),
-                ),
-                if (passwordError)
-                  Container(
-                    margin: const EdgeInsets.only(top: 5.0),
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: const Text(
-                      'Invalid password: password should be between 4 and 20 characters long, contain no special characters and must not be similar to an email',
-                      style: TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                const SizedBox(height: 15.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                SizedBox(
+                  height: 200,
+                  child: Column(
                     children: [
-                      const Text(
-                        "Did you forget your password? ",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPasswordPage()));
-                        },
-                        child: const Text(
-                          'Click here',
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
+                      MyTextField(
+                        controller: emailController,
+                        hintText: 'Email',
+                        obscureText: false,
+                        hintPadding: const EdgeInsets.only(left: 20.0),
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Colors.black54,
                         ),
                       ),
+                      if (emailError)
+                        Container(
+                          margin: const EdgeInsets.only(right: 165.0, top: 5.0),
+                          child: const Text(
+                            'Invalid email address',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      const SizedBox(height: 30,),
+                      MyTextField(
+                        controller: passwordController,
+                        hintText: 'Password',
+                        obscureText: true,
+                        hintPadding: const EdgeInsets.only(left: 20.0),
+                        prefixIcon: const Icon(
+                          Icons.password,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      if (passwordError)
+                        Container(
+                          margin: const EdgeInsets.only(top: 5.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: const Text(
+                            'Invalid password: password should be between 4 and 20 characters long, contain no special characters and must not be similar to an email',
+                            style: TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 45),
-                MyButton(
-                  nameButton: "Sign in",
-                  onTap: () {
+                const SizedBox(height: 15),
+                ElevatedButton(
+                  onPressed: () {
                     String email = emailController.text;
                     String password = passwordController.text;
                     if (!isEmailValid(email)) {
@@ -154,39 +132,108 @@ class LoginPageState extends State<LoginPage> {
                         passwordError = false;
                       });
                     }
-                    if (isEmailValid(email) && isPasswordValid(password) && password!=email) {
+                    if (isEmailValid(email) &&
+                        isPasswordValid(password) &&
+                        password != email) {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => const App()));
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    maximumSize: Size(w * 0.85, 50),
+                    padding: EdgeInsets.zero,
+                    // Loại bỏ padding mặc định của nút
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(50), // Đặt độ cong của góc
+                    ),
+                    backgroundColor: Colors.blue,
+                    // Đặt màu nền của nút
+                    side: const BorderSide(
+                      color:
+                          Color.fromARGB(255, 0, 68, 255), // Đặt màu đường viền
+                      width: 0.4, // Đặt độ dày của đường viền
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Đăng nhập",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 50),
-                Row(
+                const SizedBox(height: 15.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordPage()));
+                    },
+                    child: const Text(
+                      'Bạn quên mật khẩu ư?',
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 95,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PreRegisterPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    maximumSize: Size(w * 0.85, 50),
+                    padding: EdgeInsets.zero,
+                    // Loại bỏ padding mặc định của nút
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(50), // Đặt độ cong của góc
+                    ),
+                    primary: const Color.fromARGB(255, 248, 248, 248),
+                    side: const BorderSide(
+                      color:
+                          Color.fromARGB(255, 0, 68, 255), // Đặt màu đường viền
+                      width: 0.8, // Đặt độ dày của đường viền
+                    ), // Đặt màu nền của nút
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Tạo tài khoản mới",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Color.fromARGB(255, 1, 107, 245)),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Image(
+                      image: AssetImage('lib/src/assets/images/meta_icon.jpg'),
+                      height: 20,
+                      width: 20,
+                    ),
                     Text(
-                      'Haven\'t you already account?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const RegisterPage()));
-                      },
-                      child: Text(
-                        'Register now',
-                        style: TextStyle(
-                            color: Colors.blue[800],
-                            fontWeight: FontWeight.bold),
-                      ),
+                      "Meta",
+                      style: TextStyle(color: Colors.blueAccent, fontSize: 14),
                     )
                   ],
-                )
+                ),
               ],
             ),
           ),
