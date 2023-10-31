@@ -1,3 +1,5 @@
+import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
+import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/my_textfield.dart';
@@ -34,12 +36,39 @@ class HomePageState extends State<HomePage> {
                         width: w * 0.15,
                       ),
                     ),
-                    const Expanded(
-                        child: MyTextField(
-                      hintText: "What are you thinking?...",
-                      obscureText: false,
-                      hintPadding: EdgeInsets.only(left: 10.0),
-                    )),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const PostPage()));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          maximumSize: Size(w * 0.6, 50),
+                          padding: EdgeInsets.zero,
+                          // Loại bỏ padding mặc định của nút
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                20), // Đặt độ cong của góc
+                          ),
+                          primary: const Color.fromARGB(255, 248, 248, 248),
+                          side: const BorderSide(
+                            color: Colors.grey, // Đặt màu đường viền
+                            width: 0, // Đặt độ dày của đường viền
+                          ),
+                          elevation: 0.2,
+                          shadowColor: Colors.grey,
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "What are you thinking?",
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
                     Container(
                       margin: const EdgeInsets.only(right: 16.0),
                       child: GestureDetector(
@@ -62,79 +91,87 @@ class HomePageState extends State<HomePage> {
                 ),
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 16.0),
-                          child: Image(
-                            image: const AssetImage(
-                                'lib/src/assets/images/avatar.jpg'),
-                            height: h * 0.15,
-                            width: w * 0.15,
+                    InkWell(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 8.0),
-                                  child: const Text(
-                                    "Lời thì thầm của đá",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                )),
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: const Text(
-                                  "1 day ago",
-                                  style: TextStyle(color: Colors.black),
-                                )),
-                          ],
-                        ),
-                        const Spacer(),
-                        // dùng cái này để icon xuống phía bên phải cùng của row
-                        Container(
-                          margin: const EdgeInsets.only(right: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("Blocked status");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 8.0),
-                                  child: const Icon(
-                                    IconData(0x2716,
-                                        fontFamily: 'MaterialIcons'),
-                                    size: 20.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print("Options");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      top: 10.0, left: 8.0),
-                                  child: const Icon(
-                                    Icons.more_horiz,
-                                    size: 30.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              )
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                             ],
                           ),
-                        )
-                      ],
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 16.0, right: 12.0),
@@ -298,79 +335,87 @@ class HomePageState extends State<HomePage> {
                 ),
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 16.0),
-                          child: Image(
-                            image: const AssetImage(
-                                'lib/src/assets/images/avatar.jpg'),
-                            height: h * 0.15,
-                            width: w * 0.15,
+                    InkWell(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 8.0),
-                                  child: const Text(
-                                    "Lời thì thầm của đá",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                )),
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: const Text(
-                                  "1 day ago",
-                                  style: TextStyle(color: Colors.black),
-                                )),
-                          ],
-                        ),
-                        const Spacer(),
-                        // dùng cái này để icon xuống phía bên phải cùng của row
-                        Container(
-                          margin: const EdgeInsets.only(right: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("Blocked status");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 8.0),
-                                  child: const Icon(
-                                    IconData(0x2716,
-                                        fontFamily: 'MaterialIcons'),
-                                    size: 20.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print("Options");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      top: 10.0, left: 8.0),
-                                  child: const Icon(
-                                    Icons.more_horiz,
-                                    size: 30.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              )
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                             ],
                           ),
-                        )
-                      ],
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 16.0, right: 12.0),
@@ -534,79 +579,87 @@ class HomePageState extends State<HomePage> {
                 ),
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 16.0),
-                          child: Image(
-                            image: const AssetImage(
-                                'lib/src/assets/images/avatar.jpg'),
-                            height: h * 0.15,
-                            width: w * 0.15,
+                    InkWell(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 8.0),
-                                  child: const Text(
-                                    "Lời thì thầm của đá",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                )),
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: const Text(
-                                  "1 day ago",
-                                  style: TextStyle(color: Colors.black),
-                                )),
-                          ],
-                        ),
-                        const Spacer(),
-                        // dùng cái này để icon xuống phía bên phải cùng của row
-                        Container(
-                          margin: const EdgeInsets.only(right: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("Blocked status");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 8.0),
-                                  child: const Icon(
-                                    IconData(0x2716,
-                                        fontFamily: 'MaterialIcons'),
-                                    size: 20.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print("Options");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      top: 10.0, left: 8.0),
-                                  child: const Icon(
-                                    Icons.more_horiz,
-                                    size: 30.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              )
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                             ],
                           ),
-                        )
-                      ],
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 16.0, right: 12.0),
@@ -770,79 +823,87 @@ class HomePageState extends State<HomePage> {
                 ),
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 16.0),
-                          child: Image(
-                            image: const AssetImage(
-                                'lib/src/assets/images/avatar.jpg'),
-                            height: h * 0.15,
-                            width: w * 0.15,
+                    InkWell(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 8.0),
-                                  child: const Text(
-                                    "Lời thì thầm của đá",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                )),
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: const Text(
-                                  "1 day ago",
-                                  style: TextStyle(color: Colors.black),
-                                )),
-                          ],
-                        ),
-                        const Spacer(),
-                        // dùng cái này để icon xuống phía bên phải cùng của row
-                        Container(
-                          margin: const EdgeInsets.only(right: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("Blocked status");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 8.0),
-                                  child: const Icon(
-                                    IconData(0x2716,
-                                        fontFamily: 'MaterialIcons'),
-                                    size: 20.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print("Options");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      top: 10.0, left: 8.0),
-                                  child: const Icon(
-                                    Icons.more_horiz,
-                                    size: 30.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              )
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                             ],
                           ),
-                        )
-                      ],
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 16.0, right: 12.0),
@@ -1006,79 +1067,87 @@ class HomePageState extends State<HomePage> {
                 ),
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 16.0),
-                          child: Image(
-                            image: const AssetImage(
-                                'lib/src/assets/images/avatar.jpg'),
-                            height: h * 0.15,
-                            width: w * 0.15,
+                    InkWell(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 8.0),
-                                  child: const Text(
-                                    "Lời thì thầm của đá",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                )),
-                            Container(
-                                margin: const EdgeInsets.only(left: 16.0),
-                                child: const Text(
-                                  "1 day ago",
-                                  style: TextStyle(color: Colors.black),
-                                )),
-                          ],
-                        ),
-                        const Spacer(),
-                        // dùng cái này để icon xuống phía bên phải cùng của row
-                        Container(
-                          margin: const EdgeInsets.only(right: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("Blocked status");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 8.0),
-                                  child: const Icon(
-                                    IconData(0x2716,
-                                        fontFamily: 'MaterialIcons'),
-                                    size: 20.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print("Options");
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      top: 10.0, left: 8.0),
-                                  child: const Icon(
-                                    Icons.more_horiz,
-                                    size: 30.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              )
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                             ],
                           ),
-                        )
-                      ],
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 16.0, right: 12.0),

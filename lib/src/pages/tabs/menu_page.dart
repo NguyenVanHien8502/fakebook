@@ -1,3 +1,5 @@
+import 'package:fakebook/src/pages/authPages/login_page.dart';
+import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
 
@@ -41,10 +43,7 @@ class MenuPageState extends State<MenuPage> {
                           IconButton(
                             icon: const Icon(Icons.settings, size: 30),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const PostPage()));
+                              print("go to settings");
                             },
                           ),
                           const Padding(
@@ -64,28 +63,35 @@ class MenuPageState extends State<MenuPage> {
                             "Nguyen Ngoc Linh"));
                   },
                   child: Container(
-                    height: 60,
-                    padding: const EdgeInsets.only(left: 12),
-                    child: const Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              AssetImage('lib/src/assets/images/fakebook.png'),
-                          radius: 20,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 16),
-                          child: Text(
-                            "Nguyen Van A",
-                            style: TextStyle(
-                              fontSize: 20,
-                            ),
+                    height: 70,
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: const Color.fromARGB(255, 213, 213, 213),
+
+                    ),
+                  child: const Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage:
+                        AssetImage('lib/src/assets/images/fakebook.png'),
+                        radius: 20,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16),
+                        child: Text(
+                          "Nguyen Van A",
+                          style: TextStyle(
+                            fontSize: 20,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                   ),
                 ),
+
                 Column(
                   children: [
                     Row(
@@ -307,14 +313,34 @@ class MenuPageState extends State<MenuPage> {
                   margin: const EdgeInsets.only(bottom: 28),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, "/login");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WelcomePage()));
                     },
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(200, 50), // Kích thước cho nút
+                      maximumSize: Size(w * 0.85, 50),
+                      padding: EdgeInsets.zero,
+                      // Loại bỏ padding mặc định của nút
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(50), // Đặt độ cong của góc
+                      ),
+                      primary: const Color.fromARGB(255, 248, 248, 248),
+                      side: const BorderSide(
+                        color:
+                        Color.fromARGB(255, 0, 68, 255), // Đặt màu đường viền
+                        width: 0.2, // Đặt độ dày của đường viền
+                      ),
+                      backgroundColor: Colors.blue,// Đặt màu nền của nút
                     ),
-                    child: const Text(
-                      "Đăng xuất",
-                      style: TextStyle(fontSize: 20),
+                    child: const Center(
+                      child: Text(
+                        "Đăng xuất",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),

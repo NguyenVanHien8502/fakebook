@@ -10,8 +10,12 @@ class ForgotPasswordPage extends StatelessWidget {
     double w = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Back"),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
