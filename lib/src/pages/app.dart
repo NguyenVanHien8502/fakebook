@@ -22,7 +22,7 @@ class AppState extends State<App> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: const Text(
-              "Fakebook",
+              "Facebook",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 26,

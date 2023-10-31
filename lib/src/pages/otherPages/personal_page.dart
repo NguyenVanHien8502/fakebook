@@ -15,8 +15,15 @@ class PersonalPagesState extends State<PersonalPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Facebook"),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
         centerTitle: true,
+        title: const Text(
+          "Facebook",
+          style: TextStyle(color: Colors.black),
+          textAlign: TextAlign.center,
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

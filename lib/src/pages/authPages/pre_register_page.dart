@@ -13,8 +13,12 @@ class PreRegisterPage extends StatelessWidget {
     double h = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Back"),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -23,9 +27,6 @@ class PreRegisterPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 40,
-                ),
                 Container(
                   margin: const EdgeInsets.only(left: 24.0),
                   child: const Text(
