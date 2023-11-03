@@ -14,10 +14,7 @@ class PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
-        title: const Text("Tạo bài viết", style: TextStyle(color: Colors.black),),
+        title: const Text("Tạo bài viết"),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

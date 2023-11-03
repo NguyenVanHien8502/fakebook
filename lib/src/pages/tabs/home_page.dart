@@ -1,8 +1,8 @@
+import 'package:fakebook/src/data/infouser.dart';
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
-
-import '../../components/my_textfield.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,15 +25,24 @@ class HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Padding(padding: EdgeInsets.only(top: 16)),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 16.0),
-                      child: Image(
-                        image: const AssetImage(
-                            'lib/src/assets/images/avatar.jpg'),
-                        height: h * 0.15,
-                        width: w * 0.15,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, "/personal-page",
+                            arguments: ArgumentMenu(
+                                'lib/src/assets/images/avatar.jpg',
+                                "Nguyen Văn Hiển"));
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 16.0),
+                        child: const CircleAvatar(
+                          backgroundImage:
+                              AssetImage('lib/src/assets/images/avatar.jpg'),
+                          radius: 24,
+                        ),
                       ),
                     ),
                     Container(
@@ -51,7 +60,7 @@ class HomePageState extends State<HomePage> {
                           // Loại bỏ padding mặc định của nút
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                20), // Đặt độ cong của góc
+                                50), // Đặt độ cong của góc
                           ),
                           primary: const Color.fromARGB(255, 248, 248, 248),
                           side: const BorderSide(
@@ -63,8 +72,8 @@ class HomePageState extends State<HomePage> {
                         ),
                         child: const Center(
                           child: Text(
-                            "What are you thinking?",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                            "Bạn đang nghĩ gì?",
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                         ),
                       ),
@@ -84,15 +93,74 @@ class HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
+                const Padding(padding: EdgeInsets.only(top: 12)),
                 const Divider(
                   height: 1,
                   color: Colors.black12,
                   thickness: 3,
                 ),
+                const Padding(padding: EdgeInsets.only(top: 8)),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          AntDesign.camera,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Live",
+                          style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        )
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FontAwesome.photo,
+                          color: Colors.green,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Photo",
+                          style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        )
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Check in",
+                          style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                //List bài viết
                 Column(
                   children: [
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -336,7 +404,7 @@ class HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -580,7 +648,7 @@ class HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -824,7 +892,7 @@ class HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -1068,7 +1136,7 @@ class HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -1309,6 +1377,8 @@ class HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
+
+                ///End list post
               ],
             ),
           ),

@@ -1,6 +1,9 @@
+import 'package:fakebook/src/data/infouser.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
+import 'package:fakebook/src/pages/tabs/home_page.dart';
+import 'package:fakebook/src/utils/test.dart';
 import 'package:flutter/material.dart';
 
 class MenuPage extends StatefulWidget {
@@ -69,26 +72,25 @@ class MenuPageState extends State<MenuPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: const Color.fromARGB(255, 213, 213, 213),
-
                     ),
-                  child: const Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage:
-                        AssetImage('lib/src/assets/images/fakebook.png'),
-                        radius: 20,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 16),
-                        child: Text(
-                          "Nguyen Van A",
-                          style: TextStyle(
-                            fontSize: 20,
+                    child: const Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage:
+                              AssetImage('lib/src/assets/images/fakebook.png'),
+                          radius: 20,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 16),
+                          child: Text(
+                            "Nguyen Van A",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -241,10 +243,10 @@ class MenuPageState extends State<MenuPage> {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, "/personal-page",
-                            arguments: ArgumentMenu(
-                                'lib/src/assets/images/fakebook.png',
-                                "Settings"));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MenuPage1()));
                       },
                       child: Container(
                         decoration: const BoxDecoration(
@@ -324,22 +326,23 @@ class MenuPageState extends State<MenuPage> {
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(50), // Đặt độ cong của góc
+                            BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       primary: const Color.fromARGB(255, 248, 248, 248),
                       side: const BorderSide(
-                        color:
-                        Color.fromARGB(255, 0, 68, 255), // Đặt màu đường viền
+                        color: Color.fromARGB(
+                            255, 0, 68, 255), // Đặt màu đường viền
                         width: 0.2, // Đặt độ dày của đường viền
                       ),
-                      backgroundColor: Colors.blue,// Đặt màu nền của nút
+                      backgroundColor: Colors.blue, // Đặt màu nền của nút
                     ),
                     child: const Center(
                       child: Text(
                         "Đăng xuất",
                         style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -351,10 +354,4 @@ class MenuPageState extends State<MenuPage> {
       ),
     );
   }
-}
-
-class ArgumentMenu {
-  String linkAvatar;
-  String name;
-  ArgumentMenu(this.linkAvatar, this.name);
 }
