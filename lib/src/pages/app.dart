@@ -1,4 +1,5 @@
 import 'package:fakebook/src/messenger/messenger_page.dart';
+import 'package:fakebook/src/pages/otherPages/search_page.dart';
 import 'package:fakebook/src/pages/tabs/menu_page.dart';
 import 'package:fakebook/src/pages/tabs/friend_page.dart';
 import 'package:fakebook/src/pages/tabs/watch_page.dart';
@@ -27,18 +28,18 @@ class AppState extends State<App> {
             shadowColor: Colors.blueGrey,
             automaticallyImplyLeading: false,
             title: const Text(
-              "facebook",
+              "Facebook",
               style: TextStyle(
-                  fontFamily: 'Nunito', color: Colors.white, fontSize: 30),
+                  fontFamily: 'Nunito', color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
             ),
             actions: <Widget>[
               appBarAction(
                 Icons.search,
-                () {
+                    () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MessengerPage()));
+                          builder: (context) => const SearchPage()));
                 },
               ),
               appBarAction(

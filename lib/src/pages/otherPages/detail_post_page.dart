@@ -93,7 +93,7 @@ class DetailPostPage extends StatelessWidget {
                               child: const Icon(
                                 Icons.more_horiz,
                                 size: 30.0,
-                                color: Colors.blue,
+                                color: Colors.black,
                               ),
                             ),
                           ))
@@ -163,15 +163,17 @@ class DetailPostPage extends StatelessWidget {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(right: 5),
-                              child: const Icon(
-                                Icons.mode_comment_outlined,
-                                size: 20.0,
+                              child: const Image(
+                                image: AssetImage(
+                                    'lib/src/assets/images/comment.png'),
+                                height: 20,
+                                width: 20,
                               ),
                             ),
                             const Text(
                               "Comment",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -187,15 +189,17 @@ class DetailPostPage extends StatelessWidget {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(right: 5),
-                              child: const Icon(
-                                Icons.share,
-                                size: 20.0,
+                              child: const Image(
+                                image: AssetImage(
+                                    'lib/src/assets/images/share.png'),
+                                height: 20,
+                                width: 20,
                               ),
                             ),
                             const Text(
                               "Share",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
