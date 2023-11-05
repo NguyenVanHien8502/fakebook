@@ -1,4 +1,4 @@
-import 'package:fakebook/src/pages/tabs/menu_page.dart';
+import 'package:fakebook/src/data/infouser.dart';
 import 'package:flutter/material.dart';
 
 class PersonalPage extends StatefulWidget {
@@ -17,7 +17,8 @@ class PersonalPagesState extends State<PersonalPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
+        iconTheme: const IconThemeData(
+            color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
         centerTitle: true,
         title: const Text(
           "Facebook",

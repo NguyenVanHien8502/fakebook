@@ -123,11 +123,27 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_vector_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_vector_icons
+      sha256: "20a77e282f8cb438c8edcee4eec85d8497d5f4cbeb07d116e9d2d01c9edfc5e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: "direct main"
+    description:
+      name: font_awesome_flutter
+      sha256: "52671aea66da73b58d42ec6d0912b727a42248dd9a7c76d6c20f275783c48c08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.6.0"
   html:
     dependency: transitive
     description:
@@ -229,6 +245,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
+  sticky_headers:
+    dependency: "direct main"
+    description:
+      name: sticky_headers
+      sha256: "9b3dd2cb0fd6a7038170af3261f855660cbb241cb56c501452cb8deed7023ede"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0+2"
   stream_channel:
     dependency: transitive
     description:
@@ -311,4 +335,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.1.2 <4.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=3.0.0"
