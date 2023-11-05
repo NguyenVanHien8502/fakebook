@@ -1,8 +1,9 @@
-// ignore_for_file: avoid_print
 
+import 'package:fakebook/src/data/infouser.dart';
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,6 +15,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
+    double h = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -23,17 +26,24 @@ class HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Padding(padding: EdgeInsets.only(top: 16)),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 16.0, top: 10.0,bottom: 20.0),
-                      child: const Image(
-                        image: AssetImage(
-                            'lib/src/assets/images/avatar.jpg'),
-                        height: 50,
-                        width: 50,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, "/personal-page",
+                            arguments: ArgumentMenu(
+                                'lib/src/assets/images/avatar.jpg',
+                                "Nguyen Văn Hiển"));
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 16.0),
+                        child: const CircleAvatar(
+                          backgroundImage:
+                              AssetImage('lib/src/assets/images/avatar.jpg'),
+                          radius: 24,
+                        ),
                       ),
                     ),
                     Container(
@@ -51,7 +61,7 @@ class HomePageState extends State<HomePage> {
                           // Loại bỏ padding mặc định của nút
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                20), // Đặt độ cong của góc
+                                50), // Đặt độ cong của góc
                           ),
                           primary: const Color.fromARGB(255, 248, 248, 248),
                           side: const BorderSide(
@@ -63,8 +73,8 @@ class HomePageState extends State<HomePage> {
                         ),
                         child: const Center(
                           child: Text(
-                            "What are you thinking?",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                            "Bạn đang nghĩ gì?",
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                         ),
                       ),
@@ -84,11 +94,70 @@ class HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
+                const Padding(padding: EdgeInsets.only(top: 12)),
                 const Divider(
                   height: 1,
                   color: Colors.black12,
                   thickness: 5,
                 ),
+                const Padding(padding: EdgeInsets.only(top: 8)),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          AntDesign.camera,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Live",
+                          style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        )
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FontAwesome.photo,
+                          color: Colors.green,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Photo",
+                          style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        )
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Check in",
+                          style: TextStyle(
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                //List bài viết
                 Column(
                   children: [
                     InkWell(
@@ -805,11 +874,9 @@ class HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(right: 5),
-                                  child: const Image(
-                                    image: AssetImage(
-                                        'lib/src/assets/images/share.png'),
-                                    height: 20,
-                                    width: 20,
+                                  child: const Icon(
+                                    Icons.share,
+                                    size: 20.0,
                                   ),
                                 ),
                                 const Text(
@@ -833,6 +900,496 @@ class HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
+                            ],
+                          ),
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(left: 16.0, right: 12.0),
+                      child: const Text(
+                        "Hello everyone, our status is written here... Hope you don't disappoint me :v",
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 16.0, top: 12.0),
+                      child: const Image(
+                        image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                        height: 200,
+                        width: 200,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 16.0, top: 5.0),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.emoji_emotions,
+                                size: 20.0,
+                              ),
+                              Icon(
+                                Icons.thumb_up,
+                                size: 20.0,
+                              ),
+                              Icon(
+                                Icons.favorite,
+                                size: 20.0,
+                              ),
+                              Text("99")
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 16.0, top: 5.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 6.0),
+                                child: const Text("123 comments"),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    bottom: 6.0, right: 6.0),
+                                child: const Text(
+                                  ".",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(right: 16.0),
+                                child: const Text("456 shares"),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 5.0),
+                      child: const Divider(
+                        height: 1,
+                        color: Colors.black12,
+                        thickness: 1,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print("I liked this post");
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.thumb_up_alt_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print("I commented this post");
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Comment",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print("I shared this post");
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.share,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Share",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 30.0),
+                      child: const Divider(
+                        height: 1,
+                        color: Colors.black12,
+                        thickness: 3,
+                      ),
+                    )
+                  ],
+                ),
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DetailPostPage()));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 16.0),
+                            child: Image(
+                              image: const AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: h * 0.15,
+                              width: w * 0.15,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  )),
+                              Container(
+                                  margin: const EdgeInsets.only(left: 16.0),
+                                  child: const Text(
+                                    "1 day ago",
+                                    style: TextStyle(color: Colors.black),
+                                  )),
+                            ],
+                          ),
+                          const Spacer(),
+                          // dùng cái này để icon xuống phía bên phải cùng của row
+                          Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Blocked status");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: const Icon(
+                                      IconData(0x2716,
+                                          fontFamily: 'MaterialIcons'),
+                                      size: 20.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("Options");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0),
+                                    child: const Icon(
+                                      Icons.more_horiz,
+                                      size: 30.0,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(left: 16.0, right: 12.0),
+                      child: const Text(
+                        "Hello everyone, our status is written here... Hope you don't disappoint me :v",
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 16.0, top: 12.0),
+                      child: const Image(
+                        image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                        height: 200,
+                        width: 200,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 16.0, top: 5.0),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.emoji_emotions,
+                                size: 20.0,
+                              ),
+                              Icon(
+                                Icons.thumb_up,
+                                size: 20.0,
+                              ),
+                              Icon(
+                                Icons.favorite,
+                                size: 20.0,
+                              ),
+                              Text("99")
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 16.0, top: 5.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 6.0),
+                                child: const Text("123 comments"),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    bottom: 6.0, right: 6.0),
+                                child: const Text(
+                                  ".",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(right: 16.0),
+                                child: const Text("456 shares"),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 5.0),
+                      child: const Divider(
+                        height: 1,
+                        color: Colors.black12,
+                        thickness: 1,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print("I liked this post");
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.thumb_up_alt_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print("I commented this post");
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Comment",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print("I shared this post");
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: const Icon(
+                                    Icons.share,
+                                    size: 20.0,
+                                  ),
+                                ),
+                                const Text(
+                                  "Share",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 30.0),
+                      child: const Divider(
+                        height: 1,
+                        color: Colors.black12,
+                        thickness: 3,
+                      ),
+                    )
+                  ],
+                ),
+
+                ///End list post
               ],
             ),
           ),
