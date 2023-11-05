@@ -94,7 +94,7 @@ class HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
-                const Padding(padding: EdgeInsets.only(top: 12)),
+                const SizedBox(height: 30.0),
                 const Divider(
                   height: 1,
                   color: Colors.black12,
@@ -156,6 +156,14 @@ class HomePageState extends State<HomePage> {
                       ],
                     )
                   ],
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top:16.0),
+                  child: const Divider(
+                    height: 1,
+                    color: Colors.black12,
+                    thickness: 3,
+                  ),
                 ),
                 //List bài viết
                 Column(
@@ -874,9 +882,11 @@ class HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(right: 5),
-                                  child: const Icon(
-                                    Icons.share,
-                                    size: 20.0,
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/share.png'),
+                                    height: 20,
+                                    width: 20,
                                   ),
                                 ),
                                 const Text(
@@ -912,12 +922,12 @@ class HomePageState extends State<HomePage> {
                       child: Row(
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(left: 16.0),
-                            child: Image(
-                              image: const AssetImage(
+                            margin: const EdgeInsets.only(left: 16.0, top: 16.0,bottom: 16.0),
+                            child: const Image(
+                              image: AssetImage(
                                   'lib/src/assets/images/avatar.jpg'),
-                              height: h * 0.15,
-                              width: w * 0.15,
+                              height: 50,
+                              width: 50,
                             ),
                           ),
                           Column(
@@ -960,7 +970,7 @@ class HomePageState extends State<HomePage> {
                                       IconData(0x2716,
                                           fontFamily: 'MaterialIcons'),
                                       size: 20.0,
-                                      color: Colors.blue,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -974,7 +984,7 @@ class HomePageState extends State<HomePage> {
                                     child: const Icon(
                                       Icons.more_horiz,
                                       size: 30.0,
-                                      color: Colors.blue,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 )
@@ -1094,9 +1104,11 @@ class HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(right: 5),
-                                  child: const Icon(
-                                    Icons.mode_comment_outlined,
-                                    size: 20.0,
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/comment.png'),
+                                    height: 20,
+                                    width: 20,
                                   ),
                                 ),
                                 const Text(
@@ -1118,9 +1130,11 @@ class HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(right: 5),
-                                  child: const Icon(
-                                    Icons.share,
-                                    size: 20.0,
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/share.png'),
+                                    height: 20,
+                                    width: 20,
                                   ),
                                 ),
                                 const Text(
@@ -1156,12 +1170,12 @@ class HomePageState extends State<HomePage> {
                       child: Row(
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(left: 16.0),
-                            child: Image(
-                              image: const AssetImage(
+                            margin: const EdgeInsets.only(left: 16.0, top: 16.0,bottom: 16.0),
+                            child: const Image(
+                              image: AssetImage(
                                   'lib/src/assets/images/avatar.jpg'),
-                              height: h * 0.15,
-                              width: w * 0.15,
+                              height: 50,
+                              width: 50,
                             ),
                           ),
                           Column(
@@ -1204,7 +1218,7 @@ class HomePageState extends State<HomePage> {
                                       IconData(0x2716,
                                           fontFamily: 'MaterialIcons'),
                                       size: 20.0,
-                                      color: Colors.blue,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -1218,7 +1232,7 @@ class HomePageState extends State<HomePage> {
                                     child: const Icon(
                                       Icons.more_horiz,
                                       size: 30.0,
-                                      color: Colors.blue,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 )
@@ -1338,9 +1352,11 @@ class HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(right: 5),
-                                  child: const Icon(
-                                    Icons.mode_comment_outlined,
-                                    size: 20.0,
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/comment.png'),
+                                    height: 20,
+                                    width: 20,
                                   ),
                                 ),
                                 const Text(
@@ -1362,9 +1378,11 @@ class HomePageState extends State<HomePage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(right: 5),
-                                  child: const Icon(
-                                    Icons.share,
-                                    size: 20.0,
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/share.png'),
+                                    height: 20,
+                                    width: 20,
                                   ),
                                 ),
                                 const Text(
