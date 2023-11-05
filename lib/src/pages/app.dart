@@ -20,6 +20,8 @@ class AppState extends State<App> {
       child: Scaffold(
           drawer: const MyDrawer(),
           appBar: AppBar(
+            elevation: 1.0,
+            shadowColor: Colors.blueGrey,
             automaticallyImplyLeading: false,
             title: const Text(
               "Facebook",
@@ -36,9 +38,14 @@ class AppState extends State<App> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.chat_outlined),
+                icon: const Image(
+                  image: AssetImage('lib/src/assets/images/message.png'),
+                  height: 30,
+                  width: 30,
+                  color: Colors.white,
+                ),
                 onPressed: () {
-                  print("Messenger");
+                  print("Navigate to messenger");
                 },
               ),
             ],
