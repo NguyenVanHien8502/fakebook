@@ -12,9 +12,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  // String? selectedGender;
-  // DateTime? _selectedDate;
-
   //text editing controllers
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
@@ -111,133 +108,6 @@ class RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(color: Colors.red),
                   ),
                 ),
-              // const SizedBox(
-              //   height: 20,
-              // ),
-              // const Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.start,
-              //     children: [
-              //       Text(
-              //         'Your gender:',
-              //         style: TextStyle(
-              //           color: Colors.black,
-              //           fontSize: 16,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // Container(
-              //   width: 310,
-              //   height: 60,
-              //   decoration: BoxDecoration(
-              //     border: Border.all(color: Colors.grey, width: 1.0),
-              //     borderRadius: BorderRadius.circular(12.0),
-              //   ),
-              //   child: DropdownButton<String>(
-              //     hint: Container(
-              //         margin: const EdgeInsets.symmetric(horizontal: 12.0),
-              //         child: const Text('Select your gender',
-              //             style: TextStyle(color: Colors.grey, fontSize: 16))),
-              //     isExpanded: true,
-              //     value: selectedGender,
-              //     icon: const Row(
-              //       mainAxisAlignment: MainAxisAlignment.end,
-              //       children: [
-              //         Padding(
-              //           padding:
-              //               EdgeInsets.symmetric(vertical: 18, horizontal: 10),
-              //           child: Icon(Icons.arrow_drop_down),
-              //         ),
-              //       ],
-              //     ),
-              //     iconSize: 24,
-              //     elevation: 16,
-              //     style: const TextStyle(color: Colors.black),
-              //     underline: Container(
-              //       height: 0,
-              //     ),
-              //     onChanged: (String? newValue) {
-              //       setState(() {
-              //         selectedGender = newValue!;
-              //       });
-              //     },
-              //     items: <String>[
-              //       'Nam',
-              //       'Nữ',
-              //       'Other'
-              //     ] // Giá trị cho dropdown menu
-              //         .map<DropdownMenuItem<String>>((String value) {
-              //       return DropdownMenuItem<String>(
-              //           value: value,
-              //           child: Container(
-              //             margin: const EdgeInsets.symmetric(horizontal: 12.0),
-              //             child: Text(
-              //               value,
-              //               style: const TextStyle(
-              //                   color: Colors.black, fontSize: 16),
-              //             ),
-              //           ));
-              //     }).toList(),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 20,
-              // ),
-              // const Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.start,
-              //     children: [
-              //       Text(
-              //         'Your birthday:',
-              //         style: TextStyle(
-              //           color: Colors.black,
-              //           fontSize: 16,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // InkWell(
-              //   onTap: () async {
-              //     DateTime? pickedDate = await showDatePicker(
-              //       context: context,
-              //       initialDate: _selectedDate ?? DateTime.now(),
-              //       firstDate: DateTime(1900),
-              //       lastDate: DateTime.now(),
-              //     );
-              //
-              //     if (pickedDate != null && pickedDate != _selectedDate) {
-              //       setState(() {
-              //         _selectedDate = pickedDate;
-              //       });
-              //     }
-              //   },
-              //   child: Container(
-              //     width: 310,
-              //     height: 60,
-              //     decoration: BoxDecoration(
-              //       border: Border.all(color: Colors.grey, width: 1.0),
-              //       borderRadius: BorderRadius.circular(12.0),
-              //     ),
-              //     child: Container(
-              //       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 20.0),
-              //       child: Text(
-              //         _selectedDate != null
-              //             ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-              //             : 'Select your birthday',
-              //         style: TextStyle(
-              //           color:
-              //               _selectedDate != null ? Colors.black : Colors.grey,
-              //           fontSize: 16,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
               const SizedBox(
                 height: 20,
               ),
@@ -341,9 +211,9 @@ class RegisterPageState extends State<RegisterPage> {
               const SizedBox(
                 height: 40,
               ),
-              MyButton(
-                nameButton: 'Sign Up',
-                onTap: () {
+
+              ElevatedButton(
+                onPressed: () {
                   String username = usernameController.text;
                   String email = emailController.text;
                   String password = passwordController.text;
@@ -404,7 +274,7 @@ class RegisterPageState extends State<RegisterPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const LoginPage()));
+                                        const LoginPage()));
                               },
                               child: const Text('OK'),
                             ),
@@ -414,9 +284,31 @@ class RegisterPageState extends State<RegisterPage> {
                     );
                   }
                 },
-              ),
-              const SizedBox(
-                height: 20,
+                style: ElevatedButton.styleFrom(
+                  maximumSize: const Size(300, 50),
+                  padding: EdgeInsets.zero,
+                  // Loại bỏ padding mặc định của nút
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(50), // Đặt độ cong của góc
+                  ),
+                  backgroundColor: Colors.blue,
+                  // Đặt màu nền của nút
+                  side: const BorderSide(
+                    color: Color.fromARGB(
+                        255, 0, 68, 255), // Đặt màu đường viền
+                    width: 0.4, // Đặt độ dày của đường viền
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    "Sign Up",
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ],
           ),

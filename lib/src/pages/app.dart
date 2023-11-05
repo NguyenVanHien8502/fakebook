@@ -23,6 +23,8 @@ class AppState extends State<App> {
       child: Scaffold(
           drawer: const MyDrawer(),
           appBar: AppBar(
+            elevation: 1.0,
+            shadowColor: Colors.blueGrey,
             automaticallyImplyLeading: false,
             title: const Text(
               "facebook",

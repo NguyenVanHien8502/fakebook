@@ -12,11 +12,14 @@ class FriendPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
+            Container(
+              width: 400,
+              height: 80,
               padding:
                   const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
               child: TextField(
                 decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(top: 5.0),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.grey),
                     borderRadius: BorderRadius.circular(24.0),
