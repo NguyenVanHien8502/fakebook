@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
+//import 'package:chewie/chewie.dart';
 
 class WatchPage extends StatefulWidget {
   const WatchPage({super.key});
@@ -18,7 +18,7 @@ class WatchPageState extends State<WatchPage> {
   String displayedStatus = "";
 
   late VideoPlayerController videoPlayerController;
-  late ChewieController chewieController;
+  //late ChewieController chewieController;
 
   @override
   void initState() {
@@ -27,13 +27,14 @@ class WatchPageState extends State<WatchPage> {
     updateDisplayedStatus();
 
     // Đường dẫn đến video của bạn
-    videoPlayerController = VideoPlayerController.asset('lib/src/assets/videos/video_watch.mp4');
-    chewieController = ChewieController(
-      videoPlayerController: videoPlayerController,
-      autoPlay: false, // Bật tự động phát video khi mở trang
-      looping: false, // Lặp lại video khi kết thúc
-      allowFullScreen: true, // Cho phép chế độ toàn màn hình
-    );
+    videoPlayerController =
+        VideoPlayerController.asset('lib/src/assets/videos/video_watch.mp4');
+    // chewieController = ChewieController(
+    //   videoPlayerController: videoPlayerController,
+    //   autoPlay: false, // Bật tự động phát video khi mở trang
+    //   looping: false, // Lặp lại video khi kết thúc
+    //   allowFullScreen: true, // Cho phép chế độ toàn màn hình
+    // );
   }
 
   void updateDisplayedStatus() {
@@ -82,7 +83,9 @@ class WatchPageState extends State<WatchPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20.0,),
+                const SizedBox(
+                  height: 20.0,
+                ),
                 const Divider(
                   height: 1,
                   color: Colors.black12,
@@ -179,54 +182,53 @@ class WatchPageState extends State<WatchPage> {
                     Container(
                       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                       child: RichText(
-                        text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: displayedStatus,
-                                style: const TextStyle(color: Colors.black, fontSize: 16),
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: displayedStatus,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 16),
+                          ),
+                          if (!isExpanded) ...{
+                            TextSpan(
+                              text: ' Xem thêm...',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w300,
                               ),
-                              if (!isExpanded) ...{
-                                TextSpan(
-                                  text: ' Xem thêm...',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      setState(() {
-                                        isExpanded = !isExpanded;
-                                        updateDisplayedStatus();
-                                      });
-                                    },
-                                ),
-                              } else ...{
-                                TextSpan(
-                                  text: ' Rút gọn',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      setState(() {
-                                        isExpanded = !isExpanded;
-                                        updateDisplayedStatus();
-                                      });
-                                    },
-                                ),
-                              },
-                            ]
-                        ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  setState(() {
+                                    isExpanded = !isExpanded;
+                                    updateDisplayedStatus();
+                                  });
+                                },
+                            ),
+                          } else ...{
+                            TextSpan(
+                              text: ' Rút gọn',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w300,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  setState(() {
+                                    isExpanded = !isExpanded;
+                                    updateDisplayedStatus();
+                                  });
+                                },
+                            ),
+                          },
+                        ]),
                       ),
                     ),
 
                     // Video player
                     Container(
                       margin: const EdgeInsets.only(left: 16.0, top: 12.0),
-                      child: Chewie(
-                        controller: chewieController,
-                      ),
+                      // child: Chewie(
+                      //   controller: chewieController,
+                      // ),
                     ),
 
                     Row(
@@ -390,6 +392,6 @@ class WatchPageState extends State<WatchPage> {
   void dispose() {
     super.dispose();
     videoPlayerController.dispose();
-    chewieController.dispose();
+    //chewieController.dispose();
   }
 }
