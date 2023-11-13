@@ -1,3 +1,4 @@
+import 'package:fakebook/src/constants/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
@@ -12,10 +13,8 @@ class MessengerPageState extends State<MessengerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 54, 52, 52),
-      appBar: AppBar(
-        title: const Text("Đoạn chat"),
-      ),
+      backgroundColor: GlobalVariables.backgroundColor,
+
       //Thân messenger
       body: SafeArea(
         child: SingleChildScrollView(
@@ -25,8 +24,14 @@ class MessengerPageState extends State<MessengerPage> {
               children: <Widget>[
                 Row(
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                     Container(
-                      padding: const EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 6),
                       child: const CircleAvatar(
                         backgroundImage:
                             AssetImage('lib/src/assets/images/fakebook.png'),
@@ -38,7 +43,10 @@ class MessengerPageState extends State<MessengerPage> {
                     ),
                     const Text(
                       "Chat",
-                      style: TextStyle(fontSize: 30, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: GlobalVariables.secondaryColor,
+                          fontWeight: FontWeight.w800),
                     ),
                     const Spacer(),
                     GestureDetector(
@@ -50,13 +58,14 @@ class MessengerPageState extends State<MessengerPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
-                            color: Colors.white.withOpacity(0.23),
+                            color: const Color.fromARGB(255, 113, 95, 95)
+                                .withOpacity(0.23),
                           ),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Icon(
                               Ionicons.camera,
-                              color: Colors.white,
+                              color: GlobalVariables.secondaryColor,
                             ),
                           ),
                         ),
@@ -71,13 +80,14 @@ class MessengerPageState extends State<MessengerPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
-                            color: Colors.white.withOpacity(0.23),
+                            color: const Color.fromARGB(255, 113, 95, 95)
+                                .withOpacity(0.23),
                           ),
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Icon(
-                              Ionicons.camera,
-                              color: Colors.white,
+                              Icons.edit,
+                              color: GlobalVariables.secondaryColor,
                             ),
                           ),
                         ),
@@ -89,15 +99,15 @@ class MessengerPageState extends State<MessengerPage> {
                 Container(
                   margin: const EdgeInsets.only(left: 16, right: 16),
                   decoration: const BoxDecoration(
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 237, 231, 231),
                       borderRadius: BorderRadius.all(Radius.circular(50))),
                   child: TextFormField(
                     decoration: const InputDecoration(
                       hintText: 'Search',
-                      hintStyle: TextStyle(color: Colors.lightBlue),
+                      hintStyle: TextStyle(color: Colors.black),
                       prefixIcon: Icon(
                         Icons.search,
-                        color: Colors.lightBlue,
+                        color: Colors.black,
                       ),
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:fakebook/src/components/my_button.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
+import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
 import 'package:fakebook/src/pages/app.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
@@ -49,7 +50,8 @@ class LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
+        iconTheme: const IconThemeData(
+            color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
         centerTitle: true,
       ),
       body: SafeArea(
@@ -63,7 +65,6 @@ class LoginPageState extends State<LoginPage> {
                   height: h * 0.2,
                   width: w * 0.2,
                 ),
-
                 const SizedBox(height: 25),
                 SizedBox(
                   height: 200,
@@ -87,7 +88,9 @@ class LoginPageState extends State<LoginPage> {
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
-                      const SizedBox(height: 30,),
+                      const SizedBox(
+                        height: 30,
+                      ),
                       MyTextField(
                         controller: passwordController,
                         hintText: 'Password',
@@ -138,8 +141,10 @@ class LoginPageState extends State<LoginPage> {
                     if (isEmailValid(email) &&
                         isPasswordValid(password) &&
                         password != email) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const App()));
+                      Navigator.pushNamed(
+                        context,
+                        HomeScreen.routeName,
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(

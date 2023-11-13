@@ -1,12 +1,18 @@
-import 'package:fakebook/src/components/my_button.dart';
+import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
 import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
+  static const String routeName = '/welcome';
   const WelcomePage({Key? key}) : super(key: key);
 
+  @override
+  State<WelcomePage> createState() => WelcomePageState();
+}
+
+class WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -59,7 +65,10 @@ class WelcomePage extends StatelessWidget {
                 //login current account
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "/app");
+                    Navigator.pushNamed(
+                      context,
+                      HomeScreen.routeName,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                       maximumSize: Size(w * 0.85, 50),

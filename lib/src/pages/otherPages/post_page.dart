@@ -14,8 +14,10 @@ class PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: const Text("Tạo bài viết"),
         centerTitle: true,
+        toolbarHeight: 40,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

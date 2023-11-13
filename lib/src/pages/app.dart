@@ -1,8 +1,6 @@
 import 'package:fakebook/src/messenger/messenger_page.dart';
 import 'package:fakebook/src/pages/otherPages/search_page.dart';
-import 'package:fakebook/src/pages/tabs/menu_page.dart';
 import 'package:fakebook/src/pages/tabs/friend_page.dart';
-import 'package:fakebook/src/pages/tabs/watch_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
 import 'package:fakebook/src/pages/tabs/home_page.dart';
 import 'package:fakebook/src/pages/tabs/notification_page.dart';
@@ -30,12 +28,15 @@ class AppState extends State<App> {
             title: const Text(
               "Facebook",
               style: TextStyle(
-                  fontFamily: 'Nunito', color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                  fontFamily: 'Nunito',
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold),
             ),
             actions: <Widget>[
               appBarAction(
                 Icons.search,
-                    () {
+                () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -68,10 +69,8 @@ class AppState extends State<App> {
           body: const TabBarView(
             children: <Widget>[
               HomePage(),
-              WatchPage(),
               FriendPage(),
               NotificationPage(),
-              MenuPage()
             ],
           )),
     );
