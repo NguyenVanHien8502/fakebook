@@ -1,4 +1,5 @@
 import 'package:fakebook/src/model/user.dart';
+import 'package:fakebook/src/pages/tabs/friend_page.dart';
 import 'package:flutter/material.dart';
 
 class FriendsScreen extends StatefulWidget {
@@ -254,7 +255,12 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     width: 10,
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const FriendPage()));
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[300],

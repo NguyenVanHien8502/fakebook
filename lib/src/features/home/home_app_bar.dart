@@ -1,5 +1,6 @@
 import 'package:fakebook/src/constants/global_variables.dart';
 import 'package:fakebook/src/messenger/messenger_page.dart';
+import 'package:fakebook/src/pages/otherPages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
@@ -32,7 +33,7 @@ class _HomeAppbarScreenState extends State<HomeAppbarScreen> {
               width: 20,
             ),
             Text(
-              'facebook',
+              'Facebook',
               style: TextStyle(
                 color: GlobalVariables.secondaryColor,
                 fontSize: 28,
@@ -59,7 +60,12 @@ class _HomeAppbarScreenState extends State<HomeAppbarScreen> {
               child: IconButton(
                   splashRadius: 18,
                   padding: const EdgeInsets.all(0),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SearchPage()));
+                  },
                   icon: const Icon(
                     Icons.search,
                     color: Colors.black,
@@ -68,7 +74,7 @@ class _HomeAppbarScreenState extends State<HomeAppbarScreen> {
             //Botton Messenger
             Container(
               alignment: Alignment.center,
-              margin: const EdgeInsets.symmetric(horizontal: 5),
+              margin: const EdgeInsets.only(left: 5, right: 12.0),
               width: 35,
               height: 35,
               padding: const EdgeInsets.all(0),

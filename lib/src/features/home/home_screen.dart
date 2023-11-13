@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
+
   const HomeScreen({super.key});
 
   @override
@@ -195,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: 30,
                                             )
                                           : Image.asset(
-                                              'lib/src/assets/images/people-act.png',
+                                              'lib/src/assets/images/people-active.png',
                                               width: 30,
                                               height: 30,
                                             ),
@@ -334,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Divider(
                       color: Colors.black12,
                       height: 0,
-                    )
+                    ),
                   ],
                 ),
               ),
