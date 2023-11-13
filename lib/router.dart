@@ -1,6 +1,7 @@
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
+import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,26 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
 
           var tween =
               Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      );
+
+    case OtherPersonalPageScreen.routeName:
+      final User user = routeSettings.arguments as User;
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            OtherPersonalPageScreen(user: user),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),

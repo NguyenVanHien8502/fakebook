@@ -1,4 +1,3 @@
-import 'package:fakebook/src/pages/app.dart';
 import 'package:flutter/material.dart';
 
 class DetailPostPage extends StatelessWidget {
