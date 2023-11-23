@@ -1,12 +1,14 @@
-import 'package:fakebook/src/components/my_button.dart';
+import 'dart:convert';
+
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
-import 'package:fakebook/src/pages/app.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
 import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -141,10 +143,11 @@ class LoginPageState extends State<LoginPage> {
                     if (isEmailValid(email) &&
                         isPasswordValid(password) &&
                         password != email) {
-                      Navigator.pushNamed(
-                        context,
-                        HomeScreen.routeName,
-                      );
+                      _login(email, password);
+                      // Navigator.pushNamed(
+                      //   context,
+                      //   HomeScreen.routeName,
+                      // );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -248,5 +251,31 @@ class LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void _login(String email, String password) async {
+    var url = Uri.parse(ListAPI.LOGIN);
+
+    var body = {
+      "email": email,
+      'password': password,
+      'uuid': 'string',
+    };
+
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      print(response);
+      Navigator.pushNamed(
+        context,
+        HomeScreen.routeName,
+      );
+    } else {
+      print("loi");
+    }
   }
 }
