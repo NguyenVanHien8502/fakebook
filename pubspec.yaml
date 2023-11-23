@@ -21,6 +21,8 @@ dependencies:
   webview_flutter: ^4.2.4
   smooth_video_progress: ^0.0.4
   http: ^1.1.0
+  cupertino_date_textbox: ^1.0.3
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

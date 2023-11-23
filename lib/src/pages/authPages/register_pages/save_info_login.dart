@@ -1,21 +1,28 @@
-import 'package:fakebook/src/pages/authPages/register_pages/name.dart';
+import 'package:fakebook/src/features/home/home_screen.dart';
+import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
+import 'dart:core';
 
-class PreRegisterPage extends StatelessWidget {
-  const PreRegisterPage({super.key});
+class SaveInfoLoginPage extends StatefulWidget {
+  const SaveInfoLoginPage({Key? key}) : super(key: key);
 
+  @override
+  SaveInfoLoginPageState createState() => SaveInfoLoginPageState();
+}
+
+class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
+        iconTheme: const IconThemeData(color: Colors.black),
+        // Đặt màu của mũi tên quay lại thành màu đen
         centerTitle: true,
       ),
       body: SafeArea(
@@ -26,9 +33,9 @@ class PreRegisterPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Tham gia Fakebook",
+                    "Lưu thông tin đăng nhập?",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 24,
@@ -36,44 +43,34 @@ class PreRegisterPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 25,
+                  height: 15,
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
-                  child: const Image(
-                    image: AssetImage(
-                        "lib/src/assets/images/join_facebook.jpg"),
-                    height: 140,
-                    width: 310,
-                  ),
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Tạo tài khoản để kết nối với bạn bè, người thân và cộng đồng có chung sở thích.",
+                    "Chúng tôi sẽ lưu thông tin đăng nhập cho bạn để bạn không cần đăng nhập vào lần sau.",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(
+                  height: 25.0,
+                ),
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const NameRegisterPage()));
+                      Navigator.pushNamed(
+                        context,
+                        HomeScreen.routeName,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
-                      maximumSize: Size(w * 0.85, 50),
+                      maximumSize: const Size(370, 50),
                       padding: EdgeInsets.zero,
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(50), // Đặt độ cong của góc
+                        BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       backgroundColor: Colors.blue,
                       // Đặt màu nền của nút
@@ -85,7 +82,7 @@ class PreRegisterPage extends StatelessWidget {
                     ),
                     child: const Center(
                       child: Text(
-                        "Bắt đầu",
+                        "Lưu",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -94,23 +91,23 @@ class PreRegisterPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 15.0),
+                const SizedBox(height: 15.0,),
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const WelcomePage()));
+                      Navigator.pushNamed(
+                        context,
+                        HomeScreen.routeName,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
-                      maximumSize: Size(w * 0.85, 50),
+                      maximumSize: const Size(370, 50),
                       padding: EdgeInsets.zero,
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(50), // Đặt độ cong của góc
+                        BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       backgroundColor: Colors.white,
                       // Đặt màu nền của nút
@@ -122,7 +119,7 @@ class PreRegisterPage extends StatelessWidget {
                     ),
                     child: const Center(
                       child: Text(
-                        "Tôi có tài khoản rồi",
+                        "Lúc khác",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.black,
@@ -131,6 +128,28 @@ class PreRegisterPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(
+                  height: 430,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                const WelcomePage()));
+                      },
+                      child: const Text(
+                        'Bạn có tài khoản rồi ư?',
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
