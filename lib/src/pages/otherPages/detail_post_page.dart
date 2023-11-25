@@ -47,12 +47,12 @@ class DetailPostPage extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(left: 16.0),
-                        child: Image(
-                          image: const AssetImage(
-                              'lib/src/assets/images/avatar.jpg'),
-                          height: h * 0.15,
-                          width: w * 0.15,
+                        margin: const EdgeInsets.only(
+                            left: 16.0, top: 16.0, bottom: 16.0),
+                        child: const Image(
+                          image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                          height: 50,
+                          width: 50,
                         ),
                       ),
                       Column(
@@ -60,42 +60,75 @@ class DetailPostPage extends StatelessWidget {
                         children: [
                           Container(
                               margin: const EdgeInsets.only(left: 16.0),
-                              child: Container(
-                                margin: const EdgeInsets.only(bottom: 8.0),
-                                child: const Text(
-                                  "Lời thì thầm của đá",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: const Text(
+                                      "Lời thì thầm của đá",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 5.0, bottom: 6.0),
+                                    child: Image.asset(
+                                      'lib/src/assets/images/tich_xanh.png',
+                                      width: 15,
+                                      height: 15,
+                                    ),
+                                  ),
+                                ],
                               )),
                           Container(
                               margin: const EdgeInsets.only(left: 16.0),
-                              child: const Text(
-                                "1 day ago",
-                                style: TextStyle(color: Colors.black),
-                              )),
+                              child:  Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "1 minute ago",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 3.0, top: 2.0),
+                                    child: const Icon(
+                                      Icons.public,
+                                      size: 12.0,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              )
+                          ),
                         ],
                       ),
                       const Spacer(),
                       // dùng cái này để icon xuống phía bên phải cùng của row
                       Container(
-                          margin: const EdgeInsets.only(right: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              print("Options");
-                            },
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.only(top: 10.0, left: 8.0),
-                              child: const Icon(
-                                Icons.more_horiz,
-                                size: 30.0,
-                                color: Colors.black,
+                        margin: const EdgeInsets.only(right: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                print("Options");
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 8.0),
+                                child: const Icon(
+                                  Icons.more_horiz,
+                                  size: 22.0,
+                                  color: Colors.black54,
+                                ),
                               ),
                             ),
-                          ))
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -218,21 +251,27 @@ class DetailPostPage extends StatelessWidget {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(left: 12.0, top: 5.0),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(
-                            Icons.emoji_emotions,
-                            size: 20.0,
+                          Image.asset(
+                            'lib/src/assets/images/reactions/like.png',
+                            width: 20,
+                            height: 20,
                           ),
-                          Icon(
-                            Icons.thumb_up,
-                            size: 20.0,
+                          Image.asset(
+                            'lib/src/assets/images/reactions/haha.png',
+                            width: 20,
+                            height: 20,
                           ),
-                          Icon(
-                            Icons.favorite,
-                            size: 20.0,
+                          Image.asset(
+                            'lib/src/assets/images/reactions/love.png',
+                            width: 20,
+                            height: 20,
                           ),
-                          Text("99")
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 3.0),
+                            child: const Text("99"),
+                          )
                         ],
                       ),
                     ),

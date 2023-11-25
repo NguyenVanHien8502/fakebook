@@ -166,8 +166,8 @@ class FriendPageState extends State<FriendPage>{
                                       },
                                       child: const Icon(
                                         Icons.more_horiz,
-                                        size: 30.0,
-                                        color: Colors.black,
+                                        size: 20.0,
+                                        color: Colors.black54,
                                       ),
                                     ))
                               ],

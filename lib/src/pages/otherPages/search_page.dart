@@ -79,8 +79,7 @@ class SearchPageState extends State<SearchPage> {
                             Text(
                               "Xem tất cả",
                               style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
                                   fontSize: 20.0),
                             )
                           ],
@@ -145,8 +144,8 @@ class SearchPageState extends State<SearchPage> {
                                       },
                                       child: const Icon(
                                         Icons.more_horiz,
-                                        size: 30.0,
-                                        color: Colors.black,
+                                        size: 20.0,
+                                        color: Colors.black54,
                                       ),
                                     ))
                               ],
