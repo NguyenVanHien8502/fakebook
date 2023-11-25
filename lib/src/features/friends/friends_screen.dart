@@ -159,7 +159,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           'Bạn bè',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 21,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

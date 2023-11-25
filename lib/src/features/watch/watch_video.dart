@@ -78,35 +78,35 @@ class _WatchVideoState extends State<WatchVideo> {
       reactions = '${tmp[0]}$reactions';
       icons = [];
       if (list[0] == widget.post.like) {
-        icons.add('assets/images/reactions/like.png');
+        icons.add('lib/src/assets/images/reactions/like.png');
       } else if (list[0] == widget.post.haha) {
-        icons.add('assets/images/reactions/haha.png');
+        icons.add('lib/src/assets/images/reactions/haha.png');
       } else if (list[0] == widget.post.love) {
-        icons.add('assets/images/reactions/love.png');
+        icons.add('lib/src/assets/images/reactions/love.png');
       } else if (list[0] == widget.post.lovelove) {
-        icons.add('assets/images/reactions/care.png');
+        icons.add('lib/src/assets/images/reactions/care.png');
       } else if (list[0] == widget.post.wow) {
-        icons.add('assets/images/reactions/wow.png');
+        icons.add('lib/src/assets/images/reactions/wow.png');
       } else if (list[0] == widget.post.sad) {
-        icons.add('assets/images/reactions/sad.png');
+        icons.add('lib/src/assets/images/reactions/sad.png');
       } else if (list[0] == widget.post.angry) {
-        icons.add('assets/images/reactions/angry.png');
+        icons.add('lib/src/assets/images/reactions/angry.png');
       }
 
       if (list[1] == widget.post.like) {
-        icons.add('assets/images/reactions/like.png');
+        icons.add('lib/src/assets/images/reactions/like.png');
       } else if (list[1] == widget.post.haha) {
-        icons.add('assets/images/reactions/haha.png');
+        icons.add('lib/src/assets/images/reactions/haha.png');
       } else if (list[1] == widget.post.love) {
-        icons.add('assets/images/reactions/love.png');
+        icons.add('lib/src/assets/images/reactions/love.png');
       } else if (list[1] == widget.post.lovelove) {
-        icons.add('assets/images/reactions/care.png');
+        icons.add('lib/src/assets/images/reactions/care.png');
       } else if (list[1] == widget.post.wow) {
-        icons.add('assets/images/reactions/wow.png');
+        icons.add('lib/src/assets/images/reactions/wow.png');
       } else if (list[1] == widget.post.sad) {
-        icons.add('assets/images/reactions/sad.png');
+        icons.add('lib/src/assets/images/reactions/sad.png');
       } else if (list[1] == widget.post.angry) {
-        icons.add('assets/images/reactions/angry.png');
+        icons.add('lib/src/assets/images/reactions/angry.png');
       }
     });
   }
@@ -467,12 +467,9 @@ class _WatchVideoState extends State<WatchVideo> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ImageIcon(
-                        const AssetImage('assets/images/like.png'),
-                        size: 24,
-                        color: widget.isDarkMode == true
-                            ? Colors.white
-                            : Colors.black54,
+                      const Icon(
+                        Icons.thumb_up_alt_outlined,
+                        size: 20.0,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
@@ -502,7 +499,7 @@ class _WatchVideoState extends State<WatchVideo> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ImageIcon(
-                        const AssetImage('assets/images/comment.png'),
+                        const AssetImage('lib/src/assets/images/comment.png'),
                         size: 22,
                         color: widget.isDarkMode == true
                             ? Colors.white
@@ -536,7 +533,7 @@ class _WatchVideoState extends State<WatchVideo> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ImageIcon(
-                        const AssetImage('assets/images/share.png'),
+                        const AssetImage('lib/src/assets/images/share.png'),
                         size: 27,
                         color: widget.isDarkMode == true
                             ? Colors.white
