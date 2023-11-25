@@ -1,9 +1,7 @@
 import 'package:fakebook/src/messenger/messenger_page.dart';
 import 'package:fakebook/src/pages/otherPages/search_page.dart';
-import 'package:fakebook/src/pages/tabs/friend_page.dart';
+import 'package:fakebook/src/pages/otherPages/friend_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
-import 'package:fakebook/src/pages/tabs/home_page.dart';
-import 'package:fakebook/src/pages/tabs/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
@@ -68,9 +66,7 @@ class AppState extends State<App> {
           ),
           body: const TabBarView(
             children: <Widget>[
-              HomePage(),
               FriendPage(),
-              NotificationPage(),
             ],
           )),
     );
