@@ -1,13 +1,15 @@
 import 'package:fakebook/src/features/watch/watch_video.dart';
 import 'package:fakebook/src/model/post.dart';
 import 'package:fakebook/src/model/user.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:video_player/video_player.dart';
 
 class WatchScreen extends StatefulWidget {
   static double offset = 0;
-  const WatchScreen({super.key});
+  final ScrollController parentScrollController;
+
+  const WatchScreen({super.key, required this.parentScrollController});
 
   @override
   State<WatchScreen> createState() => _WatchScreenState();
@@ -26,7 +28,7 @@ class _WatchScreenState extends State<WatchScreen> {
   List<VideoControllerWrapper> videoController = [];
   final posts = [
     Post(
-      user: User(name: 'Aki Michio', avatar: 'lib/src/assets/images/home.png'),
+      user: User(name: 'Aki Michio', avatar: 'lib/src/assets/images/avatar.jpg'),
       time: '14 thg 7, 2022',
       shareWith: 'public',
       content: 'Kawaiii quá vậy\nAnime : Con của mẹ kế là bạn gái cũ',
@@ -43,7 +45,7 @@ class _WatchScreenState extends State<WatchScreen> {
     ),
     Post(
       user: User(
-          name: 'Đài Phát Thanh.', avatar: 'lib/src/assets/images/home.png'),
+          name: 'Đài Phát Thanh.', avatar: 'lib/src/assets/images/avatar.jpg'),
       time: '17 thg 1, 2021',
       shareWith: 'public',
       content:
@@ -60,7 +62,7 @@ class _WatchScreenState extends State<WatchScreen> {
       video: ['lib/src/assets/images/5.mp4'],
     ),
     Post(
-      user: User(name: 'Spezon', avatar: 'lib/src/assets/images/home.png'),
+      user: User(name: 'Spezon', avatar: 'lib/src/assets/images/avatar.jpg'),
       time: '27 tháng 8',
       shareWith: 'public',
       content: 'Lionel Messi World cup Champion [Messi EP. FINAL]',
@@ -79,22 +81,37 @@ class _WatchScreenState extends State<WatchScreen> {
   List<GlobalKey> key = [];
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    headerScrollController.dispose();
+    for (int i = 0; i < videoController.length; i++) {
+      videoController[i].value?.dispose();
+    }
+    super.dispose();
+  }
+
+  String status =
+      "Sau khoảng thời gian trải qua những thử thách đầy cam go, bằng tài năng và sự nỗ lực của mình, các đội đã dần về đích và tiến gần hơn đến ngôi vị quán quân. Những dự án cộng đồng thiết thực, có tính đột phá đã nhận được những đánh giá  cao từ Ban giám khảo và khán giả của chương trình. ";
+  int maxLength = 100; // Giới hạn độ dài của đoạn status
+  bool isExpanded = false;
+  String displayedStatus = "";
+
+  @override
   void initState() {
     super.initState();
+    isExpanded = status.length <= maxLength;
+    updateDisplayedStatus();
+
     videoController =
         List.generate(posts.length, (index) => VideoControllerWrapper(null));
     key = List.generate(
         posts.length, (index) => GlobalKey(debugLabel: index.toString()));
   }
 
-  @override
-  void dispose() {
-    scrollController.dispose();
-    headerScrollController.dispose();
-    /*for (int i = 0; i < videoController.length; i++) {
-      videoController[i].value?.dispose();
-    }*/
-    super.dispose();
+  void updateDisplayedStatus() {
+    setState(() {
+      displayedStatus = isExpanded ? status : status.substring(0, maxLength);
+    });
   }
 
   @override
@@ -134,20 +151,11 @@ class _WatchScreenState extends State<WatchScreen> {
                           SizedBox(
                             width: 20,
                           ),
-                          // IconButton(
-                          //   splashRadius: 20,
-                          //   onPressed: () {},
-                          //   icon: const ImageIcon(
-                          //     AssetImage('lib/src/assets/images/menu.png'),
-                          //     color: Colors.black,
-                          //     size: 50,
-                          //   ),
-                          // ),
                           Text(
                             'Video',
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 21,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -376,13 +384,45 @@ class _WatchScreenState extends State<WatchScreen> {
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           )
         ],
-        body: Text("NgocLinh"),
+        body: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 5,
+                    color: Colors.black26,
+                  ),
+                  ...posts.asMap().entries.map((e) {
+                    return Column(
+                      children: [
+                        WatchVideo(
+                          post: e.value,
+                          videoKey: key[e.key],
+                          controller: videoController[e.key],
+                          autoPlay: e.key == 0,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 5,
+                          color: Colors.black26,
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ],
+              ),
+            ],
+          ),
+        )
       ),
     );
   }

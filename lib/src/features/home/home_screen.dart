@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ScrollController scrollController = ScrollController();
   late final list = <Widget>[
     NewfeedsScreen(parentScrollController: scrollController),
-    WatchScreen(),
+    WatchScreen(parentScrollController: scrollController),
     FriendsScreen(),
     NotificationScreen(),
     MenuScreen()

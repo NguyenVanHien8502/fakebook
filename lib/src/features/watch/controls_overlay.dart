@@ -652,7 +652,7 @@ class _ControlsOverlayState extends State<ControlsOverlay> {
                               splashColor: Colors.white.withOpacity(0.5),
                               onPressed: () {},
                               icon: const ImageIcon(
-                                AssetImage('assets/images/expand.png'),
+                                AssetImage('lib/src/assets/images/expand.png'),
                                 color: Colors.white,
                                 size: 25,
                               ),

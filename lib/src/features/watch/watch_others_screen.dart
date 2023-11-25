@@ -26,7 +26,7 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
   List<VideoControllerWrapper> videoController = [];
   final posts = [
     Post(
-      user: User(name: 'Aki Michio', avatar: 'assets/images/user/aki.jpg'),
+      user: User(name: 'Aki Michio', avatar: 'lib/src/assets/images/user/aki.jpg'),
       time: '14 thg 7, 2022',
       shareWith: 'public',
       content: 'Kawaiii quá vậy\nAnime : Con của mẹ kế là bạn gái cũ',
@@ -39,12 +39,12 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
       sad: 36,
       share: 98,
       wow: 18,
-      video: ['assets/videos/4.mp4'],
+      video: ['lib/src/assets/videos/4.mp4'],
     ),
     Post(
       user: User(
           name: 'Đài Phát Thanh.',
-          avatar: 'assets/images/user/daiphatthanh.jpg'),
+          avatar: 'lib/src/assets/images/avatar.jpg'),
       time: '17 thg 1, 2021',
       shareWith: 'public',
       content:
@@ -58,10 +58,10 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
       sad: 20,
       share: 98,
       wow: 5,
-      video: ['assets/videos/5.mp4'],
+      video: ['lib/src/assets/videos/5.mp4'],
     ),
     Post(
-      user: User(name: 'Spezon', avatar: 'assets/images/user/spezon.jpg'),
+      user: User(name: 'Spezon', avatar: 'lib/src/assets/images/user/spezon.jpg'),
       time: '27 tháng 8',
       shareWith: 'public',
       content: 'Lionel Messi World cup Champion [Messi EP. FINAL]',
@@ -74,7 +74,7 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
       sad: 20,
       share: 98,
       wow: 5,
-      video: ['assets/videos/6.mp4'],
+      video: ['lib/src/assets/videos/6.mp4'],
     ),
   ];
   List<GlobalKey> key = [];

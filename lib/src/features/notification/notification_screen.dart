@@ -173,26 +173,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        splashRadius: 20,
-                        onPressed: () {},
-                        icon: const ImageIcon(
-                          AssetImage('lib/src/assets/images/home.png'),
-                          color: Colors.black,
-                          size: 50,
-                        ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 16.0),
+                    child: const Text(
+                      'Thông báo',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const Text(
-                        'Thông báo',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 21,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   Container(
                     alignment: Alignment.center,
