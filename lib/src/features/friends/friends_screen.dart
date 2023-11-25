@@ -1,5 +1,5 @@
 import 'package:fakebook/src/model/user.dart';
-import 'package:fakebook/src/pages/tabs/friend_page.dart';
+import 'package:fakebook/src/pages/otherPages/friend_page.dart';
 import 'package:flutter/material.dart';
 
 class FriendsScreen extends StatefulWidget {
