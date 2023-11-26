@@ -1,4 +1,6 @@
+import 'package:fakebook/src/features/comment/screens/comment_screen.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
+import 'package:fakebook/src/model/post.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
@@ -40,6 +42,27 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
             OtherPersonalPageScreen(user: user),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      );
+    case CommentScreen.routeName:
+      final Post post = routeSettings.arguments as Post;
+      return PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) => CommentScreen(
+          post: post,
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
           const end = Offset.zero;
           const curve = Curves.ease;
 
