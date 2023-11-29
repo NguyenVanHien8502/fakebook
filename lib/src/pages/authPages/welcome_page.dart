@@ -130,6 +130,7 @@ class WelcomePageState extends State<WelcomePage> {
                             builder: (context) => const PreRegisterPage()));
                   },
                   style: ElevatedButton.styleFrom(
+                    elevation: 0.6,
                     maximumSize: Size(w * 0.85, 50),
                     padding: EdgeInsets.zero,
                     // Loại bỏ padding mặc định của nút
@@ -141,7 +142,7 @@ class WelcomePageState extends State<WelcomePage> {
                     side: const BorderSide(
                       color:
                           Color.fromARGB(255, 0, 68, 255), // Đặt màu đường viền
-                      width: 0.8, // Đặt độ dày của đường viền
+                      width: 0.5, // Đặt độ dày của đường viền
                     ), // Đặt màu nền của nút
                   ),
                   child: const Center(

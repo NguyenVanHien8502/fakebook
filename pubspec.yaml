@@ -24,6 +24,7 @@ dependencies:
   cupertino_date_textbox: ^1.0.3
   intl: ^0.18.1
   image_picker: ^1.0.4
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:
