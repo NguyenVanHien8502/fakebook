@@ -5,8 +5,8 @@ import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
-import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
 
@@ -108,7 +108,7 @@ class LoginPageState extends State<LoginPage> {
                           margin: const EdgeInsets.only(top: 5.0),
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: const Text(
-                            'Invalid password: password should be between 4 and 20 characters long, contain no special characters and must not be similar to an email',
+                            'Invalid password: password must be longer than or equal to 6 characters, contain no special characters and must not be similar to an email',
                             style: TextStyle(color: Colors.red),
                             textAlign: TextAlign.center,
                           ),
@@ -222,7 +222,7 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  void handleLogin() {
+  Future<void> handleLogin() async {
     String email = emailController.text;
     String password = passwordController.text;
 
@@ -247,50 +247,102 @@ class LoginPageState extends State<LoginPage> {
     }
     if (isEmailValid(email) && isPasswordValid(password) && password != email) {
       _login(context, email, password);
-      // Navigator.pushNamed(
-      //   context,
-      //   HomeScreen.routeName,
-      // );
     }
   }
 
-  void _login(BuildContext context, String email, String password) async {
-    var url = Uri.parse(ListAPI.login);
+  Future<void> _login(
+      BuildContext context, String email, String password) async {
+    try {
+      var url = Uri.parse(ListAPI.login);
+      Map body = {
+        "email": email,
+        'password': password,
+        'uuid': 'string',
+      };
 
-    var body = {
-      "email": email,
-      'password': password,
-      'uuid': 'string',
-    };
-
-    var response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(body),
-    );
-
-    if (response.statusCode == 200) {
-      print(response);
-      Navigator.pushNamed(
-        context,
-        HomeScreen.routeName,
+      http.Response response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
       );
-    } else {
-      print("Error: ${response.statusCode}");
-      print("Error message: ${response.body}");
-      // or display an error dialog
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (responseBody['code'] == '1000') {
+          var token = responseBody['data']['token'];
+          const storage = FlutterSecureStorage();
+          await storage.write(key: 'token', value: token);
+          // String? tokenn = await storage.read(key: 'token');
+          emailController.clear();
+          passwordController.clear();
+          Navigator.pushNamed(
+            context,
+            HomeScreen.routeName,
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('${responseBody['message']}'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('${responseBody['message']}'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      print('Error during login: $e');
+      // Handle the error, e.g., show a general error message to the user
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Error'),
-            content: Text('Login failed. Please check your credentials.'),
+            content: Text('An error occurred during login.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                ),
               ),
             ],
           );
