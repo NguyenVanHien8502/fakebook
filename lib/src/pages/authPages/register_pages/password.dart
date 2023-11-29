@@ -1,4 +1,3 @@
-import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:fakebook/src/pages/authPages/register_pages/save_info_login.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +68,8 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                               borderRadius: BorderRadius.circular(12.0),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.blueGrey),
+                              borderSide:
+                                  const BorderSide(color: Colors.blueGrey),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
                             fillColor: Colors.white10,
@@ -88,10 +88,33 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SaveInfoLoginPage()));
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Notification'),
+                            content: const Text(
+                                'Congratulations! You have successfully registered.'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SaveInfoLoginPage()));
+                                },
+                                child: const Text(
+                                  'OK',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       maximumSize: const Size(370, 50),
@@ -99,7 +122,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(50), // Đặt độ cong của góc
+                            BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       backgroundColor: Colors.blue,
                       // Đặt màu nền của nút
@@ -111,7 +134,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "Tiếp",
+                        "Xong",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -131,8 +154,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                const WelcomePage()));
+                                builder: (context) => const WelcomePage()));
                       },
                       child: const Text(
                         'Bạn có tài khoản rồi ư?',

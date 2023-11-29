@@ -4,6 +4,8 @@ import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
+import 'package:image_picker/image_picker.dart';
+
 class SaveInfoLoginPage extends StatefulWidget {
   const SaveInfoLoginPage({Key? key}) : super(key: key);
 
@@ -18,13 +20,6 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        // Đặt màu của mũi tên quay lại thành màu đen
-        centerTitle: true,
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -32,6 +27,7 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 30.0,),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
@@ -95,11 +91,20 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        HomeScreen.routeName,
-                      );
+                    // onPressed: () {
+                    //   Navigator.pushNamed(
+                    //     context,
+                    //     HomeScreen.routeName,
+                    //   );
+                    // },
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+                      if (image != null) {
+                        // Xử lý ảnh được chọn ở đây
+                        print('Đường dẫn đến ảnh: ${image.path}');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       maximumSize: const Size(370, 50),
@@ -128,28 +133,6 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 430,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const WelcomePage()));
-                      },
-                      child: const Text(
-                        'Bạn có tài khoản rồi ư?',
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),

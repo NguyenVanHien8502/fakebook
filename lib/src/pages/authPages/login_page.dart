@@ -118,38 +118,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 15),
                 ElevatedButton(
-                  onPressed: () {
-                    String email = emailController.text;
-                    String password = passwordController.text;
-                    if (!isEmailValid(email)) {
-                      setState(() {
-                        emailError = true;
-                      });
-                    } else {
-                      setState(() {
-                        emailError = false;
-                      });
-                    }
-
-                    if (!isPasswordValid(password) || password == email) {
-                      setState(() {
-                        passwordError = true;
-                      });
-                    } else {
-                      setState(() {
-                        passwordError = false;
-                      });
-                    }
-                    if (isEmailValid(email) &&
-                        isPasswordValid(password) &&
-                        password != email) {
-                      _login(email, password);
-                      // Navigator.pushNamed(
-                      //   context,
-                      //   HomeScreen.routeName,
-                      // );
-                    }
-                  },
+                  onPressed: handleLogin,
                   style: ElevatedButton.styleFrom(
                     maximumSize: Size(w * 0.85, 50),
                     padding: EdgeInsets.zero,
@@ -253,8 +222,40 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _login(String email, String password) async {
-    var url = Uri.parse(ListAPI.LOGIN);
+  void handleLogin() {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    if (!isEmailValid(email)) {
+      setState(() {
+        emailError = true;
+      });
+    } else {
+      setState(() {
+        emailError = false;
+      });
+    }
+
+    if (!isPasswordValid(password) || password == email) {
+      setState(() {
+        passwordError = true;
+      });
+    } else {
+      setState(() {
+        passwordError = false;
+      });
+    }
+    if (isEmailValid(email) && isPasswordValid(password) && password != email) {
+      _login(context, email, password);
+      // Navigator.pushNamed(
+      //   context,
+      //   HomeScreen.routeName,
+      // );
+    }
+  }
+
+  void _login(BuildContext context, String email, String password) async {
+    var url = Uri.parse(ListAPI.login);
 
     var body = {
       "email": email,
@@ -275,7 +276,26 @@ class LoginPageState extends State<LoginPage> {
         HomeScreen.routeName,
       );
     } else {
-      print("loi");
+      print("Error: ${response.statusCode}");
+      print("Error message: ${response.body}");
+      // or display an error dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Login failed. Please check your credentials.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }
