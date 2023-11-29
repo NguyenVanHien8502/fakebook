@@ -3,6 +3,9 @@ import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+const storage = FlutterSecureStorage();
 
 class EmailRegisterPage extends StatefulWidget {
   const EmailRegisterPage({Key? key}) : super(key: key);
@@ -12,10 +15,10 @@ class EmailRegisterPage extends StatefulWidget {
 }
 
 class EmailRegisterPageState extends State<EmailRegisterPage> {
+  final TextEditingController emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -62,6 +65,7 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                     children: [
                       Expanded(
                         child: TextField(
+                          controller: emailController,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.grey),
@@ -111,7 +115,8 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await storage.write(key: 'email', value: emailController.text);
                       Navigator.push(
                           context,
                           MaterialPageRoute(

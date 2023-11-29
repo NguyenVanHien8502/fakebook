@@ -1,24 +1,23 @@
 import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/pages/authPages/register_pages/check_verify_code.dart';
+import 'package:fakebook/src/pages/authPages/register_pages/password.dart';
+import 'package:fakebook/src/pages/authPages/register_pages/save_info_login.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const storage = FlutterSecureStorage();
-
-class PasswordRegisterPage extends StatefulWidget {
-  const PasswordRegisterPage({Key? key}) : super(key: key);
+class CheckVerifyCodePage extends StatefulWidget {
+  const CheckVerifyCodePage({Key? key}) : super(key: key);
 
   @override
-  PasswordRegisterPageState createState() => PasswordRegisterPageState();
+  CheckVerifyCodePageState createState() => CheckVerifyCodePageState();
 }
 
-class PasswordRegisterPageState extends State<PasswordRegisterPage> {
-  final TextEditingController passwordController = TextEditingController();
+class CheckVerifyCodePageState extends State<CheckVerifyCodePage> {
+  final TextEditingController codeController = TextEditingController();
   late String userEmail;
 
   @override
@@ -80,7 +79,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Tạo mật khẩu",
+                    "Xác thực email của bạn",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 24,
@@ -93,7 +92,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Tạo mật khẩu gồm ít nhất 6 chữ cái hoặc chữ số. Bạn nên chọn mật khẩu thật khó đoán.",
+                    "Tuyệt đối không để ai biết mã verify code của bạn nhằm mục đích bảo mật thông tin cho chính bạn. Chúng tôi cũng sẽ giữ kín thông tin nhạy cảm của bạn.",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
@@ -107,8 +106,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     children: [
                       Expanded(
                         child: TextField(
-                          controller: passwordController,
-                          obscureText: true,
+                          controller: codeController,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.grey),
@@ -121,7 +119,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                             ),
                             fillColor: Colors.white10,
                             filled: true,
-                            hintText: "Mật khẩu của bạn",
+                            hintText: "Enter verify code",
                             contentPadding: const EdgeInsets.only(left: 20.0),
                             hintStyle: TextStyle(color: Colors.grey[500]),
                           ),
@@ -134,7 +132,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: handleSignup,
+                    onPressed: handleCheckVerifyCode,
                     style: ElevatedButton.styleFrom(
                       maximumSize: const Size(370, 50),
                       padding: EdgeInsets.zero,
@@ -153,7 +151,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "Lấy mã xác thực",
+                        "Xác thực",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -163,7 +161,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 430,
+                  height: 400,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -191,16 +189,14 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
     );
   }
 
-  Future<void> handleSignup() async {
+  Future<void> handleCheckVerifyCode() async {
     String email = userEmail;
-    String password = passwordController.text;
-
+    String verifyCode = codeController.text;
     try {
-      var url = Uri.parse(ListAPI.signup);
+      var url = Uri.parse(ListAPI.checkVerifyCode);
       Map body = {
         "email": email,
-        'password': password,
-        'uuid': 'string',
+        'code_verify': verifyCode,
       };
 
       http.Response response = await http.post(
@@ -212,35 +208,28 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
       // Chuyển chuỗi JSON thành một đối tượng Dart
       final responseBody = jsonDecode(response.body);
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
-          passwordController.clear();
-          var verifyCode = responseBody['data']['verify_code'];
-          print(verifyCode);
           showDialog(
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Verify Code'),
-                content: Text(
-                  'Enter the following code to verify your email: ${verifyCode}',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                ),
-                actions: [
+                title: const Text('Notification'),
+                content: const Text(
+                    'Congratulations! You have successfully verify.'),
+                actions: <Widget>[
                   TextButton(
                     onPressed: () {
+                      codeController.clear();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                              const CheckVerifyCodePage()));
+                              builder: (context) => const SaveInfoLoginPage()));
                     },
                     child: const Text(
                       'OK',
-                      style: TextStyle(color: Colors.black, fontSize: 14),
+                      style: TextStyle(color: Colors.black, fontSize: 16),
                     ),
                   ),
                 ],
