@@ -274,7 +274,6 @@ class LoginPageState extends State<LoginPage> {
           var token = responseBody['data']['token'];
           const storage = FlutterSecureStorage();
           await storage.write(key: 'token', value: token);
-          // String? tokenn = await storage.read(key: 'token');
           emailController.clear();
           passwordController.clear();
           Navigator.pushNamed(
