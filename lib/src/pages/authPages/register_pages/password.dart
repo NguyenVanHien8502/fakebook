@@ -19,45 +19,6 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
   static const storage = FlutterSecureStorage();
 
   final TextEditingController passwordController = TextEditingController();
-  late String userEmail;
-
-  @override
-  void initState() {
-    super.initState();
-    getEmailFromStorage();
-  }
-
-  Future<void> getEmailFromStorage() async {
-    // Lấy email từ FlutterSecureStorage
-    String? email = await storage.read(key: 'email');
-    if (email != null) {
-      setState(() {
-        userEmail = email;
-      });
-    } else {
-      print("Email is not exist in FlutterSecureStorage");
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Not have email!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'OK',
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +130,8 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        await storage.delete(key: 'emailToSignup');
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -192,7 +154,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
   }
 
   Future<void> handleSignup() async {
-    String email = userEmail;
+    String? email = await storage.read(key: 'emailToSignup');
     String password = passwordController.text;
 
     try {
@@ -215,7 +177,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
       if (response.statusCode == 201) {
         if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
           await storage.write(
-              key: 'password', value: passwordController.text);
+              key: 'passwordToSignup', value: passwordController.text);
           passwordController.clear();
           var verifyCode = responseBody['data']['verify_code'];
           showDialog(

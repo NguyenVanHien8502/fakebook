@@ -15,7 +15,6 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -25,7 +24,9 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 30.0,),
+                const SizedBox(
+                  height: 30.0,
+                ),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
@@ -52,7 +53,15 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await storage.write(
+                          key: 'email',
+                          value: await storage.read(key: 'emailToSignup'));
+                      await storage.write(
+                          key: 'password',
+                          value: await storage.read(key: 'passwordToSignup'));
+                      await storage.delete(key: 'emailToSignup');
+                      await storage.delete(key: 'passwordToSignup');
                       Navigator.pushNamed(
                         context,
                         HomeScreen.routeName,
@@ -64,7 +73,7 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(50), // Đặt độ cong của góc
+                            BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       backgroundColor: Colors.blue,
                       // Đặt màu nền của nút
@@ -85,13 +94,21 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 15.0,),
+                const SizedBox(
+                  height: 15.0,
+                ),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     onPressed: () async {
-                      await storage.delete(key: 'email');
-                      await storage.delete(key: 'password');
+                      await storage.write(
+                          key: 'email',
+                          value: await storage.read(key: 'emailToSignup'));
+                      await storage.write(
+                          key: 'password',
+                          value: await storage.read(key: 'passwordToSignup'));
+                      await storage.delete(key: 'emailToSignup');
+                      await storage.delete(key: 'passwordToSignup');
                       Navigator.pushNamed(
                         context,
                         HomeScreen.routeName,
@@ -103,7 +120,7 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(50), // Đặt độ cong của góc
+                            BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       backgroundColor: Colors.white,
                       // Đặt màu nền của nút

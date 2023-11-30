@@ -18,30 +18,6 @@ class CheckVerifyCodePageState extends State<CheckVerifyCodePage> {
   static const storage = FlutterSecureStorage();
 
   final TextEditingController codeController = TextEditingController();
-  late String userEmail;
-  late String userPassword;
-
-  @override
-  void initState() {
-    super.initState();
-    getEmailPasswordFromStorage();
-  }
-
-  Future<void> getEmailPasswordFromStorage() async {
-    // Lấy email, password từ FlutterSecureStorage
-    String? email = await storage.read(key: 'email');
-    String? password = await storage.read(key: 'password');
-    if (email != null) {
-      setState(() {
-        userEmail = email;
-      });
-    }
-    if (password != null) {
-      setState(() {
-        userPassword = password;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,8 +130,8 @@ class CheckVerifyCodePageState extends State<CheckVerifyCodePage> {
   }
 
   Future<void> handleCheckVerifyCode() async {
-    String email = userEmail;
-    String password = userPassword;
+    String? email = await storage.read(key: 'emailToSignup');
+    String? password = await storage.read(key: 'passwordToSignup');
     String verifyCode = codeController.text;
     try {
       var url = Uri.parse(ListAPI.checkVerifyCode);
@@ -193,7 +169,6 @@ class CheckVerifyCodePageState extends State<CheckVerifyCodePage> {
           if (response.statusCode == 200) {
             if (responseBody['code'] == '1000') {
               var token = responseBody['data']['token'];
-              const storage = FlutterSecureStorage();
               await storage.write(key: 'token', value: token);
             }
           }
