@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-const storage = FlutterSecureStorage();
-
 class EmailRegisterPage extends StatefulWidget {
   const EmailRegisterPage({Key? key}) : super(key: key);
 
@@ -15,6 +13,8 @@ class EmailRegisterPage extends StatefulWidget {
 }
 
 class EmailRegisterPageState extends State<EmailRegisterPage> {
+  static const storage = FlutterSecureStorage();
+
   final TextEditingController emailController = TextEditingController();
   bool emailError = false;
 

@@ -18,6 +18,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  static const storage = FlutterSecureStorage();
+
   //text editing controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -272,8 +274,9 @@ class LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         if (responseBody['code'] == '1000') {
           var token = responseBody['data']['token'];
-          const storage = FlutterSecureStorage();
           await storage.write(key: 'token', value: token);
+          await storage.write(key: 'email', value: email);
+          await storage.write(key: 'password', value: password);
           emailController.clear();
           passwordController.clear();
           Navigator.pushNamed(

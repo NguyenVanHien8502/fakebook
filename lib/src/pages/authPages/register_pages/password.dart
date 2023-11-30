@@ -8,8 +8,6 @@ import 'dart:core';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const storage = FlutterSecureStorage();
-
 class PasswordRegisterPage extends StatefulWidget {
   const PasswordRegisterPage({Key? key}) : super(key: key);
 
@@ -18,6 +16,8 @@ class PasswordRegisterPage extends StatefulWidget {
 }
 
 class PasswordRegisterPageState extends State<PasswordRegisterPage> {
+  static const storage = FlutterSecureStorage();
+
   final TextEditingController passwordController = TextEditingController();
   late String userEmail;
 
@@ -214,6 +214,8 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
 
       if (response.statusCode == 201) {
         if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
+          await storage.write(
+              key: 'password', value: passwordController.text);
           passwordController.clear();
           var verifyCode = responseBody['data']['verify_code'];
           showDialog(
