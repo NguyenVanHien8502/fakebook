@@ -1,6 +1,4 @@
 import 'package:fakebook/src/features/home/home_screen.dart';
-import 'package:fakebook/src/pages/authPages/register_page.dart';
-import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
