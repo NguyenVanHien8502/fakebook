@@ -21,6 +21,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  static const storage = FlutterSecureStorage();
+
   //text editing controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -289,6 +291,9 @@ class LoginPageState extends State<LoginPage> {
           //Cập nhật trạng thái toàn cầu
           Provider.of<UserProvider>(context, listen: false).updateUse(user);
 
+          await storage.write(key: 'token', value: token);
+          await storage.write(key: 'email', value: email);
+          await storage.write(key: 'password', value: password);
           emailController.clear();
           passwordController.clear();
           // if(await storage.read(key: 'token') != null) {

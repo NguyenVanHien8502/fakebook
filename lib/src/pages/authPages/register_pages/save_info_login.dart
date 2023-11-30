@@ -1,10 +1,7 @@
 import 'package:fakebook/src/features/home/home_screen.dart';
-import 'package:fakebook/src/pages/authPages/register_page.dart';
-import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
-
-import 'package:image_picker/image_picker.dart';
 
 class SaveInfoLoginPage extends StatefulWidget {
   const SaveInfoLoginPage({Key? key}) : super(key: key);
@@ -14,9 +11,10 @@ class SaveInfoLoginPage extends StatefulWidget {
 }
 
 class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
+  static const storage = FlutterSecureStorage();
+
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -91,20 +89,13 @@ class SaveInfoLoginPageState extends State<SaveInfoLoginPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    // onPressed: () {
-                    //   Navigator.pushNamed(
-                    //     context,
-                    //     HomeScreen.routeName,
-                    //   );
-                    // },
                     onPressed: () async {
-                      final picker = ImagePicker();
-                      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-                      if (image != null) {
-                        // Xử lý ảnh được chọn ở đây
-                        print('Đường dẫn đến ảnh: ${image.path}');
-                      }
+                      await storage.delete(key: 'email');
+                      await storage.delete(key: 'password');
+                      Navigator.pushNamed(
+                        context,
+                        HomeScreen.routeName,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       maximumSize: const Size(370, 50),

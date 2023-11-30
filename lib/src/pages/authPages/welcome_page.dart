@@ -1,11 +1,16 @@
+import 'dart:convert';
+
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
-import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class WelcomePage extends StatefulWidget {
   static const String routeName = '/welcome';
+
   const WelcomePage({Key? key}) : super(key: key);
 
   @override
@@ -13,6 +18,8 @@ class WelcomePage extends StatefulWidget {
 }
 
 class WelcomePageState extends State<WelcomePage> {
+  static const storage = FlutterSecureStorage();
+
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -64,12 +71,13 @@ class WelcomePageState extends State<WelcomePage> {
                 ),
                 //login current account
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      HomeScreen.routeName,
-                    );
-                  },
+                  onPressed: handleLoginQuickly,
+                  // onPressed: () {
+                  //   Navigator.pushNamed(
+                  //     context,
+                  //     HomeScreen.routeName,
+                  //   );
+                  // },
                   style: ElevatedButton.styleFrom(
                       maximumSize: Size(w * 0.85, 50),
                       padding:
@@ -177,5 +185,142 @@ class WelcomePageState extends State<WelcomePage> {
         ),
       ),
     );
+  }
+
+  Future<void> handleLoginQuickly() async {
+    String? email = await storage.read(key: 'email');
+    String? password = await storage.read(key: 'password');
+    if (email == null || password == null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Bạn chưa lưu thông tin đăng nhập'),
+            content: RichText(
+              text: TextSpan(
+                text: 'Vui lòng chọn ',
+                style: TextStyle(color: Colors.black, fontSize: 16),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Đăng nhập bằng tài khoản khác',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                        fontSize: 16,// Màu bạn muốn sử dụng để highlight
+                        ),
+                  ),
+                  TextSpan(text: ' để đăng nhập lại.'),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'OK',
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      try {
+        var url = Uri.parse(ListAPI.login);
+        Map body = {
+          "email": email,
+          'password': password,
+          'uuid': 'string',
+        };
+
+        http.Response response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            var token = responseBody['data']['token'];
+            const storage = FlutterSecureStorage();
+            await storage.write(key: 'token', value: token);
+            Navigator.pushNamed(
+              context,
+              HomeScreen.routeName,
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Error'),
+                  content: Text('${responseBody['message']}'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('${responseBody['message']}'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } catch (e) {
+        print('Error during login: $e');
+        // Handle the error, e.g., show a general error message to the user
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('An error occurred during login.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 }

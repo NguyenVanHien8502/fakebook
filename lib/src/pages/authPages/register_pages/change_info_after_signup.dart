@@ -1,75 +1,30 @@
 import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/pages/authPages/register_pages/check_verify_code.dart';
-import 'package:fakebook/src/pages/authPages/welcome_page.dart';
+import 'package:fakebook/src/pages/authPages/register_pages/save_info_login.dart';
 import 'package:flutter/material.dart';
-import 'dart:core';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:core';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
-class PasswordRegisterPage extends StatefulWidget {
-  const PasswordRegisterPage({Key? key}) : super(key: key);
+class ChangeInfoAfterSignupPage extends StatefulWidget {
+  const ChangeInfoAfterSignupPage({Key? key}) : super(key: key);
 
   @override
-  PasswordRegisterPageState createState() => PasswordRegisterPageState();
+  ChangeInfoAfterSignupPageState createState() =>
+      ChangeInfoAfterSignupPageState();
 }
 
-class PasswordRegisterPageState extends State<PasswordRegisterPage> {
+class ChangeInfoAfterSignupPageState extends State<ChangeInfoAfterSignupPage> {
   static const storage = FlutterSecureStorage();
 
-  final TextEditingController passwordController = TextEditingController();
-  late String userEmail;
-
-  @override
-  void initState() {
-    super.initState();
-    getEmailFromStorage();
-  }
-
-  Future<void> getEmailFromStorage() async {
-    // Lấy email từ FlutterSecureStorage
-    String? email = await storage.read(key: 'email');
-    if (email != null) {
-      setState(() {
-        userEmail = email;
-      });
-    } else {
-      print("Email is not exist in FlutterSecureStorage");
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Not have email!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'OK',
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
+  final TextEditingController usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        // Đặt màu của mũi tên quay lại thành màu đen
-        centerTitle: true,
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -77,10 +32,13 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(
+                  height: 25.0,
+                ),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Tạo mật khẩu",
+                    "Tạo username && avatar",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 24,
@@ -93,12 +51,25 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Tạo mật khẩu gồm ít nhất 6 chữ cái hoặc chữ số. Bạn nên chọn mật khẩu thật khó đoán.",
+                    "Tạo username và avatar giúp người khác có thể dễ dàng theo dõi và kết bạn với bạn.",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
                 const SizedBox(
                   height: 25.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 16.0),
+                  child: const Text(
+                    "Username *:",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 8.0,
                 ),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -107,8 +78,8 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     children: [
                       Expanded(
                         child: TextField(
-                          controller: passwordController,
-                          obscureText: true,
+                          controller: usernameController,
+                          obscureText: false,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.grey),
@@ -121,7 +92,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                             ),
                             fillColor: Colors.white10,
                             filled: true,
-                            hintText: "Mật khẩu của bạn",
+                            hintText: "Username của bạn",
                             contentPadding: const EdgeInsets.only(left: 20.0),
                             hintStyle: TextStyle(color: Colors.grey[500]),
                           ),
@@ -130,11 +101,67 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     ],
                   ),
                 ),
+                const SizedBox(
+                  height: 25.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 16.0),
+                  child: const Text(
+                    "Avatar:",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      final XFile? image =
+                          await picker.pickImage(source: ImageSource.gallery);
+
+                      if (image != null) {
+                        // Xử lý ảnh được chọn ở đây
+                        print('Đường dẫn đến ảnh: ${image.path}');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      maximumSize: const Size(370, 50),
+                      padding: EdgeInsets.zero,
+                      // Loại bỏ padding mặc định của nút
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(50), // Đặt độ cong của góc
+                      ),
+                      backgroundColor: Colors.white,
+                      // Đặt màu nền của nút
+                      side: const BorderSide(
+                        color: Color.fromARGB(
+                            255, 0, 68, 255), // Đặt màu đường viền
+                        width: 0.4, // Đặt độ dày của đường viền
+                      ),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Chọn ảnh",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 25.0),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: handleSignup,
+                    onPressed: handleChangeInfoAfterSignup,
                     style: ElevatedButton.styleFrom(
                       maximumSize: const Size(370, 50),
                       padding: EdgeInsets.zero,
@@ -153,7 +180,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "Lấy mã xác thực",
+                        "Lưu thông tin",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -162,27 +189,6 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 430,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const WelcomePage()));
-                      },
-                      child: const Text(
-                        'Bạn có tài khoản rồi ư?',
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
@@ -191,74 +197,38 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
     );
   }
 
-  Future<void> handleSignup() async {
-    String email = userEmail;
-    String password = passwordController.text;
-
+  Future<void> handleChangeInfoAfterSignup() async {
+    String username = usernameController.text;
+    String avatar = '';
+    String? token = await storage.read(key: 'token');
     try {
-      var url = Uri.parse(ListAPI.signup);
+      var url = Uri.parse(ListAPI.changeInfoAfterSignup);
       Map body = {
-        "email": email,
-        'password': password,
-        'uuid': 'string',
+        "username": username,
+        'avatar': avatar,
       };
 
       http.Response response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: jsonEncode(body),
       );
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       final responseBody = jsonDecode(response.body);
+      print(responseBody);
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
-          await storage.write(
-              key: 'password', value: passwordController.text);
-          passwordController.clear();
-          var verifyCode = responseBody['data']['verify_code'];
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Verify Code'),
-                content: RichText(
-                  text: TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: "Enter the following code to verify your email: ",
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
-                      TextSpan(
-                        text: "${verifyCode}.",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold, // Màu xanh
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const CheckVerifyCodePage()));
-                    },
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(color: Colors.black, fontSize: 14),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
+          print("abc");
+          usernameController.clear();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const SaveInfoLoginPage()));
         } else {
           showDialog(
             context: context,
@@ -287,7 +257,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('${responseBody['error']}'),
+              content: Text('${responseBody['message']}'),
               actions: [
                 TextButton(
                   onPressed: () {

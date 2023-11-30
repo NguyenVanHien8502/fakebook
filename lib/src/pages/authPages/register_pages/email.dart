@@ -3,6 +3,7 @@ import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class EmailRegisterPage extends StatefulWidget {
   const EmailRegisterPage({Key? key}) : super(key: key);
@@ -12,10 +13,18 @@ class EmailRegisterPage extends StatefulWidget {
 }
 
 class EmailRegisterPageState extends State<EmailRegisterPage> {
+  static const storage = FlutterSecureStorage();
+
+  final TextEditingController emailController = TextEditingController();
+  bool emailError = false;
+
+  bool isEmailValid(String email) {
+    final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+    return emailRegex.hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -62,6 +71,7 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                     children: [
                       Expanded(
                         child: TextField(
+                          controller: emailController,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.grey),
@@ -83,6 +93,14 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                     ],
                   ),
                 ),
+                if (emailError)
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, top: 5.0),
+                    child: const Text(
+                      'Invalid email address',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
                 const SizedBox(height: 15.0),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -111,12 +129,49 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const PasswordRegisterPage()));
+                    onPressed: () async {
+                      if (emailController.text == '') {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              content: const Text('Parameter type is invalid'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    'OK',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        if (!isEmailValid(emailController.text)) {
+                          setState(() {
+                            emailError = true;
+                          });
+                        } else {
+                          setState(() {
+                            emailError = false;
+                          });
+                        }
+                      }
+                      if(isEmailValid(emailController.text)){
+                        await storage.write(
+                            key: 'email', value: emailController.text);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                const PasswordRegisterPage()));
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       maximumSize: const Size(370, 50),
@@ -146,7 +201,7 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 370,
+                  height: 350,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

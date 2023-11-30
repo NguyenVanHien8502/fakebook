@@ -1,4 +1,4 @@
-import 'package:fakebook/src/pages/authPages/register_pages/name.dart';
+import 'package:fakebook/src/pages/authPages/register_pages/email.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/material.dart';
 
@@ -65,7 +65,7 @@ class PreRegisterPage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const NameRegisterPage()));
+                              builder: (context) => const EmailRegisterPage()));
                     },
                     style: ElevatedButton.styleFrom(
                       maximumSize: Size(w * 0.85, 50),
