@@ -2,6 +2,7 @@ import 'package:fakebook/src/model/post.dart';
 import 'package:fakebook/src/model/story.dart';
 
 class User {
+  final String id;
   final String name;
   final String avatar;
   bool? verified;
@@ -22,6 +23,7 @@ class User {
   final String? pageType;
   final String? address;
   User({
+    required this.id,
     required this.name,
     required this.avatar,
     this.verified,
@@ -65,6 +67,7 @@ class User {
     String? address,
   }) {
     return User(
+      id: id ?? this.id,
       name: name ?? this.name,
       avatar: avatar ?? this.avatar,
       verified: verified ?? this.verified,

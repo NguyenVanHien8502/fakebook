@@ -5,13 +5,24 @@ import 'package:flutter/material.dart';
 class FriendPage extends StatefulWidget {
   const FriendPage({Key? key}) : super(key: key);
 
- @override
- State<FriendPage> createState()=>FriendPageState();
+  @override
+  State<FriendPage> createState() => FriendPageState();
 }
 
-class FriendPageState extends State<FriendPage>{
+class FriendRequest {
+  final User user;
+  final int? mutualFriends;
+  FriendRequest({
+    required this.user,
+    this.mutualFriends,
+  });
+}
+
+class FriendPageState extends State<FriendPage> {
   User user = User(
-      name: "Nguyễn Ngọc Linh", avatar: 'lib/src/assets/images/avatar.jpg');
+      id: "26",
+      name: "Nguyễn Ngọc Linh",
+      avatar: 'lib/src/assets/images/avatar.jpg');
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +35,18 @@ class FriendPageState extends State<FriendPage>{
         elevation: 0,
         iconTheme: const IconThemeData(
             color: Colors.black), // Đặt màu của mũi tên quay lại thành màu đen
-        title: const Text("Bạn bè", style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: const Text(
+          "Bạn bè",
+          style: TextStyle(color: Colors.black, fontSize: 20),
+        ),
         titleSpacing: 0,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.black), // Icon tìm kiếm
+            icon:
+                const Icon(Icons.search, color: Colors.black), // Icon tìm kiếm
             onPressed: () {
-              print("Tìm cái méo gì, làm cho đẹp thôi, bấm textfield ở dưới mà tìm");
+              print(
+                  "Tìm cái méo gì, làm cho đẹp thôi, bấm textfield ở dưới mà tìm");
             },
           ),
         ],
@@ -46,7 +62,7 @@ class FriendPageState extends State<FriendPage>{
               width: 400,
               height: 80,
               padding:
-              const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
+                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
               child: TextField(
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.only(top: 5.0),
@@ -135,7 +151,7 @@ class FriendPageState extends State<FriendPage>{
                                   children: [
                                     Container(
                                         margin:
-                                        const EdgeInsets.only(left: 16.0),
+                                            const EdgeInsets.only(left: 16.0),
                                         child: Container(
                                           margin: const EdgeInsets.only(
                                               bottom: 8.0),
@@ -149,7 +165,7 @@ class FriendPageState extends State<FriendPage>{
                                         )),
                                     Container(
                                         margin:
-                                        const EdgeInsets.only(left: 16.0),
+                                            const EdgeInsets.only(left: 16.0),
                                         child: const Text(
                                           "3 thông tin mới",
                                           style: TextStyle(color: Colors.black),
@@ -173,7 +189,6 @@ class FriendPageState extends State<FriendPage>{
                               ],
                             )),
                       ),
-
                     ],
                   ),
                 ),

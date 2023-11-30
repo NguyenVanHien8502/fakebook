@@ -3,7 +3,9 @@ import 'package:fakebook/src/features/menu/shortcut.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MenuScreen extends StatefulWidget {
   static double offset = 0;
@@ -20,10 +22,13 @@ class _MenuScreenState extends State<MenuScreen> {
   ScrollController scrollController =
       ScrollController(initialScrollOffset: MenuScreen.offset);
   ScrollController headerScrollController = ScrollController();
-  User user = User(
-      name: "Nguyễn Ngọc Linh", avatar: 'lib/src/assets/images/avatar.jpg');
+
+  // User user = User(
+  //     name: "Nguyễn Ngọc Linh", avatar: 'lib/src/assets/images/avatar.jpg');
   User secondUser = User(
-      name: "Nguyễn Ngọc Linh", avatar: 'lib/src/assets/images/avatar.jpg');
+      id: "36",
+      name: "Nguyễn Ngọc Linh",
+      avatar: 'lib/src/assets/images/avatar.jpg');
 
   @override
   void initState() {
@@ -39,6 +44,8 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User? user = Provider.of<UserProvider>(context).user;
+
     scrollController.addListener(() {
       headerScrollController.jumpTo(headerScrollController.offset +
           scrollController.offset -
@@ -151,11 +158,12 @@ class _MenuScreenState extends State<MenuScreen> {
               //Avatar link personal
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    PersonalPageScreen.routeName,
-                    arguments: user,
-                  );
+                  print("1");
+                  // Navigator.pushNamed(
+                  //   context,
+                  //   PersonalPageScreen.routeName,
+                  //   arguments: user,
+                  // );
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -177,7 +185,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               ),
                             ),
                             child: CircleAvatar(
-                              backgroundImage: AssetImage(user.avatar),
+                              backgroundImage: AssetImage(user!.avatar),
                               radius: 20,
                             ),
                           ),

@@ -31,34 +31,40 @@ class _FriendsScreenState extends State<FriendsScreen> {
   final friends = [
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Nguyễn Văn Hiển',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
       time: '1 tuần',
       mutualFriends: 25,
       f1: User(
+        id: "36",
         name: 'Ngọc Linh',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
       f2: User(
+        id: "36",
         name: 'Leo Messi',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
     ),
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Ngọc Linh',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
       time: '3 tuần',
       mutualFriends: 1,
       f1: User(
+        id: "36",
         name: 'Bảo Ngân',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
     ),
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Nguyễn Bá Duy',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
@@ -66,15 +72,18 @@ class _FriendsScreenState extends State<FriendsScreen> {
     ),
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Đỗ Nghĩa',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
       mutualFriends: 455,
       f1: User(
+        id: "36",
         name: 'Minh Hương',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
       f2: User(
+        id: "36",
         name: 'Hà Linhh',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
@@ -82,6 +91,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     ),
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Ninh Thành Vinh',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
@@ -89,6 +99,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     ),
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Linh Nguyễn',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
@@ -96,6 +107,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     ),
     FriendRequest(
       user: User(
+        id: "36",
         name: 'Văn Hiển',
         avatar: "lib/src/assets/images/avatar.jpg",
       ),
@@ -451,6 +463,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           ),
                           Row(
                             children: [
+                              //Chấp nhận kết bạn
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {},
@@ -474,6 +487,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                               const SizedBox(
                                 width: 10,
                               ),
+                              //Không chấp nhận kết bạn
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {},
