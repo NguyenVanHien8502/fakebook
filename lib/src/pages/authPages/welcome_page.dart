@@ -1,7 +1,6 @@
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
-import 'package:fakebook/src/pages/authPages/register_page.dart';
 import 'package:flutter/material.dart';
 
 class WelcomePage extends StatefulWidget {

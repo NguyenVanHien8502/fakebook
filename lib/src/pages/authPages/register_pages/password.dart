@@ -216,18 +216,28 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
         if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
           passwordController.clear();
           var verifyCode = responseBody['data']['verify_code'];
-          print(verifyCode);
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('Verify Code'),
-                content: Text(
-                  'Enter the following code to verify your email: ${verifyCode}',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
+                content: RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "Enter the following code to verify your email: ",
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                      TextSpan(
+                        text: "${verifyCode}.",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold, // Màu xanh
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 actions: [
                   TextButton(
@@ -236,7 +246,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                              const CheckVerifyCodePage()));
+                                  const CheckVerifyCodePage()));
                     },
                     child: const Text(
                       'OK',
@@ -275,7 +285,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('${responseBody['message']}'),
+              content: Text('${responseBody['error']}'),
               actions: [
                 TextButton(
                   onPressed: () {
