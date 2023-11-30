@@ -7,6 +7,7 @@ class ListAPI {
   static const getVerifyCode = "https://it4788.catan.io.vn/get_verify_code";
   static const checkVerifyCode = "https://it4788.catan.io.vn/check_verify_code";
   static const resetPassword = "https://it4788.catan.io.vn/reset_password";
+  static const changeInfoAfterSignup = "https://it4788.catan.io.vn/change_profile_after_signup";
 
 //Profile
 

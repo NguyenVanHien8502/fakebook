@@ -4,12 +4,14 @@ import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MenuScreen extends StatefulWidget {
   static double offset = 0;
   static bool viewMoreShortcuts = false;
   static bool viewMoreHelps = false;
   static bool viewMoreSettings = false;
+
   const MenuScreen({super.key});
 
   @override
@@ -17,6 +19,7 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
+  static const storage = FlutterSecureStorage();
   ScrollController scrollController =
       ScrollController(initialScrollOffset: MenuScreen.offset);
   ScrollController headerScrollController = ScrollController();
@@ -805,12 +808,7 @@ class _MenuScreenState extends State<MenuScreen> {
                             width: 0.5,
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            WelcomePage.routeName,
-                          );
-                        },
+                        onPressed: handleLogout,
                         child: const Text(
                           'Đăng xuất',
                           style: TextStyle(
@@ -826,6 +824,48 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> handleLogout() async {
+    await storage.delete(key: 'token');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Thông báo'),
+          content: Text(
+              'Bạn có muốn lưu thông tin đăng nhập để lần sau đỡ phải đăng nhập hay không?'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await storage.delete(key: 'email');
+                await storage.delete(key: 'password');
+                Navigator.pushNamed(
+                  context,
+                  WelcomePage.routeName,
+                );
+              },
+              child: const Text(
+                'Không',
+                style: TextStyle(color: Colors.black, fontSize: 14),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  WelcomePage.routeName,
+                );
+              },
+              child: const Text(
+                'Có',
+                style: TextStyle(color: Colors.black, fontSize: 14),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
