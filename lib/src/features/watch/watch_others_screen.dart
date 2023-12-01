@@ -26,7 +26,10 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
   List<VideoControllerWrapper> videoController = [];
   final posts = [
     Post(
-      user: User(name: 'Aki Michio', avatar: 'lib/src/assets/images/user/aki.jpg'),
+      user: User(
+          id: "36",
+          name: 'Aki Michio',
+          avatar: 'lib/src/assets/images/user/aki.jpg'),
       time: '14 thg 7, 2022',
       shareWith: 'public',
       content: 'Kawaiii quá vậy\nAnime : Con của mẹ kế là bạn gái cũ',
@@ -43,6 +46,7 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
     ),
     Post(
       user: User(
+          id: "36",
           name: 'Đài Phát Thanh.',
           avatar: 'lib/src/assets/images/avatar.jpg'),
       time: '17 thg 1, 2021',
@@ -61,7 +65,10 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
       video: ['lib/src/assets/videos/5.mp4'],
     ),
     Post(
-      user: User(name: 'Spezon', avatar: 'lib/src/assets/images/user/spezon.jpg'),
+      user: User(
+          id: "36",
+          name: 'Spezon',
+          avatar: 'lib/src/assets/images/user/spezon.jpg'),
       time: '27 tháng 8',
       shareWith: 'public',
       content: 'Lionel Messi World cup Champion [Messi EP. FINAL]',

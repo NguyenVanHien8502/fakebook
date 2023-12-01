@@ -1,4 +1,3 @@
-
 import 'package:fakebook/src/features/comment/widgets/single_comment.dart';
 import 'package:fakebook/src/model/comment.dart';
 import 'package:fakebook/src/model/post.dart';
@@ -25,6 +24,7 @@ class _CommentScreenState extends State<CommentScreen> {
   final List<Comment> comments = [
     Comment(
       user: User(
+          id: "36",
           name: 'Khánh Vy',
           avatar: 'lib/src/assets/images/avatar.jpg',
           verified: true),
@@ -38,6 +38,7 @@ class _CommentScreenState extends State<CommentScreen> {
       replies: [
         Comment(
           user: User(
+              id: "36",
               name: 'Vương Hồng Thúy',
               avatar: 'lib/src/assets/images/avatar.jpg'),
           content: 'ủa mà chị cao mét bn vậy ạ',
@@ -46,6 +47,7 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
         Comment(
           user: User(
+              id: "36",
               name: 'Đài Phát Thanh',
               avatar: 'lib/src/assets/images/avatar.jpg'),
           content: 'xinh đẹp tuyệt vời 🙆‍♀️',
@@ -56,6 +58,7 @@ class _CommentScreenState extends State<CommentScreen> {
     ),
     Comment(
       user: User(
+          id: "36",
           name: 'Minh Hương',
           avatar: 'lib/src/assets/images/avatar.jpg',
           verified: true),
@@ -64,6 +67,7 @@ class _CommentScreenState extends State<CommentScreen> {
       replies: [
         Comment(
           user: User(
+              id: "36",
               name: 'Khánh Vy',
               avatar: 'lib/src/assets/images/avatar.jpg',
               verified: true),
@@ -76,7 +80,10 @@ class _CommentScreenState extends State<CommentScreen> {
       ],
     ),
     Comment(
-      user: User(name: 'Hà Linhh', avatar: 'lib/src/assets/images/avatar.jpg'),
+      user: User(
+          id: "36",
+          name: 'Hà Linhh',
+          avatar: 'lib/src/assets/images/avatar.jpg'),
       content: '',
       time: '1 tuần',
       image: 'lib/src/assets/images/avatar.jpg',
@@ -84,6 +91,7 @@ class _CommentScreenState extends State<CommentScreen> {
     ),
     Comment(
       user: User(
+          id: "36",
           name: 'Nguyễn Thị Minh Tuyền',
           avatar: 'lib/src/assets/images/avatar.jpg'),
       content:

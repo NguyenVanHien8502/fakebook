@@ -3,12 +3,15 @@ import 'dart:convert';
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
+import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -274,11 +277,28 @@ class LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         if (responseBody['code'] == '1000') {
           var token = responseBody['data']['token'];
+          print(responseBody['data']);
+          const storage = FlutterSecureStorage();
+          await storage.write(key: 'token', value: token);
+          // String? tokenn = await storage.read(key: 'token');
+          User user = User(
+              id: responseBody['data']['id'],
+              name: responseBody['data']['username'],
+              avatar:
+                  //responseBody['data']['avatar'] ??
+                  'lib/src/assets/images/avatarfb.jpg');
+
+          //Cập nhật trạng thái toàn cầu
+          Provider.of<UserProvider>(context, listen: false).updateUse(user);
+
           await storage.write(key: 'token', value: token);
           await storage.write(key: 'email', value: email);
           await storage.write(key: 'password', value: password);
           emailController.clear();
           passwordController.clear();
+          // if(await storage.read(key: 'token') != null) {
+
+          // }
           Navigator.pushNamed(
             context,
             HomeScreen.routeName,
@@ -350,6 +370,15 @@ class LoginPageState extends State<LoginPage> {
           );
         },
       );
+    }
+  }
+
+  ///
+  Future<void> _fetchUserData(BuildContext context, String token) async {
+    try {
+      var url = Uri.parse(ListAPI.get_user_info);
+    } catch (e) {
+      print('Lỗi khi lấy dữ liệu người dùng: $e');
     }
   }
 }

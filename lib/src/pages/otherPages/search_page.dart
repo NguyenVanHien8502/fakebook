@@ -12,7 +12,9 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   User user = User(
-      name: "Nguyễn Ngọc Linh", avatar: 'lib/src/assets/images/avatar.jpg');
+      id: "36",
+      name: "Nguyễn Ngọc Linh",
+      avatar: 'lib/src/assets/images/avatar.jpg');
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +80,8 @@ class SearchPageState extends State<SearchPage> {
                             ),
                             Text(
                               "Xem tất cả",
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 20.0),
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 20.0),
                             )
                           ],
                         ),
