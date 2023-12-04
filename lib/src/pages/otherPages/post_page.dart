@@ -226,115 +226,120 @@ class PostPageState extends State<PostPage> {
 }
 
 void showConfirmationBottomSheet(BuildContext context) {
+  final scrollController = ScrollController();
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
       return SingleChildScrollView(
-          child: Container(
-        padding: const EdgeInsets.all(6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "Bạn muốn hoàn thành bài viết của mình sau ư?",
-                    style: TextStyle(
-                      fontSize: 18,
+        controller:
+            scrollController, // Thêm controller vào SingleChildScrollView
+        physics: const ClampingScrollPhysics(), // Điều chỉnh tốc độ trượt lên
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Bạn muốn hoàn thành bài viết của mình sau ư?",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.start,
                     ),
-                    textAlign: TextAlign.start,
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Hãy lưu làm bản nháp hoặc tiếp tục chỉnh sửa.",
+                      style: TextStyle(fontSize: 17),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              ListView(
+                shrinkWrap: true,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      // Xử lý khi dòng 1 được click
+                      Navigator.of(context).pop(); // Đóng hộp thoại
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      height: 60,
+                      child: const Row(
+                        children: [
+                          Icon(Icons.bookmark, size: 36),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Lưu làm bản nháp",
+                              style: TextStyle(fontSize: 20)),
+                        ],
+                      ),
+                    ),
                   ),
-                  SizedBox(
-                    width: 5,
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      height: 60,
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.delete_sharp,
+                            size: 36,
+                            color: Color.fromARGB(255, 223, 99, 90),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Bỏ bài viết", style: TextStyle(fontSize: 20)),
+                        ],
+                      ),
+                    ),
                   ),
-                  Text(
-                    "Hãy lưu làm bản nháp hoặc tiếp tục chỉnh sửa.",
-                    style: TextStyle(fontSize: 17),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 16),
+                      height: 60,
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.done,
+                            size: 36,
+                            color: Color.fromARGB(255, 0, 83, 250),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Tiếp tục chỉnh sửa",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 0, 83, 250))),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 10),
-            ListView(
-              shrinkWrap: true,
-              children: [
-                InkWell(
-                  onTap: () {
-                    // Xử lý khi dòng 1 được click
-                    Navigator.of(context).pop(); // Đóng hộp thoại
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    height: 60,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.bookmark, size: 36),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text("Lưu làm bản nháp",
-                            style: TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    height: 60,
-                    child: const Row(
-                      children: [
-                        Icon(
-                          Icons.delete_sharp,
-                          size: 36,
-                          color: Color.fromARGB(255, 223, 99, 90),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text("Bỏ bài viết", style: TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 16),
-                    height: 60,
-                    child: const Row(
-                      children: [
-                        Icon(
-                          Icons.done,
-                          size: 36,
-                          color: Color.fromARGB(255, 0, 83, 250),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text("Tiếp tục chỉnh sửa",
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Color.fromARGB(255, 0, 83, 250))),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
-      ));
+      );
     },
   );
 }
