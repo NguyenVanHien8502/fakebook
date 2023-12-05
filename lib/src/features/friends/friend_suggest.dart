@@ -44,7 +44,7 @@ class _FriendsSuggestState extends State<FriendsSuggestScreen> {
     try {
       String? token = await getToken();
       if (token != null) {
-        var url = Uri.parse(ListAPI.get_suggested_friend);
+        var url = Uri.parse(ListAPI.getSuggestedFriend);
         Map body = {"index": "0", "count": "5"};
 
         http.Response response = await http.post(

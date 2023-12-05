@@ -44,7 +44,7 @@ class ChangeInfoAfterSignupPageState extends State<ChangeInfoAfterSignupPage> {
     String username = usernameController.text;
     String? token = await storage.read(key: 'token');
     try {
-      var url = Uri.parse(ListAPI.changeInfoAfterSignup);
+      var url = Uri.parse(ListAPI.changeProfileAfterSignup);
       var request = http.MultipartRequest('POST', url);
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Content-Type'] = 'multipart/form-data';
