@@ -52,7 +52,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     try {
       String? token = await getToken();
       if (token != null) {
-        var url = Uri.parse(ListAPI.get_requested_friend);
+        var url = Uri.parse(ListAPI.getRequestedFriend);
         Map body = {"index": "0", "count": "10"};
 
         print(body);

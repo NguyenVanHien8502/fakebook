@@ -1,6 +1,5 @@
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/model/user.dart';
-import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -39,7 +38,7 @@ class FriendPageState extends State<FriendPage> {
     try {
       String? token = await getToken();
       if (token != null) {
-        var url = Uri.parse(ListAPI.get_user_friend);
+        var url = Uri.parse(ListAPI.getUserFriend);
         Map body = {"index": "0", "count": "10", "user_id": user1.id};
 
         print(body);

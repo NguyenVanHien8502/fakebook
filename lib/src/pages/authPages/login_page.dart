@@ -325,9 +325,7 @@ class LoginPageState extends State<LoginPage> {
           }
           emailController.clear();
           passwordController.clear();
-          // if(await storage.read(key: 'token') != null) {
 
-          // }
           Navigator.pushNamed(
             context,
             HomeScreen.routeName,
@@ -405,7 +403,7 @@ class LoginPageState extends State<LoginPage> {
   ///
   Future<void> _fetchUserData(BuildContext context, String token) async {
     try {
-      var url = Uri.parse(ListAPI.get_user_info);
+      var url = Uri.parse(ListAPI.getUserInfo);
     } catch (e) {
       print('Lỗi khi lấy dữ liệu người dùng: $e');
     }
