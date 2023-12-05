@@ -294,6 +294,35 @@ class LoginPageState extends State<LoginPage> {
           await storage.write(key: 'token', value: token);
           await storage.write(key: 'email', value: email);
           await storage.write(key: 'password', value: password);
+
+          var userId = responseBody['data']['id'];
+          try{
+            var url = Uri.parse(ListAPI.getUserInfo);
+            Map body = {
+              "user_id": userId,
+            };
+
+            http.Response response = await http.post(
+              url,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $token'
+              },
+              body: jsonEncode(body),
+            );
+
+            // Chuyển chuỗi JSON thành một đối tượng Dart
+            final getUserInfo = jsonDecode(response.body);
+            if (response.statusCode == 201) {
+              if (getUserInfo['code'] == '1000') {
+                var currentUser = getUserInfo['data'];
+                var currentUserJson = jsonEncode(currentUser);
+                await storage.write(key: 'currentUser', value: currentUserJson);
+              }
+            }
+          }catch(e){
+            print("Error: $e");
+          }
           emailController.clear();
           passwordController.clear();
           // if(await storage.read(key: 'token') != null) {

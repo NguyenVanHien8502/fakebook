@@ -849,6 +849,7 @@ class _MenuScreenState extends State<MenuScreen> {
               onPressed: () async {
                 await storage.delete(key: 'email');
                 await storage.delete(key: 'password');
+                await storage.delete(key: 'currentUser');
                 Navigator.pushNamed(
                   context,
                   WelcomePage.routeName,

@@ -163,14 +163,14 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                           });
                         }
                       }
-                      if(isEmailValid(emailController.text)){
+                      if (isEmailValid(emailController.text)) {
                         await storage.write(
-                            key: 'email', value: emailController.text);
+                            key: 'emailToSignup', value: emailController.text);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                const PasswordRegisterPage()));
+                                    const PasswordRegisterPage()));
                       }
                     },
                     style: ElevatedButton.styleFrom(
