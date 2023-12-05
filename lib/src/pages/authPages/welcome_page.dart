@@ -21,6 +21,21 @@ class WelcomePageState extends State<WelcomePage> {
   static const storage = FlutterSecureStorage();
 
   @override
+  void initState() {
+    super.initState();
+    getCurrentUserData();
+  }
+
+  dynamic currentUser;
+
+  Future<void> getCurrentUserData() async {
+    dynamic newData = await storage.read(key: 'currentUser');
+    setState(() {
+      currentUser = newData;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
@@ -50,21 +65,35 @@ class WelcomePageState extends State<WelcomePage> {
                 const SizedBox(
                   height: 20,
                 ),
-                const Image(
-                  image: AssetImage('lib/src/assets/images/avatar.jpg'),
-                  height: 200,
-                  width: 200,
-                ),
+                currentUser != null
+                    ? ClipOval(
+                        child: Image.network(
+                          '${jsonDecode(currentUser)['avatar']}',
+                          height: 200,
+                          width: 200,
+                          fit: BoxFit
+                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                        ),
+                      )
+                    : const Image(
+                        image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                        height: 200,
+                        width: 200,
+                      ),
                 const SizedBox(
                   height: 30,
                 ),
-                const Text(
-                  "Nguyen Van Hien",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
+                currentUser != null
+                    ? Text(
+                        "${jsonDecode(currentUser)['username']}",
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                      )
+                    : const SizedBox(
+                        height: 20.0,
+                      ),
 
                 const SizedBox(
                   height: 30,
@@ -72,12 +101,6 @@ class WelcomePageState extends State<WelcomePage> {
                 //login current account
                 ElevatedButton(
                   onPressed: handleLoginQuickly,
-                  // onPressed: () {
-                  //   Navigator.pushNamed(
-                  //     context,
-                  //     HomeScreen.routeName,
-                  //   );
-                  // },
                   style: ElevatedButton.styleFrom(
                       maximumSize: Size(w * 0.85, 50),
                       padding:
@@ -104,7 +127,7 @@ class WelcomePageState extends State<WelcomePage> {
                   height: 40,
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -204,10 +227,10 @@ class WelcomePageState extends State<WelcomePage> {
                   TextSpan(
                     text: 'Đăng nhập bằng tài khoản khác',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                        fontSize: 16,// Màu bạn muốn sử dụng để highlight
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                      fontSize: 16, // Màu bạn muốn sử dụng để highlight
+                    ),
                   ),
                   TextSpan(text: ' để đăng nhập lại.'),
                 ],

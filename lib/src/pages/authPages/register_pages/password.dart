@@ -184,7 +184,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Verify Code'),
+                title: const Text('Verify Code'),
                 content: RichText(
                   text: TextSpan(
                     children: [
