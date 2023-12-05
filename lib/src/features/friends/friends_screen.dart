@@ -1,6 +1,14 @@
+import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/features/friends/friend_suggest.dart';
 import 'package:fakebook/src/model/user.dart';
-import 'package:fakebook/src/pages/otherPages/friend_page.dart';
+import 'package:fakebook/src/features/friends/friend_page.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class FriendsScreen extends StatefulWidget {
   static const String routeName = '/friends-screen';
@@ -13,103 +21,94 @@ class FriendsScreen extends StatefulWidget {
 
 class FriendRequest {
   final User user;
-  final String time;
-  final int? mutualFriends;
-  final User? f1;
-  final User? f2;
+  //final String time;
+  final String mutualFriends;
+  //final User? f1;
+  //final User? f2;
   FriendRequest({
     required this.user,
-    required this.time,
-    this.mutualFriends,
-    this.f1,
-    this.f2,
+    //required this.time,
+    required this.mutualFriends,
+    //this.f1,
+    //this.f2,
   });
 }
 
 class _FriendsScreenState extends State<FriendsScreen> {
-  final today = DateTime.now();
-  final friends = [
-    FriendRequest(
-      user: User(
-        name: 'Nguyễn Văn Hiển',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '1 tuần',
-      mutualFriends: 25,
-      f1: User(
-        name: 'Ngọc Linh',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      f2: User(
-        name: 'Leo Messi',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Ngọc Linh',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '3 tuần',
-      mutualFriends: 1,
-      f1: User(
-        name: 'Bảo Ngân',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Nguyễn Bá Duy',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '2 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Đỗ Nghĩa',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      mutualFriends: 455,
-      f1: User(
-        name: 'Minh Hương',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      f2: User(
-        name: 'Hà Linhh',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '2 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Ninh Thành Vinh',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '2 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Linh Nguyễn',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '4 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Văn Hiển',
-        avatar: "lib/src/assets/images/avatar.jpg",
-      ),
-      time: '5 năm',
-    ),
-  ];
+  //final today = DateTime.now();
+  List<FriendRequest> friendRequests = [];
+  String totalGetrequests = "";
 
   ScrollController scrollController =
       ScrollController(initialScrollOffset: FriendsScreen.offset);
   ScrollController headerScrollController = ScrollController();
 
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
+
+  Future<void> fetchFriendList(BuildContext context, User user1) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.get_requested_friend);
+        Map body = {"index": "0", "count": "10"};
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            final List<dynamic> friendsData = responseBody['data']['requests'];
+            setState(() {
+              totalGetrequests = responseBody['data']['total'];
+            });
+
+            setState(() {
+              friendRequests = friendsData.map((item) {
+                return FriendRequest(
+                  user: User(
+                    id: item['id'].toString(),
+                    name: item['username'],
+                    avatar:
+                        //item['avatar'] ??
+                        'lib/src/assets/images/avatarfb.jpg',
+                  ),
+                  mutualFriends: item['same_friends'],
+                );
+              }).toList();
+            });
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    User? user = Provider.of<UserProvider>(context, listen: false).user;
+    fetchFriendList(context, user!);
   }
 
   @override
@@ -233,7 +232,13 @@ class _FriendsScreenState extends State<FriendsScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const FriendsSuggestScreen()));
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
@@ -289,8 +294,8 @@ class _FriendsScreenState extends State<FriendsScreen> {
               endIndent: 10,
             ),
             //Lời mời kết bạn
-            const Padding(
-              padding: EdgeInsets.symmetric(
+            Padding(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 10,
               ),
               child: Row(
@@ -301,7 +306,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Lời mời kết bạn',
                         style: TextStyle(
                           color: Colors.black,
@@ -309,12 +314,12 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        '568',
-                        style: TextStyle(
+                        "${totalGetrequests}",
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -338,7 +343,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
             ),
             //Danh sách kết bạn
 
-            for (int i = 0; i < friends.length; i++)
+            for (int i = 0; i < friendRequests.length; i++)
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Row(
@@ -352,8 +357,9 @@ class _FriendsScreenState extends State<FriendsScreen> {
                         ),
                       ),
                       child: CircleAvatar(
-                        backgroundImage: AssetImage(friends[i].user.avatar),
-                        radius: 46,
+                        backgroundImage:
+                            AssetImage(friendRequests[i].user.avatar),
+                        radius: 42,
                       ),
                     ),
                     const SizedBox(
@@ -368,89 +374,90 @@ class _FriendsScreenState extends State<FriendsScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                friends[i].user.name,
+                                friendRequests[i].user.name,
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              Text(
-                                friends[i].time,
-                                style: const TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 14,
-                                ),
-                              ),
+                              // Text(
+                              //   friends[i].time,
+                              //   style: const TextStyle(
+                              //     color: Colors.black54,
+                              //     fontSize: 14,
+                              //   ),
+                              // ),
                             ],
                           ),
-                          if (friends[i].mutualFriends != null &&
-                              friends[i].mutualFriends! > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 2,
-                              ),
-                              child: Row(
-                                children: [
-                                  Stack(
-                                    children: [
-                                      friends[i].f2 != null
-                                          ? const SizedBox(
-                                              width: 46,
-                                              height: 28,
-                                            )
-                                          : const SizedBox(
-                                              width: 28,
-                                              height: 28,
-                                            ),
-                                      if (friends[i].f2 != null)
-                                        Positioned(
-                                          left: 22,
-                                          top: 2,
-                                          child: CircleAvatar(
-                                            backgroundImage: AssetImage(
-                                                friends[i].f2!.avatar),
-                                            radius: 12,
-                                          ),
-                                        ),
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: CircleAvatar(
-                                            backgroundImage: AssetImage(
-                                                friends[i].f1!.avatar),
-                                            radius: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    '${friends[i].mutualFriends} bạn chung',
-                                    style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          // if (friends[i].mutualFriends != null &&
+                          //     friends[i].mutualFriends! > 0)
+                          //   Padding(
+                          //     padding: const EdgeInsets.only(
+                          //       top: 2,
+                          //     ),
+                          //     child: Row(
+                          //       children: [
+                          //         Stack(
+                          //           children: [
+                          //             friends[i].f2 != null
+                          //                 ? const SizedBox(
+                          //                     width: 46,
+                          //                     height: 28,
+                          //                   )
+                          //                 : const SizedBox(
+                          //                     width: 28,
+                          //                     height: 28,
+                          //                   ),
+                          //             if (friends[i].f2 != null)
+                          //               Positioned(
+                          //                 left: 22,
+                          //                 top: 2,
+                          //                 child: CircleAvatar(
+                          //                   backgroundImage: AssetImage(
+                          //                       friends[i].f2!.avatar),
+                          //                   radius: 12,
+                          //                 ),
+                          //               ),
+                          //             Positioned(
+                          //               left: 0,
+                          //               top: 0,
+                          //               child: Container(
+                          //                 decoration: BoxDecoration(
+                          //                   shape: BoxShape.circle,
+                          //                   border: Border.all(
+                          //                     color: Colors.white,
+                          //                     width: 2,
+                          //                   ),
+                          //                 ),
+                          //                 child: CircleAvatar(
+                          //                   backgroundImage: AssetImage(
+                          //                       friends[i].f1!.avatar),
+                          //                   radius: 12,
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         ),
+                          //         const SizedBox(
+                          //           width: 5,
+                          //         ),
+                          //         Text(
+                          //           '${friends[i].mutualFriends} bạn chung',
+                          //           style: const TextStyle(
+                          //             color: Colors.black54,
+                          //             fontSize: 14,
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
                           const SizedBox(
                             height: 5,
                           ),
                           Row(
                             children: [
+                              //Chấp nhận kết bạn
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {},
@@ -474,6 +481,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                               const SizedBox(
                                 width: 10,
                               ),
+                              //Không chấp nhận kết bạn
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {},

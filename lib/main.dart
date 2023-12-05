@@ -1,12 +1,15 @@
 import 'package:fakebook/router.dart';
 import 'package:fakebook/src/constants/global_variables.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    const MyApp(),
-  );
+  runApp(ChangeNotifierProvider(
+    create: (context) => UserProvider(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

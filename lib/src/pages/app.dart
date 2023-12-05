@@ -1,6 +1,6 @@
 import 'package:fakebook/src/messenger/messenger_page.dart';
 import 'package:fakebook/src/pages/otherPages/search_page.dart';
-import 'package:fakebook/src/pages/otherPages/friend_page.dart';
+import 'package:fakebook/src/features/friends/friend_page.dart';
 import 'package:fakebook/src/utils/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
