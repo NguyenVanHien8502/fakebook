@@ -15,6 +15,7 @@ class ListAPI {
   static const setUserInfo = "https://it4788.catan.io.vn/set_user_info";
 
 //Post
+  static const addPost = "https://it4788.catan.io.vn/add_post";
 
 //Search
 
@@ -23,8 +24,7 @@ class ListAPI {
       "https://it4788.catan.io.vn/get_requested_friends";
   static const setRequestFriend =
       "https://it4788.catan.io.vn/set_request_friend";
-  static const setAcceptFriend =
-      "https://it4788.catan.io.vn/set_accept_friend";
+  static const setAcceptFriend = "https://it4788.catan.io.vn/set_accept_friend";
   static const getUserFriend = "https://it4788.catan.io.vn/get_user_friends";
   static const getSuggestedFriend =
       "https://it4788.catan.io.vn/get_suggested_friends";

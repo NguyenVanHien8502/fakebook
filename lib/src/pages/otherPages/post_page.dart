@@ -1,4 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+import 'package:async/async.dart';
+import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -8,13 +20,134 @@ class PostPage extends StatefulWidget {
 }
 
 class PostPageState extends State<PostPage> {
-  TextEditingController textEditingController = TextEditingController();
+  static const storage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserData();
+  }
+
+  dynamic currentUser;
+
+  Future<void> getCurrentUserData() async {
+    dynamic newData = await storage.read(key: 'currentUser');
+    setState(() {
+      currentUser = newData;
+    });
+  }
+
+  TextEditingController describedController = TextEditingController();
+
+  List<XFile>? images = [];
+  final ImagePicker imagePicker = ImagePicker();
+
+  Future<void> getImages() async {
+    if (images != null && images!.length > 4) {
+      return;
+    }
+    final List<XFile> selectedImages = await imagePicker.pickMultiImage();
+    if (selectedImages!.isNotEmpty) {
+      // images!.addAll(selectedImages.sublist(0, 4 - images!.length));
+      images = selectedImages.sublist(0, min(selectedImages.length, 4));
+    }
+    setState(() {});
+  }
+
+  Future<void> handleAddPost(BuildContext context) async {
+    String described = describedController.text;
+    String? token = await storage.read(key: 'token');
+    try {
+      var url = Uri.parse(ListAPI.addPost);
+      var request = http.MultipartRequest('POST', url);
+      request.headers['Authorization'] = 'Bearer $token';
+      request.headers['Content-Type'] = 'multipart/form-data';
+      request.fields['described'] = described;
+      if (images != null && images!.isNotEmpty) {
+        for (var selectedImage in images!) {
+          var stream =
+              http.ByteStream(DelegatingStream.typed(selectedImage.openRead()));
+          var length = await selectedImage.length();
+          var multipart = http.MultipartFile(
+            'image',
+            stream,
+            length,
+            filename: basename(selectedImage.path),
+            contentType: MediaType('image', 'jpg'),
+          );
+          request.files.add(multipart);
+        }
+      }
+      var response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final decodedResponse = jsonDecode(responseBody);
+      print(decodedResponse);
+      if (decodedResponse['code'] == '1000') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Thông báo'),
+              content: const Text('Bạn đã đăng bài viết thành công.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      HomeScreen.routeName,
+                    );
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Thông báo'),
+              content: Text('${decodedResponse['message']}'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      print("Occur error:: $e");
+    }
+  }
+
+  //thay đổi màu của button "Đăng" khi có text
   bool shouldEnableButton = false;
 
   Color? getButtonColor() {
-    return textEditingController.text.isNotEmpty
-        ? Colors.blueAccent
-        : Colors.grey[200];
+    bool hasText = describedController.text.isNotEmpty;
+    bool hasImages = images != null && images!.isNotEmpty;
+    return hasText || hasImages ? Colors.blueAccent : Colors.grey[200];
+  }
+
+  // vô hiệu hóa nút Đăng nếu không có thông tin gì về post
+  bool isButtonEnabled() {
+    bool hasText = describedController.text.isNotEmpty;
+    bool hasImages = images != null && images!.isNotEmpty;
+
+    return hasText || hasImages;
   }
 
   @override
@@ -33,7 +166,7 @@ class PostPageState extends State<PostPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            if (textEditingController.text.isNotEmpty) {
+            if (describedController.text.isNotEmpty || images!.isNotEmpty) {
               showConfirmationBottomSheet(context);
             } else {
               Navigator.of(context).pop();
@@ -47,7 +180,8 @@ class PostPageState extends State<PostPage> {
                 margin: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(5.0),
-                  onTap: () {},
+                  onTap:
+                      isButtonEnabled() ? () => handleAddPost(context) : null,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15,
@@ -85,119 +219,201 @@ class PostPageState extends State<PostPage> {
                   margin: const EdgeInsets.only(top: 14, left: 18),
                   child: Row(
                     children: [
-                      const CircleAvatar(
-                        backgroundImage:
-                            AssetImage('lib/src/assets/images/fakebook.png'),
-                        radius: 26,
-                      ),
+                      currentUser != null
+                          ? ClipOval(
+                              child: Image.network(
+                                '${jsonDecode(currentUser)['avatar']}',
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit
+                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                              ),
+                            )
+                          : const Image(
+                              image: AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: 50,
+                              width: 50,
+                            ),
                       const SizedBox(
                         width: 10,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Nguyen Ngoc Linh",
-                            style: TextStyle(
-                                fontSize: 17, fontWeight: FontWeight.bold),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 5.0),
-                            child: Row(
-                              children: [
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  onTap: () {},
-                                  child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        shape: BoxShape.rectangle,
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                      ),
-                                      child: const Row(
-                                        children: [
-                                          Icon(
-                                            Icons.public,
-                                            size: 12.0,
-                                            color: Colors.blueAccent,
-                                          ),
-                                          SizedBox(
-                                            width: 3.0,
-                                          ),
-                                          Text(
-                                            'Công khai',
-                                            style: TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                                ),
-                                const SizedBox(
-                                  width: 8.0,
-                                ),
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  onTap: () {},
-                                  child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        shape: BoxShape.rectangle,
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                      ),
-                                      child: const Row(
-                                        children: [
-                                          Icon(
-                                            Icons.add,
-                                            size: 16.0,
-                                            color: Colors.blueAccent,
-                                          ),
-                                          SizedBox(
-                                            width: 3.0,
-                                          ),
-                                          Text(
-                                            'Album',
-                                            style: TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 3.0,
-                                          ),
-                                          Icon(
-                                            Icons.arrow_drop_down,
-                                            size: 16.0,
-                                            color: Colors.blueAccent,
-                                          ),
-                                        ],
-                                      )),
-                                ),
-                              ],
-                            ),
-                          )
+                          currentUser != null
+                              ? Text(
+                                  "${jsonDecode(currentUser)['username']}",
+                                  style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : const Text(
+                                  "Lỗi hiển thị username",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold),
+                                )
                         ],
                       )
                     ],
                   ),
                 ),
+                Container(
+                  margin: const EdgeInsets.only(left: 70.0, top: 5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 5.0),
+                        child: Row(
+                          children: [
+                            InkWell(
+                              borderRadius: BorderRadius.circular(5.0),
+                              onTap: () {},
+                              child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.public,
+                                        size: 12.0,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      SizedBox(
+                                        width: 3.0,
+                                      ),
+                                      Text(
+                                        'Công khai',
+                                        style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                            const SizedBox(
+                              width: 8.0,
+                            ),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(5.0),
+                              onTap: getImages,
+                              child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        size: 16.0,
+                                        color: Colors.blueAccent,
+                                      ),
+                                      SizedBox(
+                                        width: 3.0,
+                                      ),
+                                      Text(
+                                        'Album',
+                                        style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 3.0,
+                                      ),
+                                      Icon(
+                                        Icons.arrow_drop_down,
+                                        size: 16.0,
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5.0,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(right: 130.0),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(5.0),
+                          onTap: () {},
+                          child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    size: 16.0,
+                                    color: Colors.blueAccent,
+                                  ),
+                                  SizedBox(
+                                    width: 3.0,
+                                  ),
+                                  Text(
+                                    'Chọn cảm xúc',
+                                    style: TextStyle(
+                                      color: Colors.blueAccent,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 3.0,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 16.0,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ],
+                              )),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                const Divider(
+                  height: 1.0,
+                  thickness: 0.1,
+                  color: Colors.grey,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: TextField(
-                    controller: textEditingController,
+                    controller: describedController,
                     onChanged: (text) {
                       // Kiểm tra xem TextField có chứa ít nhất một ký tự hay không
                       setState(() {
@@ -216,6 +432,29 @@ class PostPageState extends State<PostPage> {
                         height: 1.4),
                   ),
                 ),
+                images != null && images!.isNotEmpty
+                    ? Container(
+                        height: 600,
+                        margin: const EdgeInsets.all(25.0),
+                        child: GridView.builder(
+                          itemCount: images!.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2),
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              margin: const EdgeInsets.all(5.0),
+                              child: Image.file(
+                                File(images![index].path).absolute,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    : const SizedBox(
+                        height: 200,
+                      ),
               ],
             ),
           ),
