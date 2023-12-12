@@ -1,52 +1,41 @@
+import 'dart:convert';
 import 'dart:math';
 
-import 'package:fakebook/src/model/user.dart';
-import 'package:fakebook/src/providers/user_provider.dart';
+import 'package:fakebook/src/pages/otherPages/manage_posts_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PersonalPageScreen extends StatefulWidget {
-  static const String routeName = '/personal-page';
-  final User user;
-  const PersonalPageScreen({super.key, required this.user});
+  const PersonalPageScreen({super.key});
 
   @override
-  State<PersonalPageScreen> createState() => _PersonalPageScreenState();
+  PersonalPageScreenState createState() => PersonalPageScreenState();
 }
 
-class _PersonalPageScreenState extends State<PersonalPageScreen> {
+class PersonalPageScreenState extends State<PersonalPageScreen> {
+  static const storage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserData();
+  }
+
+  dynamic currentUser;
+
+  Future<void> getCurrentUserData() async {
+    dynamic newData = await storage.read(key: 'currentUser');
+    setState(() {
+      currentUser = newData;
+    });
+  }
+
   final TextEditingController searchController = TextEditingController();
   final Random random = Random();
-  bool isMine = false;
   int mutualFriends = 0;
 
   @override
   Widget build(BuildContext context) {
-    //User user = Provider.of<UserProvider>(context).user;
-    // if (widget.user.avatar != user.avatar) {
-    //   user = widget.user;
-
-    //   if (user.friends == null) {
-    //     user = user.copyWith(
-    //       friends: random.nextInt(5000),
-    //     );
-    //   }
-    //   if (user.likes == null) {
-    //     user = user.copyWith(
-    //       likes: random.nextInt(1000000),
-    //     );
-    //   }
-    //   if (user.type == 'page' && user.followers == null) {
-    //     user = user.copyWith(
-    //       followers: random.nextInt(1000000),
-    //     );
-    //   }
-    //   mutualFriends = random.nextInt(user.friends ?? 1000);
-    // } else {
-    //   setState(() {
-    //     isMine = true;
-    //   });
-    // }
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -138,13 +127,6 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   width: double.infinity,
                   height: 270,
                 ),
-                // Image.asset(
-                //   'lib/src/assets/images/avatar.jpg',
-                //   fit: BoxFit.cover,
-                //   height: 220,
-                //   width: double.infinity,
-                // ),
-                // :
                 Container(
                   width: double.infinity,
                   height: 220,
@@ -164,11 +146,24 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                             style: BorderStyle.solid,
                           ),
                         ),
-                        child: const CircleAvatar(
-                          backgroundImage:
-                              AssetImage('lib/src/assets/images/avatar.jpg'),
-                          radius: 75,
-                        ),
+                        child: currentUser != null
+                            ? Container(
+                                margin: const EdgeInsets.only(right: 6.0),
+                                child: CircleAvatar(
+                                  radius: 75,
+                                  backgroundImage: NetworkImage(
+                                    jsonDecode(currentUser)['avatar'],
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                margin: const EdgeInsets.only(right: 6.0),
+                                child: const CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'lib/src/assets/images/avatar.jpg'),
+                                  radius: 75,
+                                ),
+                              ),
                       ),
                       Positioned(
                         bottom: 0,
@@ -188,27 +183,11 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                     ],
                   ),
                 ),
-                //if (isMine)
                 Positioned(
                   bottom: 65,
                   right: 15,
                   child: Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(9),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[700],
-                          shape: BoxShape.circle,
-                        ),
-                        child: const ImageIcon(
-                          AssetImage('lib/src/assets/images/avatar.jpg'),
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -276,15 +255,32 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(
+                    Padding(
+                      padding: const EdgeInsets.only(
                         right: 10,
                       ),
-                      child: CircleAvatar(
-                        backgroundImage:
-                            AssetImage('lib/src/assets/images/avatar.jpg'),
-                        radius: 20,
-                      ),
+                      child: currentUser != null
+                          ? Container(
+                              margin: const EdgeInsets.only(right: 6.0),
+                              child: ClipOval(
+                                child: Image.network(
+                                  '${jsonDecode(currentUser)['avatar']}',
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit
+                                      .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                ),
+                              ),
+                            )
+                          : Container(
+                              margin: const EdgeInsets.only(right: 6.0),
+                              child: const Image(
+                                image: AssetImage(
+                                    'lib/src/assets/images/avatar.jpg'),
+                                height: 50,
+                                width: 50,
+                              ),
+                            ),
                     ),
                     const Expanded(
                       child: Text(
@@ -347,9 +343,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ImageIcon(
-                                  AssetImage(
-                                      'lib/src/assets/images/avatar.jpg'),
+                                Icon(
+                                  Icons.video_collection_outlined,
                                   color: Colors.red,
                                   size: 20,
                                 ),
@@ -421,7 +416,13 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                           horizontal: 15,
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ManagePostsPage()));
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[200],
                             shape: RoundedRectangleBorder(
