@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/otherPages/manage_posts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,12 +14,10 @@ import 'package:path/path.dart';
 
 class EditPostPage extends StatefulWidget {
   final int postId;
-  final String described;
 
   const EditPostPage({
     Key? key,
     required this.postId,
-    required this.described,
   }) : super(key: key);
 
   @override
@@ -33,11 +30,8 @@ class EditPostPageState extends State<EditPostPage> {
   @override
   void initState() {
     super.initState();
-
-    // Gán giá trị của described cho controller khi trang được khởi tạo
-    describedController.text = widget.described;
-
     getCurrentUserData();
+    getPost();
   }
 
   dynamic currentUser;
@@ -47,6 +41,36 @@ class EditPostPageState extends State<EditPostPage> {
     setState(() {
       currentUser = newData;
     });
+  }
+
+  var post = {};
+
+  Future<void> getPost() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getPost);
+      Map body = {"id": widget.postId};
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      print(responseBody['data']);
+      setState(() {
+        post = responseBody['data'];
+        describedController.text = post['described'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   TextEditingController describedController = TextEditingController();
@@ -449,9 +473,27 @@ class EditPostPageState extends State<EditPostPage> {
                           },
                         ),
                       )
-                    : const SizedBox(
-                        height: 200,
-                      ),
+                    : (post['image'] != null && post['image'].isNotEmpty
+                        ? Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+                            height:
+                                600, // Điều chỉnh độ cao của container theo ý muốn
+                            child: GridView.builder(
+                              gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2),
+                              itemCount: post['image'].length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Image.network(
+                                  '${post['image'][index]['url']}',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                          )
+                        : const SizedBox(
+                            height: 200,
+                          ))
               ],
             ),
           ),
@@ -508,7 +550,8 @@ void showConfirmationBottomSheet(BuildContext context) {
                           SizedBox(
                             width: 10,
                           ),
-                          Text("Không chỉnh sửa nữa", style: TextStyle(fontSize: 20)),
+                          Text("Không chỉnh sửa nữa",
+                              style: TextStyle(fontSize: 20)),
                         ],
                       ),
                     ),
