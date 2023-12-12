@@ -280,7 +280,6 @@ class LoginPageState extends State<LoginPage> {
           print(responseBody['data']);
           const storage = FlutterSecureStorage();
           await storage.write(key: 'token', value: token);
-          // String? tokenn = await storage.read(key: 'token');
           User user = User(
               id: responseBody['data']['id'],
               name: responseBody['data']['username'],
@@ -291,7 +290,6 @@ class LoginPageState extends State<LoginPage> {
           //Cập nhật trạng thái toàn cầu
           Provider.of<UserProvider>(context, listen: false).updateUse(user);
 
-          await storage.write(key: 'token', value: token);
           await storage.write(key: 'email', value: email);
           await storage.write(key: 'password', value: password);
 

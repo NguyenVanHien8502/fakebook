@@ -16,6 +16,10 @@ class ListAPI {
 
 //Post
   static const addPost = "https://it4788.catan.io.vn/add_post";
+  static const getListPosts = "https://it4788.catan.io.vn/get_list_posts";
+  static const getPost = "https://it4788.catan.io.vn/get_post";
+  static const deletePost = "https://it4788.catan.io.vn/delete_post";
+  static const editPost = "https://it4788.catan.io.vn/edit_post";
 
 //Search
 

@@ -267,10 +267,12 @@ class WelcomePageState extends State<WelcomePage> {
 
         // Chuyển chuỗi JSON thành một đối tượng Dart
         final responseBody = jsonDecode(response.body);
+        print(responseBody);
         if (response.statusCode == 200) {
           if (responseBody['code'] == '1000') {
             var token = responseBody['data']['token'];
             const storage = FlutterSecureStorage();
+            print(token);
             await storage.write(key: 'token', value: token);
             Navigator.pushNamed(
               context,

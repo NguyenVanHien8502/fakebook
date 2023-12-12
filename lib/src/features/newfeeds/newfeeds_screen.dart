@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:fakebook/src/features/newfeeds/post_card.dart';
 import 'package:fakebook/src/model/post.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class NewfeedsScreen extends StatefulWidget {
   static double offset = 0;
@@ -19,6 +22,23 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
   ScrollController scrollController =
       ScrollController(initialScrollOffset: NewfeedsScreen.offset);
+
+  static const storage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserData();
+  }
+
+  dynamic currentUser;
+
+  Future<void> getCurrentUserData() async {
+    dynamic newData = await storage.read(key: 'currentUser');
+    setState(() {
+      currentUser = newData;
+    });
+  }
 
   @override
   void dispose() {
@@ -247,16 +267,27 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(
-                    right: 10,
-                  ),
-                  child: CircleAvatar(
-                    backgroundImage:
-                        AssetImage("lib/src/assets/images/avatar.jpg"),
-                    radius: 20,
-                  ),
-                ),
+                currentUser != null
+                    ? Container(
+                        margin: const EdgeInsets.only(right: 6.0),
+                        child: ClipOval(
+                          child: Image.network(
+                            '${jsonDecode(currentUser)['avatar']}',
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit
+                                .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                          ),
+                        ),
+                      )
+                    : Container(
+                        margin: const EdgeInsets.only(right: 6.0),
+                        child: const Image(
+                          image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                          height: 50,
+                          width: 50,
+                        ),
+                      ),
                 Expanded(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),

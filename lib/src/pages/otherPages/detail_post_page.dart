@@ -1,13 +1,76 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class DetailPostPage extends StatelessWidget {
-  const DetailPostPage({Key? key}) : super(key: key);
+import 'package:fakebook/src/api/api.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+
+class DetailPostPage extends StatefulWidget {
+  final int postId;
+
+  const DetailPostPage({
+    Key? key,
+    required this.postId,
+  }) : super(key: key);
+
+  @override
+  DetailPostPageState createState() => DetailPostPageState();
+}
+
+class DetailPostPageState extends State<DetailPostPage> {
+  static const storage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    getPost();
+  }
+
+  var post = {};
+
+  Future<void> getPost() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getPost);
+      Map body = {
+        "id": widget.postId
+      };
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      print(responseBody['data']);
+      setState(() {
+        post = responseBody['data'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  List<List<Map<String, dynamic>>> _splitImagesIntoPairs(List<dynamic> images) {
+    List<List<Map<String, dynamic>>> imagePairs = [];
+    for (int i = 0; i < images.length; i += 2) {
+      int endIndex = i + 2;
+      if (endIndex > images.length) {
+        endIndex = images.length;
+      }
+      imagePairs.add(images.sublist(i, endIndex).cast<Map<String, dynamic>>());
+    }
+    return imagePairs;
+  }
 
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -49,10 +112,14 @@ class DetailPostPage extends StatelessWidget {
                       Container(
                         margin: const EdgeInsets.only(
                             left: 16.0, top: 16.0, bottom: 16.0),
-                        child: const Image(
-                          image: AssetImage('lib/src/assets/images/avatar.jpg'),
-                          height: 50,
-                          width: 50,
+                        child: ClipOval(
+                          child: Image.network(
+                            '${post['author']['avatar']}',
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit
+                                .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                          ),
                         ),
                       ),
                       Column(
@@ -64,16 +131,17 @@ class DetailPostPage extends StatelessWidget {
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.only(bottom: 8.0),
-                                    child: const Text(
-                                      "Lời thì thầm của đá",
-                                      style: TextStyle(
+                                    child: Text(
+                                      post['author']['name'],
+                                      style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
                                     ),
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.only(left: 5.0, bottom: 6.0),
+                                    margin: const EdgeInsets.only(
+                                        left: 5.0, bottom: 6.0),
                                     child: Image.asset(
                                       'lib/src/assets/images/tich_xanh.png',
                                       width: 15,
@@ -84,7 +152,7 @@ class DetailPostPage extends StatelessWidget {
                               )),
                           Container(
                               margin: const EdgeInsets.only(left: 16.0),
-                              child:  Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -93,7 +161,8 @@ class DetailPostPage extends StatelessWidget {
                                     style: TextStyle(color: Colors.black),
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.only(left: 3.0, top: 2.0),
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, top: 2.0),
                                     child: const Icon(
                                       Icons.public,
                                       size: 12.0,
@@ -101,8 +170,7 @@ class DetailPostPage extends StatelessWidget {
                                     ),
                                   ),
                                 ],
-                              )
-                          ),
+                              )),
                         ],
                       ),
                       const Spacer(),
@@ -132,24 +200,45 @@ class DetailPostPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: const Text(
-                      "Xin chào các bạn, bên team mình vừa biên soạn một lộ trình học lập trình cho các bạn muốn tìm hiểu về IT hoặc đang là người mới, người muốn update thêm kỹ năng . Hiện tại mình muốn tìm kiếm những bạn có tiềm năng để phát triển nên mình xin tặng cho các bạn khóa học này, với lộ trình cấp tốc các bạn sẽ được rất nhiều kiến thức và ứng dụng trong thực tế!",
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                  ),
-                ),
+
+                //status
                 Container(
-                  margin: const EdgeInsets.only(top: 12.0),
-                  child: const Image(
-                    image: AssetImage('lib/src/assets/images/avatar.jpg'),
-                    height: 300,
-                    width: 300,
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(post['described'],
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 14))
+                    ],
                   ),
                 ),
+
+                //image of post
+                const SizedBox(
+                  height: 10.0,
+                ),
+                if (post['image'] != null && post['image'].isNotEmpty)
+                  ..._splitImagesIntoPairs(post['image'])
+                      .map<Widget>((imagePair) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: imagePair.map<Widget>((image) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 5.0, vertical: 5.0),
+                          child: Image.network(
+                            '${image['url']}',
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }),
+
                 Container(
                   margin: const EdgeInsets.only(top: 14.0),
                   child: const Divider(
@@ -179,7 +268,7 @@ class DetailPostPage extends StatelessWidget {
                             const Text(
                               "Like",
                               style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                              TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -204,8 +293,8 @@ class DetailPostPage extends StatelessWidget {
                             ),
                             const Text(
                               "Comment",
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 16),
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -230,8 +319,8 @@ class DetailPostPage extends StatelessWidget {
                             ),
                             const Text(
                               "Share",
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 16),
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
