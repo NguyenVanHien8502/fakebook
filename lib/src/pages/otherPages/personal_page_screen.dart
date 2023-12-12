@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:fakebook/src/components/widget/story_card.dart';
 import 'package:fakebook/src/model/user.dart';
+import 'package:fakebook/src/providers/user_data.dart';
 import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User? user = Provider.of<UserProvider>(context).user;
     //User user = Provider.of<UserProvider>(context).user;
     // if (widget.user.avatar != user.avatar) {
     //   user = widget.user;
@@ -75,6 +78,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              //search
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -164,9 +168,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                             style: BorderStyle.solid,
                           ),
                         ),
-                        child: const CircleAvatar(
-                          backgroundImage:
-                              AssetImage('lib/src/assets/images/avatar.jpg'),
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(user!.avatar),
                           radius: 75,
                         ),
                       ),
@@ -226,6 +229,27 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                 )
               ],
             ),
+            //Name
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        user.name,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 23,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -236,6 +260,414 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
             ),
             const SizedBox(
               height: 15,
+            ),
+            //Giới thiệu cá nhân
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 15,
+                top: 10,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      'Chi tiết',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  if (User_data.userData.educations != null)
+                    for (int i = 0;
+                        i < User_data.userData.educations!.length;
+                        i++)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 10,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.school_rounded,
+                              size: 25,
+                              color: Colors.black54,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: RichText(
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          'Học ${User_data.userData.educations![i].majors != '' ? '${User_data.userData.educations![i].majors} ' : ''}tại ',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: User_data
+                                          .userData.educations![i].school,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  if (User_data.userData.address != null)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 10,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.house_rounded,
+                            size: 25,
+                            color: Colors.black54,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: RichText(
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                    text: 'Sống tại ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: User_data.userData.address,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (User_data.userData.hometown != null)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 10,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.location_on_rounded,
+                            size: 25,
+                            color: Colors.black54,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: RichText(
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                    text: 'Đến từ ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: User_data.userData.hometown,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (User_data.userData.type != 'page' &&
+                      user.followers != null)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 10,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(
+                              left: 5,
+                            ),
+                            child: ImageIcon(
+                              AssetImage('lib/src/assets/images/menu.png'),
+                              size: 20,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Có ${User_data.userData.followers} người theo dõi',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (User_data.userData.socialMedias != null)
+                    for (int i = 0;
+                        i < User_data.userData.socialMedias!.length;
+                        i++)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 10,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ImageIcon(
+                              AssetImage(
+                                  User_data.userData.socialMedias![i].icon),
+                              size: 25,
+                              color: Colors.black54,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Text(
+                                User_data.userData.socialMedias![i].name,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.more_horiz_rounded,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            isMine
+                                ? 'Xem thông tin giới thiệu của bạn'
+                                : 'Xem thông tin giới thiệu của ${User_data.userData.name}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  if (User_data.userData.hobbies != null)
+                    Wrap(
+                      spacing: 10,
+                      children: [
+                        for (int i = 0;
+                            i < User_data.userData.hobbies!.length;
+                            i++)
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              User_data.userData.hobbies![i],
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  if (User_data.userData.stories != null)
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  // SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       if (isMine)
+                  //         Column(
+                  //           mainAxisAlignment: MainAxisAlignment.center,
+                  //           crossAxisAlignment: CrossAxisAlignment.center,
+                  //           children: [
+                  //             Container(
+                  //               width: 80,
+                  //               height: 144,
+                  //               decoration: BoxDecoration(
+                  //                 shape: BoxShape.rectangle,
+                  //                 color: Colors.grey[200],
+                  //                 borderRadius: BorderRadius.circular(10),
+                  //               ),
+                  //               child: const Icon(
+                  //                 Icons.add,
+                  //                 color: Colors.black54,
+                  //                 size: 25,
+                  //               ),
+                  //             ),
+                  //             const SizedBox(
+                  //               height: 5,
+                  //             ),
+                  //             const Text(
+                  //               'Mới',
+                  //               style: TextStyle(
+                  //                 color: Colors.black,
+                  //                 fontSize: 16,
+                  //               ),
+                  //             )
+                  //           ],
+                  //         ),
+                  //       if (isMine)
+                  //         const SizedBox(
+                  //           width: 15,
+                  //         ),
+                  //       if (User_data.userData.stories != null)
+                  //         for (int i = 0;
+                  //             i < User_data.userData.stories!.length;
+                  //             i++)
+                  //           Padding(
+                  //             padding: EdgeInsets.only(
+                  //                 right: i < User_data.userData.stories!.length
+                  //                     ? 15
+                  //                     : 0),
+                  //             child: Column(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               crossAxisAlignment: CrossAxisAlignment.center,
+                  //               children: [
+                  //                 SizedBox(
+                  //                   width: 80,
+                  //                   height: 144,
+                  //                   child: FittedBox(
+                  //                     child: StoryCard(
+                  //                       story: User_data.userData.stories![i],
+                  //                       hidden: true,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //                 const SizedBox(
+                  //                   height: 5,
+                  //                 ),
+                  //                 Text(
+                  //                   User_data.userData.stories![i].name != null
+                  //                       ? User_data.userData.stories![i].name!
+                  //                       : 'Tin nổi bật',
+                  //                   style: const TextStyle(
+                  //                     color: Colors.black,
+                  //                     fontSize: 16,
+                  //                   ),
+                  //                 )
+                  //               ],
+                  //             ),
+                  //           ),
+                  //     ],
+                  //   ),
+                  // ),
+                  if (User_data.userData.stories != null)
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[50],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            shadowColor: Colors.transparent,
+                          ),
+                          child: Text(
+                            'Chỉnh sửa chi tiết công khai',
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             //header post personal
             const Padding(
@@ -267,6 +699,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
             const SizedBox(
               height: 10,
             ),
+            //Đăng bài
             InkWell(
               onTap: () {},
               child: Padding(
@@ -276,13 +709,12 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(
+                    Padding(
+                      padding: const EdgeInsets.only(
                         right: 10,
                       ),
                       child: CircleAvatar(
-                        backgroundImage:
-                            AssetImage('lib/src/assets/images/avatar.jpg'),
+                        backgroundImage: AssetImage(user.avatar),
                         radius: 20,
                       ),
                     ),

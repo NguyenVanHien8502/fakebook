@@ -31,7 +31,7 @@ class _MenuScreenState extends State<MenuScreen> {
   User secondUser = User(
       id: "36",
       name: "Nguyễn Ngọc Linh",
-      avatar: 'lib/src/assets/images/avatar.jpg');
+      avatar: 'lib/src/assets/images/avatarfb.jpg');
 
   @override
   void initState() {
@@ -161,12 +161,11 @@ class _MenuScreenState extends State<MenuScreen> {
               //Avatar link personal
               InkWell(
                 onTap: () {
-                  print("1");
-                  // Navigator.pushNamed(
-                  //   context,
-                  //   PersonalPageScreen.routeName,
-                  //   arguments: user,
-                  // );
+                  Navigator.pushNamed(
+                    context,
+                    PersonalPageScreen.routeName,
+                    arguments: user,
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

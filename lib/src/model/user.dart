@@ -46,6 +46,7 @@ class User {
   });
 
   User copyWith({
+    String? id,
     String? name,
     String? avatar,
     bool? verified,

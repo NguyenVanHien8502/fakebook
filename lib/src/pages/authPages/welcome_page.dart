@@ -4,9 +4,12 @@ import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:fakebook/src/model/user.dart';
+import 'package:provider/provider.dart';
 
 class WelcomePage extends StatefulWidget {
   static const String routeName = '/welcome';
@@ -271,6 +274,16 @@ class WelcomePageState extends State<WelcomePage> {
           if (responseBody['code'] == '1000') {
             var token = responseBody['data']['token'];
             const storage = FlutterSecureStorage();
+
+            User user = User(
+                id: responseBody['data']['id'],
+                name: responseBody['data']['username'],
+                avatar:
+                    //responseBody['data']['avatar'] ??
+                    'lib/src/assets/images/avatarfb.jpg');
+
+            Provider.of<UserProvider>(context, listen: false).updateUse(user);
+
             await storage.write(key: 'token', value: token);
             Navigator.pushNamed(
               context,

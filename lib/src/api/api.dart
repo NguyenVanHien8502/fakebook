@@ -29,6 +29,8 @@ class ListAPI {
   static const getSuggestedFriend =
       "https://it4788.catan.io.vn/get_suggested_friends";
   static const unfriend = "https://it4788.catan.io.vn/unfriend";
+  static const delRequestFriend =
+      "https://it4788.catan.io.vn/del_request_friend";
 //Block
 
 //Settings
