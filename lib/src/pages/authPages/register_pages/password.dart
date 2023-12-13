@@ -61,34 +61,34 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
                 const SizedBox(
                   height: 25.0,
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: passwordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  const BorderSide(color: Colors.blueGrey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            fillColor: Colors.white10,
-                            filled: true,
-                            hintText: "Mật khẩu của bạn",
-                            contentPadding: const EdgeInsets.only(left: 20.0),
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Mật khẩu của bạn',
+                      contentPadding: const EdgeInsets.only(left: 20.0),
+                      hintStyle: const TextStyle(color: Colors.blueGrey),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ],
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      alignLabelWithHint: true,
+                      prefixIcon: const Icon(
+                        Icons.password,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    cursorColor: Colors.black,
+                    textAlignVertical: TextAlignVertical.center,
                   ),
                 ),
                 const SizedBox(height: 25.0),

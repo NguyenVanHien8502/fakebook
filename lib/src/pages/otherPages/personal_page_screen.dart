@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fakebook/src/pages/otherPages/edit_personal_info_page.dart';
 import 'package:fakebook/src/pages/otherPages/manage_posts_page.dart';
+import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -26,6 +27,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
 
   Future<void> getCurrentUserData() async {
     dynamic newData = await storage.read(key: 'currentUser');
+    print(newData);
     setState(() {
       currentUser = newData;
     });
@@ -92,7 +94,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                         ),
                       ),
                       prefixIconConstraints:
-                      const BoxConstraints(minWidth: 45, maxHeight: 41),
+                          const BoxConstraints(minWidth: 45, maxHeight: 41),
                       border: InputBorder.none,
                       filled: true,
                       fillColor: Colors.grey[200],
@@ -121,17 +123,30 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //Avtar + anh bia
+            //Avatar + anh bia
             Stack(
               children: [
                 const SizedBox(
                   width: double.infinity,
                   height: 270,
                 ),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   height: 220,
-                  color: Colors.grey,
+                  child: currentUser != null
+                      ? Image.network(
+                          '${jsonDecode(currentUser)['cover_image']}',
+                          fit: BoxFit
+                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                        )
+                      : Container(
+                          margin: const EdgeInsets.only(right: 6.0),
+                          child: const CircleAvatar(
+                            backgroundImage:
+                                AssetImage('lib/src/assets/images/avatar.jpg'),
+                            radius: 75,
+                          ),
+                        ),
                 ),
                 Positioned(
                   left: 12,
@@ -149,22 +164,22 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                         ),
                         child: currentUser != null
                             ? Container(
-                          margin: const EdgeInsets.only(right: 6.0),
-                          child: CircleAvatar(
-                            radius: 75,
-                            backgroundImage: NetworkImage(
-                              jsonDecode(currentUser)['avatar'],
-                            ),
-                          ),
-                        )
+                                margin: EdgeInsets.zero,
+                                child: CircleAvatar(
+                                  radius: 75,
+                                  backgroundImage: NetworkImage(
+                                    jsonDecode(currentUser)['avatar'],
+                                  ),
+                                ),
+                              )
                             : Container(
-                          margin: const EdgeInsets.only(right: 6.0),
-                          child: const CircleAvatar(
-                            backgroundImage: AssetImage(
-                                'lib/src/assets/images/avatar.jpg'),
-                            radius: 75,
-                          ),
-                        ),
+                                margin: const EdgeInsets.only(right: 6.0),
+                                child: const CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'lib/src/assets/images/avatar.jpg'),
+                                  radius: 75,
+                                ),
+                              ),
                       ),
                       Positioned(
                         bottom: 0,
@@ -206,6 +221,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                 )
               ],
             ),
+
             const SizedBox(
               height: 10,
             ),
@@ -217,6 +233,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
             const SizedBox(
               height: 15,
             ),
+
             //header post personal
             const Padding(
               padding: EdgeInsets.symmetric(
@@ -262,33 +279,52 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                       ),
                       child: currentUser != null
                           ? Container(
-                        margin: const EdgeInsets.only(right: 6.0),
-                        child: ClipOval(
-                          child: Image.network(
-                            '${jsonDecode(currentUser)['avatar']}',
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit
-                                .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                          ),
-                        ),
-                      )
+                              margin: const EdgeInsets.only(right: 6.0),
+                              child: ClipOval(
+                                child: Image.network(
+                                  '${jsonDecode(currentUser)['avatar']}',
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit
+                                      .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                ),
+                              ),
+                            )
                           : Container(
-                        margin: const EdgeInsets.only(right: 6.0),
-                        child: const Image(
-                          image: AssetImage(
-                              'lib/src/assets/images/avatar.jpg'),
-                          height: 50,
-                          width: 50,
-                        ),
-                      ),
+                              margin: const EdgeInsets.only(right: 6.0),
+                              child: const Image(
+                                image: AssetImage(
+                                    'lib/src/assets/images/avatar.jpg'),
+                                height: 50,
+                                width: 50,
+                              ),
+                            ),
                     ),
-                    const Expanded(
-                      child: Text(
-                        1 > 0 ? 'Bạn đang nghĩ gì?' : 'Viết gì đó cho',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
+                    Expanded(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const PostPage()));
+                        },
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.black12,
+                              style: BorderStyle.solid,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            child: Text('Bạn đang nghĩ gì?'),
+                          ),
                         ),
                       ),
                     ),
@@ -422,7 +458,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const ManagePostsPage()));
+                                        const ManagePostsPage()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[200],
@@ -471,7 +507,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const EditPersonalInfoPage()));
+                                        const EditPersonalInfoPage()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[200],
@@ -484,8 +520,7 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Icon(Icons.edit,
-                                  color: Colors.black, size: 18),
+                              Icon(Icons.edit, color: Colors.black, size: 18),
                               SizedBox(
                                 width: 5,
                               ),
