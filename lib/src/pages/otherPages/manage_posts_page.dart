@@ -1,23 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:async/async.dart';
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/features/comment/screens/comment_screen.dart';
-import 'package:fakebook/src/features/newfeeds/post_card.dart';
-import 'package:fakebook/src/model/post.dart';
-import 'package:fakebook/src/model/user.dart';
-import 'package:fakebook/src/pages/authPages/register_pages/save_info_login.dart';
+
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/edit_post_page.dart';
-import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 
 class ManagePostsPage extends StatefulWidget {
   const ManagePostsPage({Key? key}) : super(key: key);
@@ -262,8 +252,6 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                                   postId: int
                                                                       .parse(post[
                                                                           'id']),
-                                                                  described: post[
-                                                                      'described'],
                                                                 ),
                                                               ),
                                                             );
