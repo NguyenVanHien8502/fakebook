@@ -11,6 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:fakebook/src/model/user.dart';
 import 'package:provider/provider.dart';
 
+import 'package:fakebook/src/model/user.dart';
+
 class WelcomePage extends StatefulWidget {
   static const String routeName = '/welcome';
 
@@ -68,21 +70,22 @@ class WelcomePageState extends State<WelcomePage> {
                 const SizedBox(
                   height: 20,
                 ),
-                currentUser != null
-                    ? ClipOval(
-                        child: Image.network(
-                          '${jsonDecode(currentUser)['avatar']}',
-                          height: 200,
-                          width: 200,
-                          fit: BoxFit
-                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                        ),
-                      )
-                    : const Image(
-                        image: AssetImage('lib/src/assets/images/avatar.jpg'),
-                        height: 200,
-                        width: 200,
-                      ),
+                // currentUser != null
+                //     ? ClipOval(
+                //         child: Image.network(
+                //           '${jsonDecode(currentUser)['avatar']}',
+                //           height: 200,
+                //           width: 200,
+                //           fit: BoxFit
+                //               .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                //         ),
+                //       )
+                //     :
+                const Image(
+                  image: AssetImage('lib/src/assets/images/avatarfb.jpg'),
+                  height: 200,
+                  width: 200,
+                ),
                 const SizedBox(
                   height: 30,
                 ),
@@ -270,6 +273,7 @@ class WelcomePageState extends State<WelcomePage> {
 
         // Chuyển chuỗi JSON thành một đối tượng Dart
         final responseBody = jsonDecode(response.body);
+        print(responseBody);
         if (response.statusCode == 200) {
           if (responseBody['code'] == '1000') {
             var token = responseBody['data']['token'];
@@ -283,7 +287,7 @@ class WelcomePageState extends State<WelcomePage> {
                     'lib/src/assets/images/avatarfb.jpg');
 
             Provider.of<UserProvider>(context, listen: false).updateUse(user);
-
+            print(token);
             await storage.write(key: 'token', value: token);
             Navigator.pushNamed(
               context,

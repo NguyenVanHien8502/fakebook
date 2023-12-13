@@ -47,10 +47,10 @@ class _PostCardState extends State<PostCard> {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const DetailPostPage()));
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const DetailPostPage()));
                 },
                 child: Row(
                   children: [
