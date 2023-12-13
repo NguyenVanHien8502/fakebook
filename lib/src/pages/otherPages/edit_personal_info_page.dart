@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -161,6 +162,11 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const PersonalPageScreen()));
                   },
                   child: const Text(
                     'OK',
@@ -378,6 +384,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        cursorColor: Colors.black,
                         controller: usernameController,
                         obscureText: false,
                         decoration: InputDecoration(
@@ -431,6 +438,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        cursorColor: Colors.black,
                         controller: descriptionController,
                         obscureText: false,
                         decoration: InputDecoration(
@@ -484,6 +492,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        cursorColor: Colors.black,
                         controller: addressController,
                         obscureText: false,
                         decoration: InputDecoration(
@@ -537,6 +546,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        cursorColor: Colors.black,
                         controller: cityController,
                         obscureText: false,
                         decoration: InputDecoration(
@@ -590,6 +600,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        cursorColor: Colors.black,
                         controller: countryController,
                         obscureText: false,
                         decoration: InputDecoration(
@@ -643,6 +654,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        cursorColor: Colors.black,
                         controller: linkController,
                         obscureText: false,
                         decoration: InputDecoration(

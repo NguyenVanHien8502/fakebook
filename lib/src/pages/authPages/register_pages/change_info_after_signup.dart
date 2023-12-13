@@ -187,34 +187,33 @@ class ChangeInfoAfterSignupPageState extends State<ChangeInfoAfterSignupPage> {
                 const SizedBox(
                   height: 8.0,
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: usernameController,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  const BorderSide(color: Colors.blueGrey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            fillColor: Colors.white10,
-                            filled: true,
-                            hintText: "Username của bạn",
-                            contentPadding: const EdgeInsets.only(left: 20.0),
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller:usernameController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Username của bạn',
+                      contentPadding: const EdgeInsets.only(left: 20.0),
+                      hintStyle: const TextStyle(color: Colors.blueGrey),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ],
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      alignLabelWithHint: true,
+                      prefixIcon: const Icon(
+                        Icons.person,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    cursorColor: Colors.black,
+                    textAlignVertical: TextAlignVertical.center,
                   ),
                 ),
                 const SizedBox(
@@ -241,6 +240,7 @@ class ChangeInfoAfterSignupPageState extends State<ChangeInfoAfterSignupPage> {
                             child: ElevatedButton(
                               onPressed: getImage,
                               style: ElevatedButton.styleFrom(
+                                elevation: 0.6,
                                 maximumSize: const Size(370, 50),
                                 padding: EdgeInsets.zero,
                                 // Loại bỏ padding mặc định của nút
@@ -268,48 +268,45 @@ class ChangeInfoAfterSignupPageState extends State<ChangeInfoAfterSignupPage> {
                             ),
                           )
                         : Container(
-                            margin: const EdgeInsets.all(25.0),
+                            margin: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Center(
                                 child: Column(
                               children: [
                                 Image.file(
                                   File(image!.path).absolute,
-                                  height: 100,
-                                  width: 100,
+                                  height: 200,
+                                  width: 200,
                                   fit: BoxFit.cover,
                                 ),
                                 const SizedBox(
                                   height: 15.0,
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 16.0),
-                                  child: ElevatedButton(
-                                    onPressed: getImage,
-                                    style: ElevatedButton.styleFrom(
-                                      maximumSize: const Size(370, 50),
-                                      padding: EdgeInsets.zero,
-                                      // Loại bỏ padding mặc định của nút
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            50), // Đặt độ cong của góc
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      // Đặt màu nền của nút
-                                      side: const BorderSide(
-                                        color: Color.fromARGB(255, 0, 68, 255),
-                                        // Đặt màu đường viền
-                                        width: 0.4, // Đặt độ dày của đường viền
-                                      ),
+                                ElevatedButton(
+                                  onPressed: getImage,
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0.6,
+                                    maximumSize: const Size(370, 50),
+                                    padding: EdgeInsets.zero,
+                                    // Loại bỏ padding mặc định của nút
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          50), // Đặt độ cong của góc
                                     ),
-                                    child: const Center(
-                                      child: Text(
-                                        "Chọn lại",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                    backgroundColor: Colors.white,
+                                    // Đặt màu nền của nút
+                                    side: const BorderSide(
+                                      color: Color.fromARGB(255, 0, 68, 255),
+                                      // Đặt màu đường viền
+                                      width: 0.4, // Đặt độ dày của đường viền
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      "Chọn lại",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 ),

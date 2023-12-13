@@ -1,10 +1,8 @@
 import 'dart:math';
 
 import 'package:fakebook/src/model/user.dart';
-import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:provider/provider.dart';
 
 class OtherPersonalPageScreen extends StatefulWidget {
   static const String routeName = '/other-personal-page';
@@ -66,7 +64,7 @@ class _OtherPersonalPageScreenState extends State<OtherPersonalPageScreen> {
                       isDense: true,
                       hintText: 'Tìm kiếm',
                       hintStyle: const TextStyle(
-                        fontSize: 18,
+                        color: Colors.blueGrey,
                       ),
                       prefixIcon: const Padding(
                         padding: EdgeInsets.symmetric(
@@ -477,7 +475,7 @@ class _OtherPersonalPageScreenState extends State<OtherPersonalPageScreen> {
                         height: 15.0,
                       ),
                       InkWell(
-                        onTap: (){},
+                        onTap: () {},
                         child: const Row(
                           children: [
                             Icon(
@@ -488,7 +486,11 @@ class _OtherPersonalPageScreenState extends State<OtherPersonalPageScreen> {
                             SizedBox(
                               width: 5.0,
                             ),
-                            Text("Xem thông tin giới thiệu của Han", style: TextStyle(color:Colors.black, fontSize: 17),),
+                            Text(
+                              "Xem thông tin giới thiệu của Han",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 17),
+                            ),
                           ],
                         ),
                       )

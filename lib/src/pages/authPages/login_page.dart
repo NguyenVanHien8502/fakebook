@@ -77,14 +77,44 @@ class LoginPageState extends State<LoginPage> {
                   height: 200,
                   child: Column(
                     children: [
-                      MyTextField(
-                        controller: emailController,
-                        hintText: 'Email',
-                        obscureText: false,
-                        hintPadding: const EdgeInsets.only(left: 20.0),
-                        prefixIcon: const Icon(
-                          Icons.email,
-                          color: Colors.black54,
+                      // MyTextField(
+                      //   controller: emailController,
+                      //   hintText: 'Email',
+                      //   obscureText: false,
+                      //   hintPadding: const EdgeInsets.only(left: 20.0),
+                      //   prefixIcon: const Icon(
+                      //     Icons.email,
+                      //     color: Colors.black54,
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: 'Email',
+                            contentPadding: const EdgeInsets.only(left: 20.0),
+                            hintStyle: const TextStyle(color: Colors.blueGrey),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            alignLabelWithHint: true,
+                            // contentPadding: EdgeInsets.zero,
+                            prefixIcon: const Icon(
+                              Icons.email,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          cursorColor: Colors.black,
+                          textAlignVertical: TextAlignVertical.center,
                         ),
                       ),
                       if (emailError)
@@ -98,14 +128,44 @@ class LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 30,
                       ),
-                      MyTextField(
-                        controller: passwordController,
-                        hintText: 'Password',
-                        obscureText: true,
-                        hintPadding: const EdgeInsets.only(left: 20.0),
-                        prefixIcon: const Icon(
-                          Icons.password,
-                          color: Colors.black54,
+                      // MyTextField(
+                      //   controller: passwordController,
+                      //   hintText: 'Password',
+                      //   obscureText: true,
+                      //   hintPadding: const EdgeInsets.only(left: 20.0),
+                      //   prefixIcon: const Icon(
+                      //     Icons.password,
+                      //     color: Colors.black54,
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: TextField(
+                          obscureText: true,
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: 'Password',
+                            contentPadding: const EdgeInsets.only(left: 20.0),
+                            hintStyle: const TextStyle(color: Colors.blueGrey),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            alignLabelWithHint: true,
+                            prefixIcon: const Icon(
+                              Icons.password,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          cursorColor: Colors.black, //chỉnh màu của cái vạch nháy
+                          textAlignVertical: TextAlignVertical.center,
                         ),
                       ),
                       if (passwordError)
@@ -294,7 +354,7 @@ class LoginPageState extends State<LoginPage> {
           await storage.write(key: 'password', value: password);
 
           var userId = responseBody['data']['id'];
-          try{
+          try {
             var url = Uri.parse(ListAPI.getUserInfo);
             Map body = {
               "user_id": userId,
@@ -318,7 +378,7 @@ class LoginPageState extends State<LoginPage> {
                 await storage.write(key: 'currentUser', value: currentUserJson);
               }
             }
-          }catch(e){
+          } catch (e) {
             print("Error: $e");
           }
           emailController.clear();

@@ -421,10 +421,13 @@ class PostPageState extends State<PostPage> {
                       });
                     },
                     decoration: const InputDecoration(
+                      isDense: true,
                       hintText: "Bạn đang nghĩ gì?",
+                      hintStyle: TextStyle(color: Colors.blueGrey),
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                     ),
+                    cursorColor: Colors.black,
                     maxLines: null,
                     style: const TextStyle(
                         decoration: TextDecoration.none,

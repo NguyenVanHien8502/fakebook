@@ -37,14 +37,29 @@ class SearchPageState extends State<SearchPage> {
             borderRadius: BorderRadius.circular(20.0),
             color: Colors.grey.withOpacity(0.1), // Đổi màu background tại đây
           ),
-          child: const TextField(
+          child: TextField(
             autofocus: true,
             decoration: InputDecoration(
-              border: InputBorder.none, // Xóa border
-              hintText: "Search...",
-              contentPadding: EdgeInsets.only(left: 16.0, bottom: 9.0),
-              hintStyle: TextStyle(color: Colors.blueGrey),
+              isDense: true,
+              hintText: 'Search...',
+              contentPadding: const EdgeInsets.only(left: 16.0, bottom: 10.0, top: 25.0),
+              hintStyle: const TextStyle(color: Colors.blueGrey),
+              border: InputBorder.none,
+              filled: true,
+              fillColor: Colors.grey[200],
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              alignLabelWithHint: true,
+              // contentPadding: EdgeInsets.zero,
             ),
+            cursorColor: Colors.black,
+            textAlignVertical: TextAlignVertical.center,
           ),
         ),
       ),
