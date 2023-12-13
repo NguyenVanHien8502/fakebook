@@ -475,13 +475,14 @@ class EditPostPageState extends State<EditPostPage> {
                       )
                     : (post['image'] != null && post['image'].isNotEmpty
                         ? Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 15.0),
                             height:
                                 600, // Điều chỉnh độ cao của container theo ý muốn
                             child: GridView.builder(
                               gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2),
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2),
                               itemCount: post['image'].length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Image.network(

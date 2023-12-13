@@ -4,14 +4,9 @@ import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
-import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:fakebook/src/model/user.dart';
-import 'package:provider/provider.dart';
-
-import 'package:fakebook/src/model/user.dart';
 
 class WelcomePage extends StatefulWidget {
   static const String routeName = '/welcome';
@@ -70,22 +65,21 @@ class WelcomePageState extends State<WelcomePage> {
                 const SizedBox(
                   height: 20,
                 ),
-                // currentUser != null
-                //     ? ClipOval(
-                //         child: Image.network(
-                //           '${jsonDecode(currentUser)['avatar']}',
-                //           height: 200,
-                //           width: 200,
-                //           fit: BoxFit
-                //               .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                //         ),
-                //       )
-                //     :
-                const Image(
-                  image: AssetImage('lib/src/assets/images/avatarfb.jpg'),
-                  height: 200,
-                  width: 200,
-                ),
+                currentUser != null
+                    ? ClipOval(
+                        child: Image.network(
+                          '${jsonDecode(currentUser)['avatar']}',
+                          height: 200,
+                          width: 200,
+                          fit: BoxFit
+                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                        ),
+                      )
+                    : const Image(
+                        image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                        height: 200,
+                        width: 200,
+                      ),
                 const SizedBox(
                   height: 30,
                 ),
@@ -278,15 +272,6 @@ class WelcomePageState extends State<WelcomePage> {
           if (responseBody['code'] == '1000') {
             var token = responseBody['data']['token'];
             const storage = FlutterSecureStorage();
-
-            User user = User(
-                id: responseBody['data']['id'],
-                name: responseBody['data']['username'],
-                avatar:
-                    //responseBody['data']['avatar'] ??
-                    'lib/src/assets/images/avatarfb.jpg');
-
-            Provider.of<UserProvider>(context, listen: false).updateUse(user);
             print(token);
             await storage.write(key: 'token', value: token);
             Navigator.pushNamed(

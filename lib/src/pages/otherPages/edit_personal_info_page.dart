@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/pages/otherPages/manage_posts_page.dart';
-import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,6 +29,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
   }
 
   dynamic currentUser;
+
   Future<void> getCurrentUserData() async {
     dynamic newData = await storage.read(key: 'currentUser');
     print(newData);
@@ -105,7 +103,8 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
       request.fields['country'] = country;
       request.fields['link'] = link;
       if (avatar != null) {
-        var stream = http.ByteStream(DelegatingStream.typed(avatar!.openRead()));
+        var stream =
+            http.ByteStream(DelegatingStream.typed(avatar!.openRead()));
         var length = await avatar!.length();
         var multipart = http.MultipartFile('avatar', stream, length,
             filename: basename(avatar!.path),
@@ -113,7 +112,8 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
         request.files.add(multipart);
       }
       if (coverImage != null) {
-        var stream = http.ByteStream(DelegatingStream.typed(coverImage!.openRead()));
+        var stream =
+            http.ByteStream(DelegatingStream.typed(coverImage!.openRead()));
         var length = await coverImage!.length();
         var multipart = http.MultipartFile('cover_image', stream, length,
             filename: basename(coverImage!.path),
@@ -154,8 +154,8 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Thông báo'),
-              content:
-              const Text('Chúc mừng! Đã cập nhật thông tin  cá nhân thành công.'),
+              content: const Text(
+                  'Chúc mừng! Đã cập nhật thông tin cá nhân thành công.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -682,7 +682,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(5.0),
-                            onTap: (){
+                            onTap: () {
                               handleEditPersonalInfo(context);
                             },
                             child: Container(
@@ -715,4 +715,3 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
     );
   }
 }
-

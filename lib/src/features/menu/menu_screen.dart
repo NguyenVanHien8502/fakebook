@@ -1,11 +1,10 @@
+import 'dart:convert';
+
 import 'package:fakebook/src/features/menu/menu_choice.dart';
 import 'package:fakebook/src/features/menu/shortcut.dart';
-import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
-import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -22,21 +21,25 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   static const storage = FlutterSecureStorage();
-  ScrollController scrollController =
-      ScrollController(initialScrollOffset: MenuScreen.offset);
-  ScrollController headerScrollController = ScrollController();
-
-  // User user = User(
-  //     name: "Nguyễn Ngọc Linh", avatar: 'lib/src/assets/images/avatar.jpg');
-  User secondUser = User(
-      id: "36",
-      name: "Nguyễn Ngọc Linh",
-      avatar: 'lib/src/assets/images/avatarfb.jpg');
 
   @override
   void initState() {
     super.initState();
+    getCurrentUserData();
   }
+
+  dynamic currentUser;
+
+  Future<void> getCurrentUserData() async {
+    dynamic newData = await storage.read(key: 'currentUser');
+    setState(() {
+      currentUser = newData;
+    });
+  }
+
+  ScrollController scrollController =
+  ScrollController(initialScrollOffset: MenuScreen.offset);
+  ScrollController headerScrollController = ScrollController();
 
   @override
   void dispose() {
@@ -47,8 +50,6 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    User? user = Provider.of<UserProvider>(context).user;
-
     scrollController.addListener(() {
       headerScrollController.jumpTo(headerScrollController.offset +
           scrollController.offset -
@@ -161,11 +162,10 @@ class _MenuScreenState extends State<MenuScreen> {
               //Avatar link personal
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    PersonalPageScreen.routeName,
-                    arguments: user,
-                  );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PersonalPageScreen()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -178,17 +178,26 @@ class _MenuScreenState extends State<MenuScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.black12,
-                                width: 1,
+                          currentUser != null
+                              ? Container(
+                            margin: const EdgeInsets.only(right: 6.0),
+                            child: ClipOval(
+                              child: Image.network(
+                                '${jsonDecode(currentUser)['avatar']}',
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit
+                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
                               ),
                             ),
-                            child: CircleAvatar(
-                              backgroundImage: AssetImage(user!.avatar),
-                              radius: 20,
+                          )
+                              : Container(
+                            margin: const EdgeInsets.only(right: 6.0),
+                            child: const Image(
+                              image: AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: 50,
+                              width: 50,
                             ),
                           ),
                           Padding(
@@ -196,9 +205,17 @@ class _MenuScreenState extends State<MenuScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  user.name,
+                                currentUser != null
+                                    ? Text(
+                                  '${jsonDecode(currentUser)['username']}',
                                   style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                )
+                                    : const Text(
+                                  'Lỗi hiển thị',
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
@@ -218,19 +235,6 @@ class _MenuScreenState extends State<MenuScreen> {
                           ),
                         ],
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 2,
-                            color: Colors.white,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          backgroundImage: AssetImage(secondUser.avatar),
-                          radius: 18,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -243,19 +247,8 @@ class _MenuScreenState extends State<MenuScreen> {
                 endIndent: 10,
                 height: 0,
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 15,
-                ),
-                child: Text(
-                  'Lối tắt của bạn',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-              ),
-              //Lối tắt
+              const SizedBox(height: 10),
 
-              //
               const Padding(
                 padding: EdgeInsets.only(
                   left: 10,
@@ -536,7 +529,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         onPressed: () {
                           setState(() {
                             MenuScreen.viewMoreShortcuts =
-                                !MenuScreen.viewMoreShortcuts;
+                            !MenuScreen.viewMoreShortcuts;
                           });
                         },
                         child: Text(
