@@ -33,9 +33,7 @@ class DetailPostPageState extends State<DetailPostPage> {
     dynamic responseBody;
     try {
       var url = Uri.parse(ListAPI.getPost);
-      Map body = {
-        "id": widget.postId
-      };
+      Map body = {"id": widget.postId};
 
       http.Response response = await http.post(
         url,
@@ -247,6 +245,8 @@ class DetailPostPageState extends State<DetailPostPage> {
                     thickness: 1,
                   ),
                 ),
+
+                //options like comment share
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -268,7 +268,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                             const Text(
                               "Like",
                               style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -294,7 +294,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                             const Text(
                               "Comment",
                               style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -320,7 +320,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                             const Text(
                               "Share",
                               style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -336,6 +336,8 @@ class DetailPostPageState extends State<DetailPostPage> {
                     thickness: 1,
                   ),
                 ),
+
+                //số lượng bày tỏ cảm xúc
                 Row(
                   children: [
                     Container(
@@ -372,6 +374,213 @@ class DetailPostPageState extends State<DetailPostPage> {
                         )),
                   ],
                 ),
+
+                const SizedBox(
+                  height: 20.0,
+                ),
+                //comment
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Image(
+                            image:
+                                AssetImage('lib/src/assets/images/avatar.jpg'),
+                            height: 40,
+                            width: 40,
+                          ),
+                          const SizedBox(
+                            width: 15.0,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE8EBF5),
+                                  border: Border.all(
+                                    color: Colors.white, // Màu của border
+                                    width: 0, // Độ rộng của border
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                      12.0), // Độ cong của góc
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14.0, vertical: 3.0),
+                                child: const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "username",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                      "this is a comment",
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 12.0,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: const Row(
+                                  children: [
+                                    Text(
+                                      "2 gio",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      width: 12.0,
+                                    ),
+                                    Text(
+                                      "Thich",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      width: 12.0,
+                                    ),
+                                    Text(
+                                      "Phan hoi",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(left: 30.0, right: 16.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Image(
+                              image: AssetImage(
+                                  'lib/src/assets/images/avatar.jpg'),
+                              height: 40,
+                              width: 40,
+                            ),
+                            const SizedBox(
+                              width: 15.0,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE8EBF5),
+                                      border: Border.all(
+                                        color: Colors.white, // Màu của border
+                                        width: 0, // Độ rộng của border
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                          12.0), // Độ cong của góc
+                                    ),
+                                    padding: const EdgeInsets.symmetric(vertical: 3.0,
+                                        horizontal: 14.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "username",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(
+                                          height: 5.0,
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              right: 16.0),
+                                          child: const Text(
+                                            "this is a comment, this is a comment, this is a comment",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 12.0,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    child: const Row(
+                                      children: [
+                                        Text(
+                                          "2 gio",
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(
+                                          width: 12.0,
+                                        ),
+                                        Text(
+                                          "Thich",
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(
+                                          width: 12.0,
+                                        ),
+                                        Text(
+                                          "Phan hoi",
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
           ),

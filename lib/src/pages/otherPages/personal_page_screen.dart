@@ -133,18 +133,22 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: 220,
-                  child: currentUser != null
+                  child: (jsonDecode(currentUser)['cover_image'] is String &&
+                          jsonDecode(currentUser)['cover_image'] != "")
                       ? Image.network(
                           '${jsonDecode(currentUser)['cover_image']}',
+                          height: 100,
+                          width: 100,
                           fit: BoxFit
                               .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
                         )
                       : Container(
                           margin: const EdgeInsets.only(right: 6.0),
-                          child: const CircleAvatar(
-                            backgroundImage:
+                          child: const Image(
+                            image:
                                 AssetImage('lib/src/assets/images/avatar.jpg'),
-                            radius: 75,
+                            height: 50,
+                            width: 50,
                           ),
                         ),
                 ),
