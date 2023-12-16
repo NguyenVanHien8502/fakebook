@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DetailPostPage extends StatefulWidget {
   final int postId;
@@ -24,8 +26,19 @@ class DetailPostPageState extends State<DetailPostPage> {
   void initState() {
     super.initState();
     getPost();
+    getListFeels();
+    getMarkComment();
   }
 
+  final FocusNode _commentFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _commentFocusNode.dispose();
+    super.dispose();
+  }
+
+  //get post
   var post = {};
 
   Future<void> getPost() async {
@@ -33,9 +46,7 @@ class DetailPostPageState extends State<DetailPostPage> {
     dynamic responseBody;
     try {
       var url = Uri.parse(ListAPI.getPost);
-      Map body = {
-        "id": widget.postId
-      };
+      Map body = {"id": widget.postId};
 
       http.Response response = await http.post(
         url,
@@ -48,7 +59,7 @@ class DetailPostPageState extends State<DetailPostPage> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      print(responseBody['data']);
+      // print(responseBody['data']);
       setState(() {
         post = responseBody['data'];
       });
@@ -57,6 +68,25 @@ class DetailPostPageState extends State<DetailPostPage> {
     }
   }
 
+  // Xử lý ngày giờ đăng post, comment
+  String formatTimeDifference(String createdAt) {
+    DateTime createdDateTime = DateTime.parse(createdAt);
+    Duration difference = DateTime.now().difference(createdDateTime);
+
+    if (difference.inDays > 7) {
+      return DateFormat('dd/MM/yyyy').format(createdDateTime);
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  //Xử lý hiển thị ảnh của post
   List<List<Map<String, dynamic>>> _splitImagesIntoPairs(List<dynamic> images) {
     List<List<Map<String, dynamic>>> imagePairs = [];
     for (int i = 0; i < images.length; i += 2) {
@@ -67,6 +97,221 @@ class DetailPostPageState extends State<DetailPostPage> {
       imagePairs.add(images.sublist(i, endIndex).cast<Map<String, dynamic>>());
     }
     return imagePairs;
+  }
+
+  //get list feel
+  var listFeels = [];
+  dynamic userId;
+
+  Future<void> getListFeels() async {
+    String? token = await storage.read(key: 'token');
+    dynamic currentUser = await storage.read(key: 'currentUser');
+    userId = jsonDecode(currentUser)['id'];
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getListFeels);
+      Map body = {"id": widget.postId, "index": "0", "count": "10"};
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      // print(responseBody['data']);
+      setState(() {
+        listFeels = responseBody['data'];
+      });
+      dynamic isFelt = listFeels.firstWhere((element) {
+        print(element['feel']['user']['id'] == userId);
+        return element['feel']['user']['id'] == userId;
+      }, orElse: () => null);
+      if (isFelt == null) {
+        setState(() {
+          isFeltKudo = '-1';
+        });
+      } else {
+        if (isFelt['feel']['type'] == '0') {
+          setState(() {
+            isFeltKudo = '0';
+          });
+        } else if (isFelt['feel']['type'] == '1') {
+          setState(() {
+            isFeltKudo = '1';
+          });
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  dynamic
+      isFeltKudo; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
+
+// Hàm hiển thị menu tùy chọn
+  void showReactionMenu(BuildContext context) {
+    // Get the position of the button
+    // RenderBox button = context.findRenderObject() as RenderBox;
+    // Offset buttonPosition = button.localToGlobal(Offset.zero);
+
+    showMenu(
+      context: context,
+      position: const RelativeRect.fromLTRB(-80, 315, 0, 0),
+      // position: RelativeRect.fromLTRB(
+      //   buttonPosition.dx,
+      //   buttonPosition.dy + button.size.height+300,
+      //   buttonPosition.dx + button.size.width,
+      //   buttonPosition.dy + button.size.height, // Height of the menu
+      // ),
+      elevation: 0,
+      // Đặt độ nâng của PopupMenu để loại bỏ border
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0), // Đặt độ cong của border
+      ),
+      color: Colors.transparent,
+      // color: Colors.blue,
+      items: [
+        PopupMenuItem<String>(
+          padding: const EdgeInsets.all(0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '1',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/like.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '0',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/angry.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) async {
+      if (value != null) {
+        setState(() {
+          isFeltKudo = value == '1' ? '1' : '0';
+        });
+        // Thực hiện các hành động tương ứng
+        String? token = await storage.read(key: 'token');
+        try {
+          var url = Uri.parse(ListAPI.feel);
+          Map body = {"id": widget.postId, "type": value};
+          http.Response response = await http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token'
+            },
+            body: jsonEncode(body),
+          );
+
+          // Chuyển chuỗi JSON thành một đối tượng Dart
+          var responseBody = jsonDecode(response.body);
+          print(responseBody);
+        } catch (e) {
+          print('Error: $e');
+        }
+      }
+    });
+  }
+
+  //xử lý phần get comment
+  var markComment = [];
+
+  Future<void> getMarkComment() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getMarkComment);
+      Map body = {"id": widget.postId, "index": "0", "count": "10"};
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      // print(responseBody['data']);
+      setState(() {
+        markComment = responseBody['data'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  //xử lý set comment
+  bool isTextFieldFocusDirectly = false;
+  int markId = -1;
+  final TextEditingController contentController = TextEditingController();
+
+  Future<void> handleSetMarkComment() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.setMarkComment);
+      Map body = {};
+      if (isTextFieldFocusDirectly) {
+        body = {
+          "id": widget.postId,
+          "content": contentController.text,
+          "index": "0",
+          "count": "10",
+          "type": "1"
+        };
+      } else {
+        body = {
+          "id": widget.postId,
+          "content": contentController.text,
+          "index": "0",
+          "count": "10",
+          "mark_id": '$markId'
+        };
+      }
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      contentController.clear();
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      print(responseBody['data']);
+      setState(() {
+        markComment = responseBody['data'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
@@ -94,11 +339,11 @@ class DetailPostPageState extends State<DetailPostPage> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
+          child: Stack(
+        children: [
+          SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Divider(
                   height: 1,
@@ -106,15 +351,14 @@ class DetailPostPageState extends State<DetailPostPage> {
                   color: Colors.grey,
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(
-                            left: 16.0, top: 16.0, bottom: 16.0),
+                        margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
                         child: ClipOval(
                           child: Image.network(
-                            '${post['author']['avatar']}',
+                            '${post['author']?['avatar'] ?? 'https://it4788.catan.io.vn/files/avatar-1702481624085-946922318.jpg'}',
                             height: 50,
                             width: 50,
                             fit: BoxFit
@@ -132,7 +376,8 @@ class DetailPostPageState extends State<DetailPostPage> {
                                   Container(
                                     margin: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
-                                      post['author']['name'],
+                                      post['author']?['name'] ??
+                                          'Lỗi hiển thị username',
                                       style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
@@ -156,9 +401,10 @@ class DetailPostPageState extends State<DetailPostPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    "1 minute ago",
-                                    style: TextStyle(color: Colors.black),
+                                  Text(
+                                    formatTimeDifference(post['created'] ??
+                                        '2023-12-15T04:35:45.921Z'),
+                                    style: const TextStyle(color: Colors.black),
                                   ),
                                   Container(
                                     margin: const EdgeInsets.only(
@@ -175,27 +421,24 @@ class DetailPostPageState extends State<DetailPostPage> {
                       ),
                       const Spacer(),
                       // dùng cái này để icon xuống phía bên phải cùng của row
-                      Container(
-                        margin: const EdgeInsets.only(right: 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                print("Options");
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.only(right: 8.0),
-                                child: const Icon(
-                                  Icons.more_horiz,
-                                  size: 22.0,
-                                  color: Colors.black54,
-                                ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              print("Options");
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 8.0),
+                              child: const Icon(
+                                Icons.more_horiz,
+                                size: 22.0,
+                                color: Colors.black54,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     ],
                   ),
@@ -205,12 +448,10 @@ class DetailPostPageState extends State<DetailPostPage> {
                 Container(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(post['described'],
+                      Text(post['described'] ?? 'Lỗi hiển thị status',
                           style: const TextStyle(
-                              color: Colors.black, fontSize: 14))
+                              color: Colors.black, fontSize: 16))
                     ],
                   ),
                 ),
@@ -220,6 +461,22 @@ class DetailPostPageState extends State<DetailPostPage> {
                   height: 10.0,
                 ),
                 if (post['image'] != null && post['image'].isNotEmpty)
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: post['image'].map((image) {
+                  //     return Column(
+                  //       children: [
+                  //         Image.network(
+                  //           '${image['url']}',
+                  //           height: 150,
+                  //           width: 150,
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //         const SizedBox(height: 10.0,),
+                  //       ],
+                  //     );
+                  //   }),
+                  // ),
                   ..._splitImagesIntoPairs(post['image'])
                       .map<Widget>((imagePair) {
                     return Row(
@@ -247,29 +504,119 @@ class DetailPostPageState extends State<DetailPostPage> {
                     thickness: 1,
                   ),
                 ),
+
+                //options like comment share
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
                       margin: const EdgeInsets.only(top: 10.0),
                       child: GestureDetector(
-                        onTap: () {
-                          print("I liked this post");
+                        onTap: () async {
+                          String? token = await storage.read(key: 'token');
+                          if (isFeltKudo == '1' || isFeltKudo == '0') {
+                            // xử lý delete feel
+                            try {
+                              var url = Uri.parse(ListAPI.deleteFeel);
+                              Map body = {"id": widget.postId};
+                              http.Response response = await http.post(
+                                url,
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': 'Bearer $token'
+                                },
+                                body: jsonEncode(body),
+                              );
+
+                              //cập nhật lại trạng thái của isFeltKudo
+                              setState(() {
+                                isFeltKudo = '-1';
+                              });
+
+                              // Chuyển chuỗi JSON thành một đối tượng Dart
+                              var responseBody = jsonDecode(response.body);
+                              print(responseBody);
+                            } catch (e) {
+                              print('Error: $e');
+                            }
+                          } else {
+                            // xử lý set feel kudo
+                            try {
+                              var url = Uri.parse(ListAPI.feel);
+                              Map body = {"id": widget.postId, "type": "1"};
+                              http.Response response = await http.post(
+                                url,
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': 'Bearer $token'
+                                },
+                                body: jsonEncode(body),
+                              );
+
+                              //cập nhật lại trạng thái của isFeltKudo
+                              setState(() {
+                                isFeltKudo = '1';
+                              });
+
+                              // Chuyển chuỗi JSON thành một đối tượng Dart
+                              var responseBody = jsonDecode(response.body);
+                              print(responseBody);
+                            } catch (e) {
+                              print('Error: $e');
+                            }
+                          }
+                        },
+                        onLongPress: () {
+                          // Xử lý khi nhấn giữ nút like
+                          showReactionMenu(context);
                         },
                         child: Row(
                           children: [
                             Container(
                               margin: const EdgeInsets.only(right: 5),
-                              child: const Icon(
-                                Icons.thumb_up_alt_outlined,
-                                size: 20.0,
-                              ),
+                              child: () {
+                                if (isFeltKudo == '-1') {
+                                  return Image.asset(
+                                    'lib/src/assets/images/like.png',
+                                    width: 20,
+                                    height: 20,
+                                  );
+                                } else if (isFeltKudo == '0') {
+                                  return Image.asset(
+                                    'lib/src/assets/images/reactions/angry.png',
+                                    width: 20,
+                                    height: 20,
+                                  );
+                                } else {
+                                  return Image.asset(
+                                    'lib/src/assets/images/reactions/like.png',
+                                    width: 20,
+                                    height: 20,
+                                  );
+                                }
+                              }(),
                             ),
-                            const Text(
-                              "Like",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16),
-                            ),
+                            () {
+                              if (isFeltKudo == '-1') {
+                                return const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                );
+                              } else if (isFeltKudo == '0') {
+                                return const Text(
+                                  "Phẫn nộ",
+                                  style: TextStyle(
+                                      color: Colors.green, fontSize: 16),
+                                );
+                              } else {
+                                return const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 16),
+                                );
+                              }
+                            }(),
                           ],
                         ),
                       ),
@@ -278,7 +625,12 @@ class DetailPostPageState extends State<DetailPostPage> {
                       margin: const EdgeInsets.only(top: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          print("I commented this post");
+                          _commentFocusNode
+                              .requestFocus();
+                          setState(() {
+                            isTextFieldFocusDirectly =
+                            true;
+                          });
                         },
                         child: Row(
                           children: [
@@ -294,7 +646,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                             const Text(
                               "Comment",
                               style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
@@ -320,12 +672,12 @@ class DetailPostPageState extends State<DetailPostPage> {
                             const Text(
                               "Share",
                               style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 Container(
@@ -336,6 +688,8 @@ class DetailPostPageState extends State<DetailPostPage> {
                     thickness: 1,
                   ),
                 ),
+
+                //số lượng bày tỏ cảm xúc
                 Row(
                   children: [
                     Container(
@@ -348,35 +702,367 @@ class DetailPostPageState extends State<DetailPostPage> {
                             height: 20,
                           ),
                           Image.asset(
-                            'lib/src/assets/images/reactions/haha.png',
-                            width: 20,
-                            height: 20,
-                          ),
-                          Image.asset(
-                            'lib/src/assets/images/reactions/love.png',
+                            'lib/src/assets/images/reactions/angry.png',
                             width: 20,
                             height: 20,
                           ),
                           Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 3.0),
-                            child: const Text("99"),
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              (int.parse(post['kudos'] ?? '0') +
+                                      int.parse(post['disappointed'] ?? '0'))
+                                  .toString(),
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16),
+                            ),
                           )
                         ],
                       ),
                     ),
-                    Container(
-                        margin: const EdgeInsets.only(left: 8.0, top: 5.0),
-                        child: const Text(
-                          "Lê Văn Luyện và 98 người khác",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
-                        )),
                   ],
+                ),
+
+                const SizedBox(
+                  height: 20.0,
+                ),
+
+                //comment part
+                Column(
+                  children: markComment
+                      .map((markComment) => Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ClipOval(
+                                            child: Image.network(
+                                          '${markComment['poster']['avatar']}',
+                                          height: 40,
+                                          width: 40,
+                                          fit: BoxFit.cover,
+                                        )),
+                                        const SizedBox(
+                                          width: 15.0,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFE8EBF5),
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  // Màu của border
+                                                  width:
+                                                      0, // Độ rộng của border
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        12.0), // Độ cong của góc
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 14.0,
+                                                      vertical: 3.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    markComment['poster']
+                                                        ['name'],
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5.0,
+                                                  ),
+                                                  Text(
+                                                    markComment['mark_content'],
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5.0,
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10.0),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    formatTimeDifference(
+                                                        markComment[
+                                                                'created'] ??
+                                                            '2023-12-15T04:35:45.921Z'),
+                                                    style: const TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 25.0,
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      _commentFocusNode
+                                                          .requestFocus();
+                                                      setState(() {
+                                                        isTextFieldFocusDirectly =
+                                                            false;
+                                                        markId = int.parse(
+                                                            markComment['id']);
+                                                      });
+                                                    },
+                                                    child: const Text(
+                                                      "Phản hồi",
+                                                      style: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 15.0,
+                                    ),
+                                    Column(
+                                      children: markComment['comments']
+                                          .map<Widget>((comment) => Column(
+                                                children: [
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 30.0,
+                                                            right: 16.0),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                          '${comment['poster']['avatar']}',
+                                                          height: 40,
+                                                          width: 40,
+                                                          fit: BoxFit.cover,
+                                                        )),
+                                                        const SizedBox(
+                                                          width: 15.0,
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: const Color(
+                                                                      0xFFE8EBF5),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    // Màu của border
+                                                                    width:
+                                                                        0, // Độ rộng của border
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12.0), // Độ cong của góc
+                                                                ),
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        3.0,
+                                                                    horizontal:
+                                                                        14.0),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      comment['poster']
+                                                                          [
+                                                                          'name'],
+                                                                      style: const TextStyle(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize:
+                                                                              16,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          5.0,
+                                                                    ),
+                                                                    Container(
+                                                                      margin: const EdgeInsets
+                                                                          .only(
+                                                                          right:
+                                                                              16.0),
+                                                                      child:
+                                                                          Text(
+                                                                        comment[
+                                                                            'content'],
+                                                                        style: const TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontSize: 15),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 5.0,
+                                                              ),
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        10.0),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      formatTimeDifference(
+                                                                          comment['created'] ??
+                                                                              '2023-12-15T04:35:45.921Z'),
+                                                                      style: const TextStyle(
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontSize:
+                                                                              12,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 12,
+                                                  ),
+                                                ],
+                                              ))
+                                          .toList(),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
+                            ],
+                          ))
+                      .toList(),
+                ),
+                const SizedBox(
+                  height: 40.0,
                 ),
               ],
             ),
           ),
-        ),
-      ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 60,
+              color: Colors.white,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: contentController,
+                      onTap: () {
+                        setState(() {
+                          isTextFieldFocusDirectly = true;
+                        });
+                      },
+                      cursorColor: Colors.black,
+                      focusNode: _commentFocusNode,
+                      maxLines: null,
+                      // giúp có thể xuống dòng khi nhập quá nhiều chữ trong textfield
+                      decoration: InputDecoration(
+                        hintText: 'Nhập mark/comment...',
+                        contentPadding:
+                            const EdgeInsets.only(left: 16, bottom: 12),
+                        hintStyle: const TextStyle(color: Colors.blueGrey),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      handleSetMarkComment();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue, // Màu nền
+                      onPrimary: Colors.white, // Màu chữ
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(12.0), // Độ cong của góc
+                      ),
+                      elevation: 0.75, // Độ đổ bóng
+                    ),
+                    child: const Text(
+                      "Gửi",
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      )),
     );
   }
 }

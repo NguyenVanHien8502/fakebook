@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ManagePostsPage extends StatefulWidget {
   const ManagePostsPage({Key? key}) : super(key: key);
@@ -30,6 +31,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
     getListPosts();
   }
 
+  //get list post
   var listPosts = [];
 
   Future<void> getListPosts() async {
@@ -65,11 +67,118 @@ class ManagePostsPageState extends State<ManagePostsPage> {
       setState(() {
         listPosts = responseBody['data']['post'] ?? [];
       });
+      for (var i = 0; i < listPosts.length; i++) {
+        int postId = int.parse(listPosts[i]['id'] ?? "");
+        if (listPosts[i]['is_felt'] == '-1') {
+          setState(() {
+            isFeltKudo[postId] = '-1';
+          });
+        } else if (listPosts[i]['is_felt'] == '0') {
+          setState(() {
+            isFeltKudo[postId] = '0';
+          });
+        } else if (listPosts[i]['is_felt'] == '1') {
+          setState(() {
+            isFeltKudo[postId] = '1';
+          });
+        }
+      }
     } catch (e) {
       print('Error: $e');
     }
   }
 
+  Map<int, String> isFeltKudo =
+      {}; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
+
+// Hàm hiển thị menu tùy chọn
+  void showReactionMenu(BuildContext context, int postId) {
+    showMenu(
+      context: context,
+      position: const RelativeRect.fromLTRB(-80, 315, 0, 0),
+      elevation: 0,
+      // Đặt độ nâng của PopupMenu để loại bỏ border
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0), // Đặt độ cong của border
+      ),
+      color: Colors.transparent,
+      // color: Colors.blue,
+      items: [
+        PopupMenuItem<String>(
+          padding: const EdgeInsets.all(0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '1',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/like.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '0',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/angry.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) async {
+      if (value != null) {
+        setState(() {
+          isFeltKudo[postId] = value == '1' ? '1' : '0';
+        });
+        // Thực hiện các hành động tương ứng
+        String? token = await storage.read(key: 'token');
+        try {
+          var url = Uri.parse(ListAPI.feel);
+          Map body = {"id": postId, "type": value};
+          http.Response response = await http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token'
+            },
+            body: jsonEncode(body),
+          );
+
+          // Chuyển chuỗi JSON thành một đối tượng Dart
+          var responseBody = jsonDecode(response.body);
+          print(responseBody);
+        } catch (e) {
+          print('Error: $e');
+        }
+      }
+    });
+  }
+
+  //xử lý hiển thị thời gian đăng của post
+  String formatTimeDifference(String createdAt) {
+    DateTime createdDateTime = DateTime.parse(createdAt);
+    Duration difference = DateTime.now().difference(createdDateTime);
+
+    if (difference.inDays > 7) {
+      return DateFormat('dd/MM/yyyy').format(createdDateTime);
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  // xử lý hiển thị ảnh của post
   List<List<Map<String, dynamic>>> _splitImagesIntoPairs(List<dynamic> images) {
     List<List<Map<String, dynamic>>> imagePairs = [];
     for (int i = 0; i < images.length; i += 2) {
@@ -103,6 +212,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
               return Column(
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
                         onTap: () {
@@ -165,9 +275,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Text(
-                                          "1 minute ago",
-                                          style: TextStyle(color: Colors.black),
+                                        Text(
+                                          formatTimeDifference(post['created']),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                         ),
                                         Container(
                                           margin: const EdgeInsets.only(
@@ -311,9 +422,76 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                             Colors.transparent,
                                                         child: InkWell(
                                                           onTap: () {
-                                                            handleDeletePost(
-                                                                context,
-                                                                post['id']);
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: const Text(
+                                                                      'Xóa bài viết?'),
+                                                                  content:
+                                                                      const Text(
+                                                                          'Bạn có thể chỉnh sửa bài viết nếu cần thay đổi.'),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        handleDeletePost(
+                                                                            context,
+                                                                            post['id']);
+                                                                      },
+                                                                      child:
+                                                                          const Text(
+                                                                        'Xóa',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.blue,
+                                                                            fontSize: 14),
+                                                                      ),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator
+                                                                            .push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                EditPostPage(
+                                                                              postId: int.parse(post['id']),
+                                                                            ),
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                      child:
+                                                                          const Text(
+                                                                        'Chỉnh sửa',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontSize: 14),
+                                                                      ),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child:
+                                                                          const Text(
+                                                                        'Hủy',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontSize: 14),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },
+                                                            );
                                                           },
                                                           borderRadius:
                                                               const BorderRadius
@@ -392,11 +570,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                         padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(post['described'],
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 14))
+                                    color: Colors.black, fontSize: 16))
                           ],
                         ),
                       ),
@@ -437,29 +614,39 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(
-                                      left: 16.0, top: 5.0),
+                                      left: 10.0, top: 5.0),
                                   child: Row(
                                     children: [
-                                      Image.asset(
-                                        'lib/src/assets/images/reactions/like.png',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                      Image.asset(
-                                        'lib/src/assets/images/reactions/haha.png',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                      Image.asset(
-                                        'lib/src/assets/images/reactions/love.png',
-                                        width: 20,
-                                        height: 20,
-                                      ),
                                       Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 3.0),
-                                        child: const Text("99"),
-                                      )
+                                        margin: const EdgeInsets.only(
+                                            left: 6.0, top: 5.0),
+                                        child: Row(
+                                          children: [
+                                            Image.asset(
+                                              'lib/src/assets/images/reactions/like.png',
+                                              width: 20,
+                                              height: 20,
+                                            ),
+                                            Image.asset(
+                                              'lib/src/assets/images/reactions/angry.png',
+                                              width: 20,
+                                              height: 20,
+                                            ),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Text(
+                                                (int.parse(post['feel'] ?? '0'))
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -470,24 +657,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                     children: [
                                       Container(
                                         margin:
-                                            const EdgeInsets.only(right: 6.0),
-                                        child: const Text("123 comments"),
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: Text(
+                                            "${post['comment_mark']} comments"),
                                       ),
-                                      Container(
-                                        margin: const EdgeInsets.only(
-                                            bottom: 6.0, right: 6.0),
-                                        child: const Text(
-                                          ".",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin:
-                                            const EdgeInsets.only(right: 16.0),
-                                        child: const Text("456 shares"),
-                                      )
                                     ],
                                   ),
                                 ),
@@ -504,29 +677,133 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                           endIndent: 14,
                         ),
                       ),
+
+                      //options like comment share
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
                             margin: const EdgeInsets.only(top: 10.0),
                             child: GestureDetector(
-                              onTap: () {
-                                print("I liked this post");
+                              onTap: () async {
+                                String? token =
+                                    await storage.read(key: 'token');
+                                int postId = int.parse(post['id'] ?? "");
+                                if (isFeltKudo.containsKey(postId) &&
+                                    (isFeltKudo[postId] == '1' ||
+                                        isFeltKudo[postId] == '0')) {
+                                  // xử lý delete feel
+                                  try {
+                                    var url = Uri.parse(ListAPI.deleteFeel);
+                                    Map body = {"id": '$postId'};
+                                    http.Response response = await http.post(
+                                      url,
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer $token'
+                                      },
+                                      body: jsonEncode(body),
+                                    );
+
+                                    //cập nhật lại trạng thái của isFeltKudo
+                                    setState(() {
+                                      isFeltKudo[postId] = '-1';
+                                    });
+
+                                    // Chuyển chuỗi JSON thành một đối tượng Dart
+                                    var responseBody =
+                                        jsonDecode(response.body);
+                                    print(responseBody);
+                                  } catch (e) {
+                                    print('Error: $e');
+                                  }
+                                } else {
+                                  // xử lý set feel kudo
+                                  try {
+                                    var url = Uri.parse(ListAPI.feel);
+                                    Map body = {"id": '$postId', "type": "1"};
+                                    http.Response response = await http.post(
+                                      url,
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer $token'
+                                      },
+                                      body: jsonEncode(body),
+                                    );
+
+                                    //cập nhật lại trạng thái của isFeltKudo
+                                    setState(() {
+                                      isFeltKudo[postId] = '1';
+                                    });
+
+                                    // Chuyển chuỗi JSON thành một đối tượng Dart
+                                    var responseBody =
+                                        jsonDecode(response.body);
+                                    print(responseBody);
+                                  } catch (e) {
+                                    print('Error: $e');
+                                  }
+                                }
+                              },
+                              onLongPress: () {
+                                // Xử lý khi nhấn giữ nút like
+                                showReactionMenu(
+                                    context, int.parse(post['id']));
                               },
                               child: Row(
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.only(right: 5),
-                                    child: const Icon(
-                                      Icons.thumb_up_alt_outlined,
-                                      size: 20.0,
-                                    ),
+                                    child: () {
+                                      int postId = int.parse(post['id'] ?? "");
+                                      if (isFeltKudo.containsKey(postId) &&
+                                          isFeltKudo[postId] == '-1') {
+                                        return Image.asset(
+                                          'lib/src/assets/images/like.png',
+                                          width: 20,
+                                          height: 20,
+                                        );
+                                      } else if (isFeltKudo
+                                              .containsKey(postId) &&
+                                          isFeltKudo[postId] == '0') {
+                                        return Image.asset(
+                                          'lib/src/assets/images/reactions/angry.png',
+                                          width: 20,
+                                          height: 20,
+                                        );
+                                      } else {
+                                        return Image.asset(
+                                          'lib/src/assets/images/reactions/like.png',
+                                          width: 20,
+                                          height: 20,
+                                        );
+                                      }
+                                    }(),
                                   ),
-                                  const Text(
-                                    "Like",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                  ),
+                                  () {
+                                    int postId = int.parse(post['id'] ?? "");
+                                    if (isFeltKudo.containsKey(postId) &&
+                                        isFeltKudo[postId] == '-1') {
+                                      return const Text(
+                                        "Like",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 16),
+                                      );
+                                    } else if (isFeltKudo.containsKey(postId) &&
+                                        isFeltKudo[postId] == '0') {
+                                      return const Text(
+                                        "Phẫn nộ",
+                                        style: TextStyle(
+                                            color: Colors.green, fontSize: 16),
+                                      );
+                                    } else {
+                                      return const Text(
+                                        "Like",
+                                        style: TextStyle(
+                                            color: Colors.blue, fontSize: 16),
+                                      );
+                                    }
+                                  }(),
                                 ],
                               ),
                             ),

@@ -100,7 +100,17 @@ class EditPostPageState extends State<EditPostPage> {
       request.headers['Content-Type'] = 'multipart/form-data';
       request.fields['described'] = described;
       request.fields['id'] = widget.postId.toString();
+
       if (images != null && images!.isNotEmpty) {
+        //start delete image cũ
+        String imageDel = "1,2,3,4";
+        var requestDeleteOldImage = http.MultipartRequest('POST', url);
+        requestDeleteOldImage.headers['Authorization'] = 'Bearer $token';
+        requestDeleteOldImage.fields['id'] = widget.postId.toString();
+        requestDeleteOldImage.fields['image_del'] = imageDel;
+        await requestDeleteOldImage.send();
+        //finish delete image cũ
+
         for (var selectedImage in images!) {
           var stream =
               http.ByteStream(DelegatingStream.typed(selectedImage.openRead()));
@@ -434,6 +444,7 @@ class EditPostPageState extends State<EditPostPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: TextField(
+                    cursorColor: Colors.black,
                     controller: describedController,
                     onChanged: (text) {
                       // Kiểm tra xem TextField có chứa ít nhất một ký tự hay không

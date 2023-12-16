@@ -44,6 +44,7 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     return postVisible
         ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InkWell(
                 onTap: () {
