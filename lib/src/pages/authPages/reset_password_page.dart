@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/pages/authPages/login_page.dart';
-import 'package:fakebook/src/pages/authPages/register_pages/change_info_after_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
@@ -55,7 +54,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Nhập mã code và mật khẩu mới để hoàn tất quá trình reset password. Hãy ghi nhớ mật khẩu của bạn.",
+                    "Nhập mã code và mật khẩu mới để hoàn tất quá trình reset password. Lưu ý hãy ghi nhớ mật khẩu mới của bạn.",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
@@ -75,33 +74,34 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 const SizedBox(
                   height: 8.0,
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: codeController,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  const BorderSide(color: Colors.blueGrey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            fillColor: Colors.white10,
-                            filled: true,
-                            hintText: "Enter verify code",
-                            contentPadding: const EdgeInsets.only(left: 20.0),
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: TextField(
+                    obscureText: false,
+                    controller: codeController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Nhập mã xác thực',
+                      contentPadding: const EdgeInsets.only(left: 20.0),
+                      hintStyle: const TextStyle(color: Colors.blueGrey),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ],
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      alignLabelWithHint: true,
+                      prefixIcon: const Icon(
+                        Icons.verified_user_sharp,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    cursorColor: Colors.black, //chỉnh màu của cái vạch nháy
+                    textAlignVertical: TextAlignVertical.center,
                   ),
                 ),
                 const SizedBox(height: 25.0),
@@ -118,34 +118,34 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 const SizedBox(
                   height: 8.0,
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          obscureText: true,
-                          controller: newPasswordController,
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  const BorderSide(color: Colors.blueGrey),
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            fillColor: Colors.white10,
-                            filled: true,
-                            hintText: "Enter new password",
-                            contentPadding: const EdgeInsets.only(left: 20.0),
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: TextField(
+                    obscureText: true,
+                    controller: newPasswordController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Nhập mật khẩu mới',
+                      contentPadding: const EdgeInsets.only(left: 20.0),
+                      hintStyle: const TextStyle(color: Colors.blueGrey),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ],
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      alignLabelWithHint: true,
+                      prefixIcon: const Icon(
+                        Icons.password,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    cursorColor: Colors.black, //chỉnh màu của cái vạch nháy
+                    textAlignVertical: TextAlignVertical.center,
                   ),
                 ),
                 const SizedBox(height: 25.0),
