@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MenuChoice extends StatelessWidget {
-  final String img;
+  final String? img;
   final String title;
-  const MenuChoice({super.key, required this.img, required this.title});
+  const MenuChoice({super.key, this.img, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class MenuChoice extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Image.asset(
-          img,
+          img!,
           width: 30,
           height: 30,
         ),

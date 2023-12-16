@@ -1,28 +1,25 @@
 import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/components/my_textfield.dart';
-import 'package:fakebook/src/pages/authPages/reset_password_page.dart';
+import 'package:fakebook/src/features/home/home_screen.dart';
+import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:core';
 import 'package:http/http.dart' as http;
 
-class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({Key? key}) : super(key: key);
 
   @override
-  ForgotPasswordPageState createState() => ForgotPasswordPageState();
+  ChangePasswordPageState createState() => ChangePasswordPageState();
 }
 
-class ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class ChangePasswordPageState extends State<ChangePasswordPage> {
   static const storage = FlutterSecureStorage();
-  final emailController = TextEditingController();
-  bool emailError = false;
 
-  bool isEmailValid(String email) {
-    final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
-    return emailRegex.hasMatch(email);
-  }
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -43,34 +40,49 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Khôi phục mật khẩu",
+                    "Thay đổi mật khẩu của bạn",
                     style: TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(
-                  height: 5,
+                  height: 15,
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: const Text(
-                    "Nhập email đăng ký của bạn",
+                    "Nhập mật khẩu hiện tại và mật khẩu mới để tiến hành thay đổi mật khẩu cho bạn. Lưu ý hãy ghi nhớ mật khẩu mới của bạn.",
                     style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(
+                  height: 25.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0),
+                  child: const Text(
+                    "Mật khẩu hiện tại *:",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  ),
+                ),
+                const SizedBox(
+                  height: 8.0,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextField(
-                    obscureText: false,
-                    controller: emailController,
+                    obscureText: true,
+                    controller: passwordController,
                     decoration: InputDecoration(
                       isDense: true,
-                      hintText: 'Enter registered email',
+                      hintText: 'Nhập mật khẩu hiện tại',
                       contentPadding: const EdgeInsets.only(left: 20.0),
                       hintStyle: const TextStyle(color: Colors.blueGrey),
                       filled: true,
@@ -85,7 +97,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                       alignLabelWithHint: true,
                       prefixIcon: const Icon(
-                        Icons.email,
+                        Icons.password,
                         color: Colors.black54,
                       ),
                     ),
@@ -93,30 +105,62 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     textAlignVertical: TextAlignVertical.center,
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 25.0),
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.only(left: 20.0),
                   child: const Text(
-                    "Chúng tôi có thể gửi thông báo qua Email và WhatsApp để phục vụ mục đích bảo mật và hỗ trợ bạn đăng nhập.",
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    "Mật khẩu mới *:",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
                   ),
                 ),
                 const SizedBox(
-                  height: 50.0,
+                  height: 8.0,
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: TextField(
+                    obscureText: true,
+                    controller: newPasswordController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Nhập mật khẩu mới',
+                      contentPadding: const EdgeInsets.only(left: 20.0),
+                      hintStyle: const TextStyle(color: Colors.blueGrey),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      alignLabelWithHint: true,
+                      prefixIcon: const Icon(
+                        Icons.password,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    cursorColor: Colors.black, //chỉnh màu của cái vạch nháy
+                    textAlignVertical: TextAlignVertical.center,
+                  ),
+                ),
+                const SizedBox(height: 25.0),
                 Container(
-                  margin: const EdgeInsets.only(left: 24.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
-                    onPressed: handleGetVerifyCode,
+                    onPressed: handleChangePassword,
                     style: ElevatedButton.styleFrom(
-                      maximumSize: const Size(310, 50),
+                      maximumSize: const Size(370, 50),
                       padding: EdgeInsets.zero,
                       // Loại bỏ padding mặc định của nút
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(50), // Đặt độ cong của góc
+                        BorderRadius.circular(50), // Đặt độ cong của góc
                       ),
                       backgroundColor: Colors.blue,
                       // Đặt màu nền của nút
@@ -128,7 +172,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "Lấy mã",
+                        "Change password",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -136,7 +180,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -145,17 +189,20 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  Future<void> handleGetVerifyCode() async {
-    String email = emailController.text;
+  Future<void> handleChangePassword() async {
+    String password = passwordController.text;
+    String newPassword = newPasswordController.text;
+    String? token =await storage.read(key: 'token');
     try {
-      var url = Uri.parse(ListAPI.getVerifyCode);
+      var url = Uri.parse(ListAPI.changePassword);
       Map body = {
-        "email": email,
+        'password': password,
+        'new_password': newPassword,
       };
 
       http.Response response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Authorization':'Bearer $token'},
         body: jsonEncode(body),
       );
 
@@ -164,42 +211,30 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (response.statusCode == 200) {
         if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
-          await storage.write(key: 'emailToResetPassword', value: email);
+          String token=responseBody['data']['token'];
+          await storage.write(key: 'password', value: newPassword);
+          await storage.write(key: 'token', value: token);
           showDialog(
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Verify Code'),
-                content: RichText(
-                  text: TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: "Enter the following code to restore your password: ",
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
-                      TextSpan(
-                        text: "${responseBody['data']['verify_code']}.",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold, // Màu xanh
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
+                title: const Text('Notification'),
+                content: const Text(
+                    'Congratulations! You have successfully changed password.'),
+                actions: <Widget>[
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                              const ResetPasswordPage()));
+                      passwordController.clear();
+                      newPasswordController.clear();
+                      Navigator.pushNamed(
+                        context,
+                        HomeScreen.routeName,
+                      );
                     },
                     child: const Text(
                       'OK',
-                      style: TextStyle(color: Colors.black, fontSize: 14),
+                      style: TextStyle(color: Colors.black, fontSize: 16),
                     ),
                   ),
                 ],

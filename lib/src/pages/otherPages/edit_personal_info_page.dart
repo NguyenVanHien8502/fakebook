@@ -165,8 +165,7 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                            const PersonalPageScreen()));
+                            builder: (context) => const PersonalPageScreen()));
                   },
                   child: const Text(
                     'OK',
@@ -262,13 +261,17 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
                 margin: const EdgeInsets.symmetric(vertical: 5.0),
                 child: avatar == null
                     ? ClipOval(
-                        child: Image.network(
-                          '${jsonDecode(currentUser)['avatar']}',
-                          height: 200,
-                          width: 200,
-                          fit: BoxFit
-                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                        ),
+                        child: () {
+                          if (currentUser != null) {
+                            return Image.network(
+                              '${jsonDecode(currentUser)['avatar']}',
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit
+                                  .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                            );
+                          }
+                        }(),
                       )
                     : ClipOval(
                         child: Image.file(
@@ -320,23 +323,42 @@ class EditPersonalInfoPageState extends State<EditPersonalInfoPage> {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 5.0),
                 child: coverImage == null
-                    ? ((jsonDecode(currentUser)['cover_image'] is String &&
-                            jsonDecode(currentUser)['cover_image'] != "")
-                        ? ClipOval(
-                            child: Image.network(
-                              '${jsonDecode(currentUser)['cover_image']}',
+                    ? (() {
+                        if (currentUser != null) {
+                          if (jsonDecode(currentUser)['cover_image']
+                                  is String &&
+                              jsonDecode(currentUser)['cover_image'] != "") {
+                            return ClipOval(
+                              child: () {
+                                if (currentUser != null) {
+                                  return Image.network(
+                                    '${jsonDecode(currentUser)['cover_image']}',
+                                    height: 200,
+                                    width: 200,
+                                    fit: BoxFit.cover,
+                                  );
+                                }
+                              }(),
+                            );
+                          } else {
+                            return const Image(
+                              image: AssetImage(
+                                'lib/src/assets/images/avatar.jpg',
+                              ),
                               height: 200,
                               width: 200,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : const Image(
+                            );
+                          }
+                        } else {
+                          return const Image(
                             image: AssetImage(
                               'lib/src/assets/images/avatar.jpg',
                             ),
                             height: 200,
                             width: 200,
-                          ))
+                          );
+                        }
+                      }())
                     : ClipOval(
                         child: Image.file(
                           File(coverImage!.path).absolute,

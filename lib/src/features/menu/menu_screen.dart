@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fakebook/src/features/menu/menu_choice.dart';
 import 'package:fakebook/src/features/menu/shortcut.dart';
+import 'package:fakebook/src/pages/authPages/change_password_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   ScrollController scrollController =
-  ScrollController(initialScrollOffset: MenuScreen.offset);
+      ScrollController(initialScrollOffset: MenuScreen.offset);
   ScrollController headerScrollController = ScrollController();
 
   @override
@@ -180,26 +181,26 @@ class _MenuScreenState extends State<MenuScreen> {
                         children: [
                           currentUser != null
                               ? Container(
-                            margin: const EdgeInsets.only(right: 6.0),
-                            child: ClipOval(
-                              child: Image.network(
-                                '${jsonDecode(currentUser)['avatar']}',
-                                height: 50,
-                                width: 50,
-                                fit: BoxFit
-                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                              ),
-                            ),
-                          )
+                                  margin: const EdgeInsets.only(right: 6.0),
+                                  child: ClipOval(
+                                    child: Image.network(
+                                      '${jsonDecode(currentUser)['avatar']}',
+                                      height: 50,
+                                      width: 50,
+                                      fit: BoxFit
+                                          .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                    ),
+                                  ),
+                                )
                               : Container(
-                            margin: const EdgeInsets.only(right: 6.0),
-                            child: const Image(
-                              image: AssetImage(
-                                  'lib/src/assets/images/avatar.jpg'),
-                              height: 50,
-                              width: 50,
-                            ),
-                          ),
+                                  margin: const EdgeInsets.only(right: 6.0),
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/avatar.jpg'),
+                                    height: 50,
+                                    width: 50,
+                                  ),
+                                ),
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: Column(
@@ -207,19 +208,19 @@ class _MenuScreenState extends State<MenuScreen> {
                               children: [
                                 currentUser != null
                                     ? Text(
-                                  '${jsonDecode(currentUser)['username']}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                )
+                                        '${jsonDecode(currentUser)['username']}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      )
                                     : const Text(
-                                  'Lỗi hiển thị',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                                        'Lỗi hiển thị username',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
                                 const SizedBox(
                                   height: 5,
                                 ),
@@ -529,7 +530,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         onPressed: () {
                           setState(() {
                             MenuScreen.viewMoreShortcuts =
-                            !MenuScreen.viewMoreShortcuts;
+                                !MenuScreen.viewMoreShortcuts;
                           });
                         },
                         child: Text(
@@ -762,6 +763,39 @@ class _MenuScreenState extends State<MenuScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const ChangePasswordPage()));
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child:const MenuChoice(
+                              img: 'lib/src/assets/images/change_password.png',
+                              title: 'Đổi mật khẩu'),
+                        ),
+                      ),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(10),
