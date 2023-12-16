@@ -1,41 +1,47 @@
 class ListAPI {
+  static const baseHost =
+      "https://it4788.catan.io.vn";
+
   ///Auth
-  static const signup = "https://it4788.catan.io.vn/signup";
-  static const login = "https://it4788.catan.io.vn/login";
-  static const changePassword = "https://it4788.catan.io.vn/change_password";
-  static const logout = "https://it4788.catan.io.vn/logout";
-  static const getVerifyCode = "https://it4788.catan.io.vn/get_verify_code";
-  static const checkVerifyCode = "https://it4788.catan.io.vn/check_verify_code";
-  static const resetPassword = "https://it4788.catan.io.vn/reset_password";
+  static const signup = "$baseHost/signup";
+  static const login = "$baseHost/login";
+  static const changePassword = "$baseHost/change_password";
+  static const logout = "$baseHost/logout";
+  static const getVerifyCode = "$baseHost/get_verify_code";
+  static const checkVerifyCode = "$baseHost/check_verify_code";
+  static const resetPassword = "$baseHost/reset_password";
 
 //Profile
   static const changeProfileAfterSignup =
-      "https://it4788.catan.io.vn/change_profile_after_signup";
-  static const getUserInfo = "https://it4788.catan.io.vn/get_user_info";
-  static const setUserInfo = "https://it4788.catan.io.vn/set_user_info";
+      "$baseHost/change_profile_after_signup";
+  static const getUserInfo = "$baseHost/get_user_info";
+  static const setUserInfo = "$baseHost/set_user_info";
 
 //Post
-  static const addPost = "https://it4788.catan.io.vn/add_post";
-  static const getListPosts = "https://it4788.catan.io.vn/get_list_posts";
-  static const getPost = "https://it4788.catan.io.vn/get_post";
-  static const deletePost = "https://it4788.catan.io.vn/delete_post";
-  static const editPost = "https://it4788.catan.io.vn/edit_post";
+  static const addPost = "$baseHost/add_post";
+  static const getListPosts = "$baseHost/get_list_posts";
+  static const getPost = "$baseHost/get_post";
+  static const deletePost = "$baseHost/delete_post";
+  static const editPost = "$baseHost/edit_post";
 
 //Search
 
 //Friend
-  static const getRequestedFriend =
-      "https://it4788.catan.io.vn/get_requested_friends";
-  static const setRequestFriend =
-      "https://it4788.catan.io.vn/set_request_friend";
-  static const setAcceptFriend = "https://it4788.catan.io.vn/set_accept_friend";
-  static const getUserFriend = "https://it4788.catan.io.vn/get_user_friends";
-  static const getSuggestedFriend =
-      "https://it4788.catan.io.vn/get_suggested_friends";
-  static const unfriend = "https://it4788.catan.io.vn/unfriend";
-  static const delRequestFriend =
-      "https://it4788.catan.io.vn/del_request_friend";
+  static const getRequestedFriend = "$baseHost/get_requested_friends";
+  static const setRequestFriend = "$baseHost/set_request_friend";
+  static const setAcceptFriend = "$baseHost/set_accept_friend";
+  static const getUserFriend = "$baseHost/get_user_friends";
+  static const getSuggestedFriend = "$baseHost/get_suggested_friends";
+  static const unfriend = "$baseHost/unfriend";
+  static const delRequestFriend = "$baseHost/del_request_friend";
+
 //Block
 
 //Settings
+
+//Comment
+  static const feel = "$baseHost/feel";
+  static const getListFeels = "$baseHost/get_list_feels";
+  static const getMarkComment = "$baseHost/get_mark_comment";
+  static const setMarkComment = "$baseHost/set_mark_comment";
 }

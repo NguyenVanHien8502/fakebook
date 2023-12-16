@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DetailPostPage extends StatefulWidget {
   final int postId;
@@ -24,8 +26,19 @@ class DetailPostPageState extends State<DetailPostPage> {
   void initState() {
     super.initState();
     getPost();
+    getListFeels();
+    getMarkComment();
   }
 
+  final FocusNode _commentFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _commentFocusNode.dispose();
+    super.dispose();
+  }
+
+  //get post
   var post = {};
 
   Future<void> getPost() async {
@@ -55,6 +68,25 @@ class DetailPostPageState extends State<DetailPostPage> {
     }
   }
 
+  // Xử lý ngày giờ đăng post, comment
+  String formatTimeDifference(String createdAt) {
+    DateTime createdDateTime = DateTime.parse(createdAt);
+    Duration difference = DateTime.now().difference(createdDateTime);
+
+    if (difference.inDays > 7) {
+      return DateFormat('dd/MM/yyyy').format(createdDateTime);
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  //Xử lý hiển thị ảnh của post
   List<List<Map<String, dynamic>>> _splitImagesIntoPairs(List<dynamic> images) {
     List<List<Map<String, dynamic>>> imagePairs = [];
     for (int i = 0; i < images.length; i += 2) {
@@ -65,6 +97,206 @@ class DetailPostPageState extends State<DetailPostPage> {
       imagePairs.add(images.sublist(i, endIndex).cast<Map<String, dynamic>>());
     }
     return imagePairs;
+  }
+
+  //get list feel
+  var listFeels = [];
+  dynamic userId;
+
+  Future<void> getListFeels() async {
+    String? token = await storage.read(key: 'token');
+    dynamic currentUser = await storage.read(key: 'currentUser');
+    userId = jsonDecode(currentUser)['id'];
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getListFeels);
+      Map body = {"id": widget.postId, "index": "0", "count": "10"};
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      // print(responseBody['data']);
+      setState(() {
+        listFeels = responseBody['data'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  bool isClickedLike = false;
+  bool isLongPress = false;
+  String selectedReaction = '';
+
+  dynamic isFeltKudo;
+
+  bool isFelt() {
+    for (var i = 0; i < listFeels.length; i++) {
+      if (listFeels[i]['feel']['user']['id'] == userId) {
+        isFeltKudo = listFeels[i]['feel']['type'] == '0' ? '0' : '1';
+        return true;
+      }
+    }
+    return false;
+  }
+
+// Hàm hiển thị menu tùy chọn
+  void showReactionMenu(BuildContext context) {
+    showMenu(
+      context: context,
+      position: const RelativeRect.fromLTRB(-80, 315, 0, 0),
+      elevation: 0,
+      // Đặt độ nâng của PopupMenu để loại bỏ border
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0), // Đặt độ cong của border
+      ),
+      color: Colors.transparent,
+      // color: Colors.blue,
+      items: [
+        PopupMenuItem<String>(
+          padding: const EdgeInsets.all(0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '1',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/like.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '0',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/angry.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) async {
+      if (value != null) {
+        setState(() {
+          selectedReaction = value;
+          isFeltKudo = value == '1' ? '1' : '0';
+        });
+        // Thực hiện các hành động tương ứng
+        String? token = await storage.read(key: 'token');
+        try {
+          var url = Uri.parse(ListAPI.feel);
+          Map body = {"id": widget.postId, "type": value};
+          http.Response response = await http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token'
+            },
+            body: jsonEncode(body),
+          );
+
+          // Chuyển chuỗi JSON thành một đối tượng Dart
+          var responseBody = jsonDecode(response.body);
+          print(responseBody);
+        } catch (e) {
+          print('Error: $e');
+        }
+      }
+    });
+  }
+
+  //xử lý phần get comment
+  var markComment = [];
+
+  Future<void> getMarkComment() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getMarkComment);
+      Map body = {"id": widget.postId, "index": "0", "count": "10"};
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      print(responseBody['data']);
+      setState(() {
+        markComment = responseBody['data'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  //xử lý set comment
+  bool isTextFieldFocusDirectly = false;
+  int markId = -1;
+  final TextEditingController contentController = TextEditingController();
+
+  Future<void> handleSetMarkComment() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.setMarkComment);
+      Map body = {};
+      if (isTextFieldFocusDirectly) {
+        body = {
+          "id": widget.postId,
+          "content": contentController.text,
+          "index": "0",
+          "count": "10",
+          "type": "1"
+        };
+      } else {
+        body = {
+          "id": widget.postId,
+          "content": contentController.text,
+          "index": "0",
+          "count": "10",
+          "mark_id": '$markId'
+        };
+      }
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      contentController.clear();
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      print(responseBody['data']);
+      setState(() {
+        markComment = responseBody['data'];
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
@@ -92,11 +324,11 @@ class DetailPostPageState extends State<DetailPostPage> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
+          child: Stack(
+        children: [
+          SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Divider(
                   height: 1,
@@ -104,15 +336,14 @@ class DetailPostPageState extends State<DetailPostPage> {
                   color: Colors.grey,
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(
-                            left: 16.0, top: 16.0, bottom: 16.0),
+                        margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
                         child: ClipOval(
                           child: Image.network(
-                            '${post['author']['avatar']}',
+                            '${post['author']?['avatar'] ?? 'https://it4788.catan.io.vn/files/avatar-1702481624085-946922318.jpg'}',
                             height: 50,
                             width: 50,
                             fit: BoxFit
@@ -130,7 +361,8 @@ class DetailPostPageState extends State<DetailPostPage> {
                                   Container(
                                     margin: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
-                                      post['author']['name'],
+                                      post['author']?['name'] ??
+                                          'Lỗi hiển thị username',
                                       style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
@@ -154,9 +386,10 @@ class DetailPostPageState extends State<DetailPostPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    "1 minute ago",
-                                    style: TextStyle(color: Colors.black),
+                                  Text(
+                                    formatTimeDifference(post['created'] ??
+                                        '2023-12-15T04:35:45.921Z'),
+                                    style: const TextStyle(color: Colors.black),
                                   ),
                                   Container(
                                     margin: const EdgeInsets.only(
@@ -173,27 +406,24 @@ class DetailPostPageState extends State<DetailPostPage> {
                       ),
                       const Spacer(),
                       // dùng cái này để icon xuống phía bên phải cùng của row
-                      Container(
-                        margin: const EdgeInsets.only(right: 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                print("Options");
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.only(right: 8.0),
-                                child: const Icon(
-                                  Icons.more_horiz,
-                                  size: 22.0,
-                                  color: Colors.black54,
-                                ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              print("Options");
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 8.0),
+                              child: const Icon(
+                                Icons.more_horiz,
+                                size: 22.0,
+                                color: Colors.black54,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     ],
                   ),
@@ -203,12 +433,10 @@ class DetailPostPageState extends State<DetailPostPage> {
                 Container(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(post['described'],
+                      Text(post['described'] ?? 'Lỗi hiện thị status',
                           style: const TextStyle(
-                              color: Colors.black, fontSize: 14))
+                              color: Colors.black, fontSize: 16))
                     ],
                   ),
                 ),
@@ -218,6 +446,22 @@ class DetailPostPageState extends State<DetailPostPage> {
                   height: 10.0,
                 ),
                 if (post['image'] != null && post['image'].isNotEmpty)
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: post['image'].map((image) {
+                  //     return Column(
+                  //       children: [
+                  //         Image.network(
+                  //           '${image['url']}',
+                  //           height: 150,
+                  //           width: 150,
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //         const SizedBox(height: 10.0,),
+                  //       ],
+                  //     );
+                  //   }),
+                  // ),
                   ..._splitImagesIntoPairs(post['image'])
                       .map<Widget>((imagePair) {
                     return Row(
@@ -254,22 +498,70 @@ class DetailPostPageState extends State<DetailPostPage> {
                       margin: const EdgeInsets.only(top: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          print("I liked this post");
+                          // Xử lý khi nhấn nút like (không nhấn giữ)
+                          if (isLongPress == false) {
+                            setState(() {
+                              isClickedLike = !isClickedLike;
+                              selectedReaction = isClickedLike ? '1' : '0';
+                            });
+                          }
+                          if (selectedReaction != '') {
+                            setState(() {
+                              selectedReaction = '';
+                            });
+                          }
+                        },
+                        onLongPress: () {
+                          // Xử lý khi nhấn giữ nút like
+                          setState(() {
+                            isLongPress = true;
+                          });
+                          showReactionMenu(context);
+                        },
+                        onLongPressEnd: (_) {
+                          // Khi nhấn giữ kết thúc, cập nhật giá trị và ẩn menu
+                          setState(() {
+                            isLongPress = false;
+                          });
                         },
                         child: Row(
                           children: [
                             Container(
                               margin: const EdgeInsets.only(right: 5),
-                              child: const Icon(
-                                Icons.thumb_up_alt_outlined,
-                                size: 20.0,
+                              child: Image.asset(
+                                isFelt()
+                                    ? (isFeltKudo == '1'
+                                        ? ('lib/src/assets/images/reactions/like.png')
+                                        : ('lib/src/assets/images/reactions/angry.png'))
+                                    : (selectedReaction != ''
+                                        ? (selectedReaction == '1'
+                                            ? 'lib/src/assets/images/reactions/like.png'
+                                            : 'lib/src/assets/images/reactions/angry.png')
+                                        : 'lib/src/assets/images/like.png'),
+                                width: 20,
+                                height: 20,
                               ),
                             ),
-                            const Text(
-                              "Like",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
+                            Text(
+                              isFelt()
+                                  ? (isFeltKudo == '1' ? ('Like') : ('Phẫn nộ'))
+                                  : (selectedReaction != ''
+                                      ? (selectedReaction == '1'
+                                          ? 'Like'
+                                          : 'Phẫn nộ')
+                                      : 'Like'),
+                              style: TextStyle(
+                                  color: isFelt()
+                                      ? (isFeltKudo == '1'
+                                          ? (Colors.blue)
+                                          : (Colors.green))
+                                      : (selectedReaction != ''
+                                          ? (selectedReaction == '1'
+                                              ? Colors.blue
+                                              : Colors.green)
+                                          : Colors.black),
+                                  fontSize: 16),
+                            )
                           ],
                         ),
                       ),
@@ -325,7 +617,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 Container(
@@ -350,242 +642,367 @@ class DetailPostPageState extends State<DetailPostPage> {
                             height: 20,
                           ),
                           Image.asset(
-                            'lib/src/assets/images/reactions/haha.png',
-                            width: 20,
-                            height: 20,
-                          ),
-                          Image.asset(
-                            'lib/src/assets/images/reactions/love.png',
+                            'lib/src/assets/images/reactions/angry.png',
                             width: 20,
                             height: 20,
                           ),
                           Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 3.0),
-                            child: const Text("99"),
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              (int.parse(post['kudos'] ?? '0') +
+                                      int.parse(post['disappointed'] ?? '0'))
+                                  .toString(),
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16),
+                            ),
                           )
                         ],
                       ),
                     ),
-                    Container(
-                        margin: const EdgeInsets.only(left: 8.0, top: 5.0),
-                        child: const Text(
-                          "Lê Văn Luyện và 98 người khác",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
-                        )),
                   ],
                 ),
 
                 const SizedBox(
                   height: 20.0,
                 ),
-                //comment
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Image(
-                            image:
-                                AssetImage('lib/src/assets/images/avatar.jpg'),
-                            height: 40,
-                            width: 40,
-                          ),
-                          const SizedBox(
-                            width: 15.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                //comment part
+                Column(
+                  children: markComment
+                      .map((markComment) => Column(
                             children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE8EBF5),
-                                  border: Border.all(
-                                    color: Colors.white, // Màu của border
-                                    width: 0, // Độ rộng của border
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                      12.0), // Độ cong của góc
-                                ),
+                              Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 14.0, vertical: 3.0),
-                                child: const Column(
+                                    horizontal: 12.0),
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "username",
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ClipOval(
+                                            child: Image.network(
+                                          '${markComment['poster']['avatar']}',
+                                          height: 40,
+                                          width: 40,
+                                          fit: BoxFit.cover,
+                                        )),
+                                        const SizedBox(
+                                          width: 15.0,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFE8EBF5),
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  // Màu của border
+                                                  width:
+                                                      0, // Độ rộng của border
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        12.0), // Độ cong của góc
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 14.0,
+                                                      vertical: 3.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    markComment['poster']
+                                                        ['name'],
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5.0,
+                                                  ),
+                                                  Text(
+                                                    markComment['mark_content'],
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5.0,
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10.0),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    formatTimeDifference(
+                                                        markComment[
+                                                                'created'] ??
+                                                            '2023-12-15T04:35:45.921Z'),
+                                                    style: const TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 25.0,
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      _commentFocusNode
+                                                          .requestFocus();
+                                                      setState(() {
+                                                        isTextFieldFocusDirectly =
+                                                            false;
+                                                        markId = int.parse(
+                                                            markComment['id']);
+                                                      });
+                                                    },
+                                                    child: const Text(
+                                                      "Phản hồi",
+                                                      style: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(
-                                      height: 5.0,
+                                    const SizedBox(
+                                      height: 15.0,
                                     ),
-                                    Text(
-                                      "this is a comment",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 15),
-                                    ),
+                                    Column(
+                                      children: markComment['comments']
+                                          .map<Widget>((comment) => Column(
+                                                children: [
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 30.0,
+                                                            right: 16.0),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                          '${comment['poster']['avatar']}',
+                                                          height: 40,
+                                                          width: 40,
+                                                          fit: BoxFit.cover,
+                                                        )),
+                                                        const SizedBox(
+                                                          width: 15.0,
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: const Color(
+                                                                      0xFFE8EBF5),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    // Màu của border
+                                                                    width:
+                                                                        0, // Độ rộng của border
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12.0), // Độ cong của góc
+                                                                ),
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        3.0,
+                                                                    horizontal:
+                                                                        14.0),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      comment['poster']
+                                                                          [
+                                                                          'name'],
+                                                                      style: const TextStyle(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize:
+                                                                              16,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          5.0,
+                                                                    ),
+                                                                    Container(
+                                                                      margin: const EdgeInsets
+                                                                          .only(
+                                                                          right:
+                                                                              16.0),
+                                                                      child:
+                                                                          Text(
+                                                                        comment[
+                                                                            'content'],
+                                                                        style: const TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontSize: 15),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 5.0,
+                                                              ),
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        10.0),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      formatTimeDifference(
+                                                                          comment['created'] ??
+                                                                              '2023-12-15T04:35:45.921Z'),
+                                                                      style: const TextStyle(
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontSize:
+                                                                              12,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 12,
+                                                  ),
+                                                ],
+                                              ))
+                                          .toList(),
+                                    )
                                   ],
                                 ),
                               ),
                               const SizedBox(
-                                height: 12.0,
+                                height: 10.0,
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: const Row(
-                                  children: [
-                                    Text(
-                                      "2 gio",
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(
-                                      width: 12.0,
-                                    ),
-                                    Text(
-                                      "Thich",
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(
-                                      width: 12.0,
-                                    ),
-                                    Text(
-                                      "Phan hoi",
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              )
                             ],
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 30.0, right: 16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Image(
-                              image: AssetImage(
-                                  'lib/src/assets/images/avatar.jpg'),
-                              height: 40,
-                              width: 40,
-                            ),
-                            const SizedBox(
-                              width: 15.0,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE8EBF5),
-                                      border: Border.all(
-                                        color: Colors.white, // Màu của border
-                                        width: 0, // Độ rộng của border
-                                      ),
-                                      borderRadius: BorderRadius.circular(
-                                          12.0), // Độ cong của góc
-                                    ),
-                                    padding: const EdgeInsets.symmetric(vertical: 3.0,
-                                        horizontal: 14.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "username",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        const SizedBox(
-                                          height: 5.0,
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                              right: 16.0),
-                                          child: const Text(
-                                            "this is a comment, this is a comment, this is a comment",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 12.0,
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: const Row(
-                                      children: [
-                                        Text(
-                                          "2 gio",
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          width: 12.0,
-                                        ),
-                                        Text(
-                                          "Thich",
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          width: 12.0,
-                                        ),
-                                        Text(
-                                          "Phan hoi",
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )
+                          ))
+                      .toList(),
+                ),
+                const SizedBox(
+                  height: 30.0,
+                ),
               ],
             ),
           ),
-        ),
-      ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 60,
+              color: Colors.white,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: contentController,
+                      onTap: () {
+                        setState(() {
+                          isTextFieldFocusDirectly = true;
+                        });
+                      },
+                      cursorColor: Colors.black,
+                      focusNode: _commentFocusNode,
+                      maxLines: null,
+                      // giúp có thể xuống dòng khi nhập quá nhiều chữ trong textfield
+                      decoration: InputDecoration(
+                        hintText: 'Nhập mark/comment...',
+                        contentPadding:
+                            const EdgeInsets.only(left: 16, bottom: 12),
+                        hintStyle: const TextStyle(color: Colors.blueGrey),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      handleSetMarkComment();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue, // Màu nền
+                      onPrimary: Colors.white, // Màu chữ
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(12.0), // Độ cong của góc
+                      ),
+                      elevation: 0.75, // Độ đổ bóng
+                    ),
+                    child: const Text(
+                      "Gửi",
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      )),
     );
   }
 }

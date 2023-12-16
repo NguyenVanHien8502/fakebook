@@ -106,8 +106,8 @@ class EditPostPageState extends State<EditPostPage> {
         String imageDel = "1,2,3,4";
         var requestDeleteOldImage = http.MultipartRequest('POST', url);
         requestDeleteOldImage.headers['Authorization'] = 'Bearer $token';
-        // requestDeleteOldImage.headers['Content-Type'] = 'multipart/form-data';
-        requestDeleteOldImage.fields['image_del'] = imageDel.toString();
+        requestDeleteOldImage.fields['id'] = widget.postId.toString();
+        requestDeleteOldImage.fields['image_del'] = imageDel;
         await requestDeleteOldImage.send();
         //finish delete image cũ
 

@@ -273,7 +273,7 @@ class PasswordRegisterPageState extends State<PasswordRegisterPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Error'),
-            content: Text('An error occurred during login.'),
+            content: Text('An error occurred during get verify code.'),
             actions: [
               TextButton(
                 onPressed: () {

@@ -133,24 +133,31 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: 220,
-                  child: (jsonDecode(currentUser)['cover_image'] is String &&
-                          jsonDecode(currentUser)['cover_image'] != "")
-                      ? Image.network(
-                          '${jsonDecode(currentUser)['cover_image']}',
+                  child: (() {
+                    if (currentUser != null) {
+                      final dynamic decodedUser = jsonDecode(currentUser);
+                      if (decodedUser != null &&
+                          decodedUser is Map<String, dynamic> &&
+                          decodedUser['cover_image'] is String &&
+                          decodedUser['cover_image'] != "") {
+                        return Image.network(
+                          '${decodedUser['cover_image']}',
                           height: 100,
                           width: 100,
-                          fit: BoxFit
-                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                        )
-                      : Container(
-                          margin: const EdgeInsets.only(right: 6.0),
-                          child: const Image(
-                            image:
-                                AssetImage('lib/src/assets/images/avatar.jpg'),
-                            height: 50,
-                            width: 50,
-                          ),
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    } else {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 6.0),
+                        child: const Image(
+                          image: AssetImage('lib/src/assets/images/avatar.jpg'),
+                          height: 50,
+                          width: 50,
                         ),
+                      );
+                    }
+                  })(),
                 ),
                 Positioned(
                   left: 12,
@@ -172,7 +179,8 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                                 child: CircleAvatar(
                                   radius: 75,
                                   backgroundImage: NetworkImage(
-                                    jsonDecode(currentUser)['avatar'],
+                                    jsonDecode(currentUser)['avatar'] ??
+                                        "https://it4788.catan.io.vn/files/avatar-1701791988981-89709381.jpg",
                                   ),
                                 ),
                               )
