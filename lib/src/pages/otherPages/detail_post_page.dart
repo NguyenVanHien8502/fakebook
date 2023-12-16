@@ -59,7 +59,7 @@ class DetailPostPageState extends State<DetailPostPage> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      print(responseBody['data']);
+      // print(responseBody['data']);
       setState(() {
         post = responseBody['data'];
       });
@@ -127,32 +127,48 @@ class DetailPostPageState extends State<DetailPostPage> {
       setState(() {
         listFeels = responseBody['data'];
       });
+      dynamic isFelt = listFeels.firstWhere((element) {
+        print(element['feel']['user']['id'] == userId);
+        return element['feel']['user']['id'] == userId;
+      }, orElse: () => null);
+      if (isFelt == null) {
+        setState(() {
+          isFeltKudo = '-1';
+        });
+      } else {
+        if (isFelt['feel']['type'] == '0') {
+          setState(() {
+            isFeltKudo = '0';
+          });
+        } else if (isFelt['feel']['type'] == '1') {
+          setState(() {
+            isFeltKudo = '1';
+          });
+        }
+      }
     } catch (e) {
       print('Error: $e');
     }
   }
 
-  bool isClickedLike = false;
-  bool isLongPress = false;
-  String selectedReaction = '';
-
-  dynamic isFeltKudo;
-
-  bool isFelt() {
-    for (var i = 0; i < listFeels.length; i++) {
-      if (listFeels[i]['feel']['user']['id'] == userId) {
-        isFeltKudo = listFeels[i]['feel']['type'] == '0' ? '0' : '1';
-        return true;
-      }
-    }
-    return false;
-  }
+  dynamic
+      isFeltKudo; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
 
 // Hàm hiển thị menu tùy chọn
   void showReactionMenu(BuildContext context) {
+    // Get the position of the button
+    // RenderBox button = context.findRenderObject() as RenderBox;
+    // Offset buttonPosition = button.localToGlobal(Offset.zero);
+
     showMenu(
       context: context,
       position: const RelativeRect.fromLTRB(-80, 315, 0, 0),
+      // position: RelativeRect.fromLTRB(
+      //   buttonPosition.dx,
+      //   buttonPosition.dy + button.size.height+300,
+      //   buttonPosition.dx + button.size.width,
+      //   buttonPosition.dy + button.size.height, // Height of the menu
+      // ),
       elevation: 0,
       // Đặt độ nâng của PopupMenu để loại bỏ border
       shape: RoundedRectangleBorder(
@@ -191,7 +207,6 @@ class DetailPostPageState extends State<DetailPostPage> {
     ).then((value) async {
       if (value != null) {
         setState(() {
-          selectedReaction = value;
           isFeltKudo = value == '1' ? '1' : '0';
         });
         // Thực hiện các hành động tương ứng
@@ -239,7 +254,7 @@ class DetailPostPageState extends State<DetailPostPage> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      print(responseBody['data']);
+      // print(responseBody['data']);
       setState(() {
         markComment = responseBody['data'];
       });
@@ -434,7 +449,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                   child: Column(
                     children: [
-                      Text(post['described'] ?? 'Lỗi hiện thị status',
+                      Text(post['described'] ?? 'Lỗi hiển thị status',
                           style: const TextStyle(
                               color: Colors.black, fontSize: 16))
                     ],
@@ -497,71 +512,111 @@ class DetailPostPageState extends State<DetailPostPage> {
                     Container(
                       margin: const EdgeInsets.only(top: 10.0),
                       child: GestureDetector(
-                        onTap: () {
-                          // Xử lý khi nhấn nút like (không nhấn giữ)
-                          if (isLongPress == false) {
-                            setState(() {
-                              isClickedLike = !isClickedLike;
-                              selectedReaction = isClickedLike ? '1' : '0';
-                            });
-                          }
-                          if (selectedReaction != '') {
-                            setState(() {
-                              selectedReaction = '';
-                            });
+                        onTap: () async {
+                          String? token = await storage.read(key: 'token');
+                          if (isFeltKudo == '1' || isFeltKudo == '0') {
+                            // xử lý delete feel
+                            try {
+                              var url = Uri.parse(ListAPI.deleteFeel);
+                              Map body = {"id": widget.postId};
+                              http.Response response = await http.post(
+                                url,
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': 'Bearer $token'
+                                },
+                                body: jsonEncode(body),
+                              );
+
+                              //cập nhật lại trạng thái của isFeltKudo
+                              setState(() {
+                                isFeltKudo = '-1';
+                              });
+
+                              // Chuyển chuỗi JSON thành một đối tượng Dart
+                              var responseBody = jsonDecode(response.body);
+                              print(responseBody);
+                            } catch (e) {
+                              print('Error: $e');
+                            }
+                          } else {
+                            // xử lý set feel kudo
+                            try {
+                              var url = Uri.parse(ListAPI.feel);
+                              Map body = {"id": widget.postId, "type": "1"};
+                              http.Response response = await http.post(
+                                url,
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': 'Bearer $token'
+                                },
+                                body: jsonEncode(body),
+                              );
+
+                              //cập nhật lại trạng thái của isFeltKudo
+                              setState(() {
+                                isFeltKudo = '1';
+                              });
+
+                              // Chuyển chuỗi JSON thành một đối tượng Dart
+                              var responseBody = jsonDecode(response.body);
+                              print(responseBody);
+                            } catch (e) {
+                              print('Error: $e');
+                            }
                           }
                         },
                         onLongPress: () {
                           // Xử lý khi nhấn giữ nút like
-                          setState(() {
-                            isLongPress = true;
-                          });
                           showReactionMenu(context);
-                        },
-                        onLongPressEnd: (_) {
-                          // Khi nhấn giữ kết thúc, cập nhật giá trị và ẩn menu
-                          setState(() {
-                            isLongPress = false;
-                          });
                         },
                         child: Row(
                           children: [
                             Container(
                               margin: const EdgeInsets.only(right: 5),
-                              child: Image.asset(
-                                isFelt()
-                                    ? (isFeltKudo == '1'
-                                        ? ('lib/src/assets/images/reactions/like.png')
-                                        : ('lib/src/assets/images/reactions/angry.png'))
-                                    : (selectedReaction != ''
-                                        ? (selectedReaction == '1'
-                                            ? 'lib/src/assets/images/reactions/like.png'
-                                            : 'lib/src/assets/images/reactions/angry.png')
-                                        : 'lib/src/assets/images/like.png'),
-                                width: 20,
-                                height: 20,
-                              ),
+                              child: () {
+                                if (isFeltKudo == '-1') {
+                                  return Image.asset(
+                                    'lib/src/assets/images/like.png',
+                                    width: 20,
+                                    height: 20,
+                                  );
+                                } else if (isFeltKudo == '0') {
+                                  return Image.asset(
+                                    'lib/src/assets/images/reactions/angry.png',
+                                    width: 20,
+                                    height: 20,
+                                  );
+                                } else {
+                                  return Image.asset(
+                                    'lib/src/assets/images/reactions/like.png',
+                                    width: 20,
+                                    height: 20,
+                                  );
+                                }
+                              }(),
                             ),
-                            Text(
-                              isFelt()
-                                  ? (isFeltKudo == '1' ? ('Like') : ('Phẫn nộ'))
-                                  : (selectedReaction != ''
-                                      ? (selectedReaction == '1'
-                                          ? 'Like'
-                                          : 'Phẫn nộ')
-                                      : 'Like'),
-                              style: TextStyle(
-                                  color: isFelt()
-                                      ? (isFeltKudo == '1'
-                                          ? (Colors.blue)
-                                          : (Colors.green))
-                                      : (selectedReaction != ''
-                                          ? (selectedReaction == '1'
-                                              ? Colors.blue
-                                              : Colors.green)
-                                          : Colors.black),
-                                  fontSize: 16),
-                            )
+                            () {
+                              if (isFeltKudo == '-1') {
+                                return const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                );
+                              } else if (isFeltKudo == '0') {
+                                return const Text(
+                                  "Phẫn nộ",
+                                  style: TextStyle(
+                                      color: Colors.green, fontSize: 16),
+                                );
+                              } else {
+                                return const Text(
+                                  "Like",
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 16),
+                                );
+                              }
+                            }(),
                           ],
                         ),
                       ),
@@ -570,7 +625,12 @@ class DetailPostPageState extends State<DetailPostPage> {
                       margin: const EdgeInsets.only(top: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          print("I commented this post");
+                          _commentFocusNode
+                              .requestFocus();
+                          setState(() {
+                            isTextFieldFocusDirectly =
+                            true;
+                          });
                         },
                         child: Row(
                           children: [
@@ -934,7 +994,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                       .toList(),
                 ),
                 const SizedBox(
-                  height: 30.0,
+                  height: 40.0,
                 ),
               ],
             ),

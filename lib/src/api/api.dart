@@ -44,4 +44,5 @@ class ListAPI {
   static const getListFeels = "$baseHost/get_list_feels";
   static const getMarkComment = "$baseHost/get_mark_comment";
   static const setMarkComment = "$baseHost/set_mark_comment";
+  static const deleteFeel = "$baseHost/delete_feel";
 }
