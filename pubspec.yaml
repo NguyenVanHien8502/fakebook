@@ -46,3 +46,4 @@ flutter:
   assets:
     - lib/src/assets/images/
     - lib/src/assets/images/reactions/
+    - lib/src/assets/user/

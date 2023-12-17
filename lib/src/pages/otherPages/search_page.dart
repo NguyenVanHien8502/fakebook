@@ -1,6 +1,5 @@
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
-import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
@@ -18,9 +17,6 @@ class SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -42,7 +38,8 @@ class SearchPageState extends State<SearchPage> {
             decoration: InputDecoration(
               isDense: true,
               hintText: 'Search...',
-              contentPadding: const EdgeInsets.only(left: 16.0, bottom: 10.0, top: 25.0),
+              contentPadding:
+                  const EdgeInsets.only(left: 16.0, bottom: 10.0, top: 25.0),
               hintStyle: const TextStyle(color: Colors.blueGrey),
               border: InputBorder.none,
               filled: true,

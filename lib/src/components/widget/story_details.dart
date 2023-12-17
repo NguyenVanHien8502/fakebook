@@ -496,7 +496,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                                 children: [
                                                   ImageIcon(
                                                     AssetImage(
-                                                        'assets/images/message.png'),
+                                                        'lib/src/assets/images/message.png'),
                                                     color: Colors.white,
                                                     size: 20,
                                                   ),
@@ -520,7 +520,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/like.png',
+                                          'lib/src/assets/images/reactions/like.png',
                                           width: 40,
                                           height: 40,
                                         ),
@@ -529,7 +529,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/love.png',
+                                          'lib/src/assets/images/reactions/love.png',
                                           width: 40,
                                           height: 40,
                                         ),
@@ -538,7 +538,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/care.png',
+                                          'lib/src/assets/images/reactions/care.png',
                                           width: 40,
                                           height: 40,
                                         ),
@@ -547,7 +547,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/haha.png',
+                                          'lib/src/assets/images/reactions/haha.png',
                                           width: 40,
                                           height: 40,
                                         ),
@@ -556,7 +556,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/wow.png',
+                                          'lib/src/assets/images/reactions/wow.png',
                                           width: 40,
                                           height: 40,
                                         ),
@@ -565,7 +565,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/sad.png',
+                                          'lib/src/assets/images/reactions/sad.png',
                                           width: 40,
                                           height: 40,
                                         ),
@@ -574,7 +574,7 @@ class _StoryDetailsState extends State<StoryDetails>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Image.asset(
-                                          'assets/images/reactions/angry.png',
+                                          'lib/src/assets/images/reactions/angry.png',
                                           width: 40,
                                           height: 40,
                                         ),

@@ -38,7 +38,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   ScrollController scrollController =
-  ScrollController(initialScrollOffset: MenuScreen.offset);
+      ScrollController(initialScrollOffset: MenuScreen.offset);
   ScrollController headerScrollController = ScrollController();
 
   @override
@@ -180,26 +180,26 @@ class _MenuScreenState extends State<MenuScreen> {
                         children: [
                           currentUser != null
                               ? Container(
-                            margin: const EdgeInsets.only(right: 6.0),
-                            child: ClipOval(
-                              child: Image.network(
-                                '${jsonDecode(currentUser)['avatar']}',
-                                height: 50,
-                                width: 50,
-                                fit: BoxFit
-                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                              ),
-                            ),
-                          )
+                                  margin: const EdgeInsets.only(right: 6.0),
+                                  child: ClipOval(
+                                    child: Image.network(
+                                      '${jsonDecode(currentUser)['avatar']}',
+                                      height: 50,
+                                      width: 50,
+                                      fit: BoxFit
+                                          .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                    ),
+                                  ),
+                                )
                               : Container(
-                            margin: const EdgeInsets.only(right: 6.0),
-                            child: const Image(
-                              image: AssetImage(
-                                  'lib/src/assets/images/avatar.jpg'),
-                              height: 50,
-                              width: 50,
-                            ),
-                          ),
+                                  margin: const EdgeInsets.only(right: 6.0),
+                                  child: const Image(
+                                    image: AssetImage(
+                                        'lib/src/assets/images/avatarfb.jpg'),
+                                    height: 50,
+                                    width: 50,
+                                  ),
+                                ),
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: Column(
@@ -207,19 +207,19 @@ class _MenuScreenState extends State<MenuScreen> {
                               children: [
                                 currentUser != null
                                     ? Text(
-                                  '${jsonDecode(currentUser)['username']}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                )
+                                        '${jsonDecode(currentUser)['username']}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      )
                                     : const Text(
-                                  'Lỗi hiển thị',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                                        'Lỗi hiển thị',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
                                 const SizedBox(
                                   height: 5,
                                 ),
@@ -529,7 +529,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         onPressed: () {
                           setState(() {
                             MenuScreen.viewMoreShortcuts =
-                            !MenuScreen.viewMoreShortcuts;
+                                !MenuScreen.viewMoreShortcuts;
                           });
                         },
                         child: Text(
@@ -783,7 +783,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               ),
                             ]),
                         child: const MenuChoice(
-                            img: 'lib/src/assets/images/avatar.jpg',
+                            img: 'lib/src/assets/images/settings2.png',
                             title: 'Cài đặt'),
                       ),
                     ],
