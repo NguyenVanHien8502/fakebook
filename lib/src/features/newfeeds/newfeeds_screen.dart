@@ -1,11 +1,13 @@
 import 'dart:convert';
 
-import 'package:fakebook/src/features/newfeeds/post_card.dart';
-import 'package:fakebook/src/model/post.dart';
-import 'package:fakebook/src/model/user.dart';
+import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
+import 'package:fakebook/src/pages/otherPages/report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class NewfeedsScreen extends StatefulWidget {
   static double offset = 0;
@@ -25,10 +27,14 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
   static const storage = FlutterSecureStorage();
 
+  // bool postVisible = true;
+  Map<int, bool> postVisible = {};
+
   @override
   void initState() {
     super.initState();
     getCurrentUserData();
+    getListPosts();
   }
 
   dynamic currentUser;
@@ -46,204 +52,174 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     super.dispose();
   }
 
-  final posts = [
-    Post(
-      user: User(
-        id: "36",
-        name: 'Đài Phát Thanh.',
-        avatar: 'assets/images/user/daiphatthanh.jpg',
-        type: 'page',
+  //get list post
+  var listPosts = [];
+
+  Future<void> getListPosts() async {
+    String? token = await storage.read(key: 'token');
+    dynamic currentUser = await storage.read(key: 'currentUser');
+    dynamic userId = jsonDecode(currentUser)['id'];
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.getListPosts);
+      Map body = {
+        //"user_id": userId,
+        "in_campaign": "1",
+        "campaign_id": "1",
+        "latitude": "1.0",
+        "longitude": "1.0",
+        // "last_id": "6",
+        "index": "0",
+        "count": "10"
+      };
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(body),
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      print(responseBody['data']['post']);
+      setState(() {
+        listPosts = responseBody['data']['post'] ?? [];
+      });
+      for (var i = 0; i < listPosts.length; i++) {
+        int postId = int.parse(listPosts[i]['id'] ?? "");
+        if (listPosts[i]['is_felt'] == '-1') {
+          setState(() {
+            isFeltKudo[postId] = '-1';
+          });
+        } else if (listPosts[i]['is_felt'] == '0') {
+          setState(() {
+            isFeltKudo[postId] = '0';
+          });
+        } else if (listPosts[i]['is_felt'] == '1') {
+          setState(() {
+            isFeltKudo[postId] = '1';
+          });
+        }
+      }
+
+      for (var i = 0; i < listPosts.length; i++) {
+        int postId = int.parse(listPosts[i]['id'] ?? "");
+        setState(() {
+          postVisible[postId] = true;
+        });
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Map<int, String> isFeltKudo =
+      {}; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
+
+// Hàm hiển thị menu tùy chọn
+  void showReactionMenu(BuildContext context, int postId) {
+    showMenu(
+      context: context,
+      position: const RelativeRect.fromLTRB(-80, 315, 0, 0),
+      elevation: 0,
+      // Đặt độ nâng của PopupMenu để loại bỏ border
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0), // Đặt độ cong của border
       ),
-      time: '16 giờ',
-      shareWith: 'public',
-      content:
-          'Rap Việt Mùa 3 (2023) đã tìm ra Top 9 bước vào Chung Kết, hứa hẹn một trận đại chiến cực căng.\n\nTập cuối vòng Bứt Phá Rap Việt Mùa 3 (2023) đã chính thức khép lại và chương trình đã tìm ra 9 gương mặt đầy triển vọng để bước vào vòng Chung Kết tranh ngôi vị quán quân.\n\nKịch tính, cam go và đầy bất ngờ đến tận những giây phút cuối, Huỳnh Công Hiếu của team B Ray đã vượt lên trên 3 đối thủ Yuno BigBoi, Richie D. ICY, gung0cay để giành được tấm vé đầu tiên bước vào Chung Kết cho đội của mình.\n\nỞ bảng F, không hề thua kém người đồng đội cùng team, 24k.Right cũng có được vé vào Chung Kết sau khi hạ gục SMO team Andree Right Hand, Pháp Kiều – team BigDaddy và Tọi đến từ team Thái VG tại bảng F.\n\nKết thúc toàn bộ phần trình diễn của các thí sinh ở vòng Bứt Phá cũng là lúc 3 Giám khảo hội ý để đưa ra quyết định chọn người nhận Nón Vàng của mình để bước tiếp vào đêm Chung Kết Rap Việt Mùa 3 (2023).\n\nNữ giám khảo Suboi quyết định trao nón vàng cho thành viên đội HLV BigDaddy - Pháp Kiều. Tiếp theo, SMO là người được Giám khảo Karik tin tưởng trao nón. Cuối cùng, Giám khảo JustaTee quyết định trao gửi Nón Vàng của mình cho Double2T.\n\nNhư vậy, đội hình Top 9 bước vào Chung kết đã hoàn thiện gồm: Huỳnh Công Hiếu, 24k.Right – Team B Ray; Liu Grace, Mikelodic – Team Thái VG; SMO, Rhyder – Team Andree Right Hand và Pháp Kiều, Double2T, Tez – Team BigDaddy.',
-      image: ['assets/images/post/1.jpg'],
-      like: 8500,
-      angry: 0,
-      comment: 902,
-      haha: 43,
-      love: 2200,
-      lovelove: 59,
-      sad: 36,
-      share: 98,
-      wow: 7,
-    ),
-    Post(
-      user: User(
-        id: "36",
-        verified: true,
-        name: 'GOAL Vietnam',
-        avatar: 'assets/images/user/goal.png',
-        cover: 'assets/images/user/goal-cover.png',
-        type: 'page',
-        likes: 285308,
-        followers: 379103,
-        bio:
-            'GOAL là trang tin điện tử về bóng đá lớn nhất thế giới, cập nhật liên tục, đa chiều về mọi giải đấu',
-        pageType: 'Công ty truyền thông/tin tức',
-        socialMedias: [
-          SocialMedia(
-            icon: 'assets/images/email.png',
-            name: 'vietnamdesk@goal.com',
-            link: 'mailto:vietnamdesk@goal.com',
-          ),
-          SocialMedia(
-            icon: 'assets/images/link.png',
-            name: 'goal.com/vn',
-            link: 'goal.com/vn',
-          ),
-        ],
-        posts: [
-          Post(
-            user: User(
-              id: "36",
-              verified: true,
-              name: 'GOAL Vietnam',
-              avatar: 'assets/images/user/goal.png',
-            ),
-            time: '3 phút',
-            shareWith: 'public',
-            content:
-                '✅ 10 năm cống hiến cho bóng đá trẻ Việt Nam\n✅ Người đầu tiên đưa Việt Nam tham dự World Cup ở cấp độ U20 🌏🇻🇳\n✅ Giành danh hiệu đầu tiên cùng U23 Việt Nam tại giải U23 Đông Nam Á 2023 🏆\n\nMột người thầy đúng nghĩa với sự tận tụy cống hiến cho sự nghiệp ươm mầm những tương lai của bóng đá nước nhà. Cảm ơn ông, HLV Hoàng Anh Tuấn ❤️\n\n📸 VFF\n\n#goalvietnam #hot #HoangAnhTuan #U23Vietnam',
-            image: ['assets/images/post/2.jpg'],
-            like: 163,
-            love: 24,
-            comment: 5,
-            type: 'memory',
-          ),
-          Post(
-            user: User(
-              id: "36",
-              verified: true,
-              name: 'GOAL Vietnam',
-              avatar: 'assets/images/user/goal.png',
-            ),
-            time: '3 phút',
-            shareWith: 'public',
-            content: 'Do you like Phở?\nBecause I can be your Pho-ever ✨✨',
-            image: [
-              'assets/images/post/3.jpg',
-              'assets/images/post/5.jpg',
-              'assets/images/post/12.jpg',
-              'assets/images/post/13.jpg',
-              'assets/images/post/14.jpg',
-              'assets/images/post/15.jpg',
-              'assets/images/post/16.jpg',
+      color: Colors.transparent,
+      // color: Colors.blue,
+      items: [
+        PopupMenuItem<String>(
+          padding: const EdgeInsets.all(0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '1',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/like.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+              PopupMenuItem<String>(
+                padding: const EdgeInsets.all(0),
+                value: '0',
+                child: Image.asset(
+                  'lib/src/assets/images/reactions/angry.png',
+                  width: 30,
+                  height: 30,
+                ),
+              ),
             ],
-            like: 15000,
-            love: 7300,
-            comment: 258,
-            haha: 235,
-            share: 825,
-            lovelove: 212,
-            wow: 9,
-            layout: 'classic',
-            type: 'memory',
           ),
-          Post(
-            user: User(
-              id: "36",
-              verified: true,
-              name: 'GOAL Vietnam',
-              avatar: 'assets/images/user/goal.png',
-            ),
-            time: '3 phút',
-            shareWith: 'public',
-            content:
-                'Những câu thả thính Tiếng Anh mượt mà - The smoothest pick up lines \n\n1. You wanna know who my crush is? - Cậu muốn biết crush của tớ là ai hơm?\nSimple. Just read the first word :> - Đơn giản. Cứ đọc lại từ đầu tiên\n\n2. Hey, i think my phone is broken - Tớ nghĩ điện thoại tớ bị hỏng rùi \nIt doesn’t have your phone number in it. - Vì nó không có sđt của cậu trong nàyyy \nCan you fix it? 😉 - Cậu sửa được không ha?\n\n3. According to my calculations, the more you smile, the more i fall - Theo tính toán của tớ, cậu càng cười, tớ càng đổ \n\n4. I can’t turn water into wine - Tớ không thể biến nước thành rịu\nBut i can turn you into mine - Nhưng tớ có thể biến cậu thành “của tớ” \n\n5. Can i take a picture of you? - Cho tớ chụp 1 bức hình với cậu được hem\nAh, to tell Santa what i want for Christmas this year - À để nói với ông già Noel tớ muốn quà gì dịp giáng sinh năm nay \n\nÁp dụng cho bạn thân, crush, ngừi iu hay cho zui cũng được lun 🥰',
-            image: [
-              'assets/images/post/3.jpg',
-              'assets/images/post/4.jpg',
-              'assets/images/post/5.jpg'
-            ],
-            like: 15000,
-            love: 7300,
-            comment: 258,
-            haha: 235,
-            share: 825,
-            lovelove: 212,
-            wow: 9,
-            layout: 'column',
-            type: 'memory',
-          ),
-        ],
-      ),
-      time: '3 phút',
-      shareWith: 'public',
-      content:
-          '✅ 10 năm cống hiến cho bóng đá trẻ Việt Nam\n✅ Người đầu tiên đưa Việt Nam tham dự World Cup ở cấp độ U20 🌏🇻🇳\n✅ Giành danh hiệu đầu tiên cùng U23 Việt Nam tại giải U23 Đông Nam Á 2023 🏆\n\nMột người thầy đúng nghĩa với sự tận tụy cống hiến cho sự nghiệp ươm mầm những tương lai của bóng đá nước nhà. Cảm ơn ông, HLV Hoàng Anh Tuấn ❤️\n\n📸 VFF\n\n#goalvietnam #hot #HoangAnhTuan #U23Vietnam',
-      image: ['assets/images/post/2.jpg'],
-      like: 163,
-      love: 24,
-      comment: 5,
-    ),
-    Post(
-      user: User(
-        id: "36",
-        name: 'Khánh Vy',
-        verified: true,
-        cover: 'assets/images/user/khanhvy-cover.jpg',
-        avatar: 'assets/images/user/khanhvy.jpg',
-        bio: 'Trần Khánh Vy (1999) - MC VTV - Youtuber - Tác giả Sách',
-        socialMedias: [
-          SocialMedia(
-            icon: 'assets/images/instagram.png',
-            name: 'khanhvyccf',
-            link: 'instagram.com/khanhvyccf',
-          ),
-        ],
-        topFriends: [
-          User(
-            id: "36",
-            name: 'Khánh Vy',
-            avatar: 'assets/images/user/khanhvy.jpg',
-          ),
-          User(
-            id: "36",
-            name: 'Leo Messi',
-            avatar: 'assets/images/user/messi.jpg',
-          ),
-          User(
-            id: "36",
-            name: 'Minh Hương',
-            avatar: 'assets/images/user/minhhuong.jpg',
-          ),
-          User(
-            id: "36",
-            name: 'Bảo Ngân',
-            avatar: 'assets/images/user/baongan.jpg',
-          ),
-          User(
-            id: "36",
-            name: 'Hà Linhh',
-            avatar: 'assets/images/user/halinh.jpg',
-          ),
-          User(
-            id: "36",
-            name: 'Minh Trí',
-            avatar: 'assets/images/user/minhtri.jpg',
-          ),
-        ],
-      ),
-      time: '3 phút',
-      shareWith: 'public',
-      content:
-          'Có một nơi luôn mang lại cho mình sự bình yên và ấm áp diệu kỳ, là nơi mà Ông nội đang yên nghỉ cùng các đồng đội. Mỗi lần nhìn vào lá cờ Tổ quốc là thêm một lần mình nhớ Ông. Mỗi lần nhìn lên bầu trời, là thêm một lần mình chào Ông nội. Chắc bởi Ông đã hoá thân vào núi sống, mây trời của đất nước đã từ rất lâu trước khi mình được sinh ra trên cõi đời này.\n\nMình vẫn hay tự nhủ với bản thân rằng: Trong hành trình trưởng thành, sẽ có những lúc mệt mỏi yếu đuối, những khi chán ghét cuộc sống, nhưng mong bản thân hãy luôn nhớ rằng từng thớ thịt, từng dòng máu trong người mình là sự tiếp nối của thế hệ cha anh - những tiền nhân đã gác lại những nỗi niềm hạnh phúc riêng tư, những trang sách, những giảng đường, hay những mâm cơm gia đình bé nhỏ, để dùng máu đào của mình nhuộm lên lá cờ tổ quốc thêm đỏ chói, để thế hệ mai sau thêm bình an, ấm yên.\nKính cẩn nghiêng mình trước hồn thiêng dân tộc đã chở che cho quốc thái dân an. Mong nguyện một cuộc sống ổn định, bình an tới các gia đình liệt sĩ, những thương bệnh binh. \n\nKính chúc các mẹ Việt Nam anh hùng mến thương luôn mạnh khỏe. \n\nChúng con trân trọng và biết ơn giá trị hòa bình ngày hôm nay và mãi về sau. Luôn hướng về tổ quốc.\n\nChưa bao giờ ngừng tự hào về Ông và những anh hùng liệt sĩ.\nCon thương Ông nội thật nhiều.\nNgày 27/7/2023.',
-      image: [
-        'assets/images/post/10.jpg',
-        'assets/images/post/11.jpg',
+        ),
       ],
-      like: 15000,
-      love: 7300,
-      comment: 258,
-      haha: 235,
-      share: 825,
-      lovelove: 212,
-      wow: 9,
-      layout: 'classic',
-    ),
-  ];
+    ).then((value) async {
+      if (value != null) {
+        setState(() {
+          isFeltKudo[postId] = value == '1' ? '1' : '0';
+        });
+        // Thực hiện các hành động tương ứng
+        String? token = await storage.read(key: 'token');
+        try {
+          var url = Uri.parse(ListAPI.feel);
+          Map body = {"id": postId, "type": value};
+          http.Response response = await http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token'
+            },
+            body: jsonEncode(body),
+          );
+
+          // Chuyển chuỗi JSON thành một đối tượng Dart
+          var responseBody = jsonDecode(response.body);
+          print(responseBody);
+        } catch (e) {
+          print('Error: $e');
+        }
+      }
+    });
+  }
+
+  //xử lý hiển thị thời gian đăng của post
+  String formatTimeDifference(String createdAt) {
+    DateTime createdDateTime = DateTime.parse(createdAt);
+    Duration difference = DateTime.now().difference(createdDateTime);
+
+    if (difference.inDays > 7) {
+      return DateFormat('dd/MM/yyyy').format(createdDateTime);
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  // xử lý hiển thị ảnh của post
+  List<List<Map<String, dynamic>>> _splitImagesIntoPairs(List<dynamic> images) {
+    List<List<Map<String, dynamic>>> imagePairs = [];
+    for (int i = 0; i < images.length; i += 2) {
+      int endIndex = i + 2;
+      if (endIndex > images.length) {
+        endIndex = images.length;
+      }
+      imagePairs.add(images.sublist(i, endIndex).cast<Map<String, dynamic>>());
+    }
+    return imagePairs;
+  }
+
+  //xử lý report
 
   @override
   Widget build(BuildContext context) {
@@ -338,16 +314,1023 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
           // List posts
           Column(
-            children: posts
-                .map((e) => Column(
-                      children: [
-                        const SizedBox(
-                          height: 10,
+            children: listPosts.where((post) => post['id'] != null).map((post) {
+              return Column(
+                children: <Widget>[
+                  () {
+                    int postId = int.parse(post['id']);
+                    if (postVisible[postId] == true) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailPostPage(
+                                            postId: int.parse(post['id']),
+                                          )));
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 16.0, top: 16.0, bottom: 16.0),
+                                  child: () {
+                                    if (post['author']['avatar'] != '') {
+                                      return ClipOval(
+                                        child: Image.network(
+                                          '${post['author']['avatar']}',
+                                          height: 50,
+                                          width: 50,
+                                          fit: BoxFit
+                                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                        ),
+                                      );
+                                    } else {
+                                      return Image.asset(
+                                        'lib/src/assets/images/avatar.jpg',
+                                        width: 50,
+                                        height: 50,
+                                      );
+                                    }
+                                  }(),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: Text(
+                                                post['author']['name'],
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
+                                            ),
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  left: 5.0, bottom: 6.0),
+                                              child: Image.asset(
+                                                'lib/src/assets/images/tich_xanh.png',
+                                                width: 15,
+                                                height: 15,
+                                              ),
+                                            ),
+                                          ],
+                                        )),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              formatTimeDifference(
+                                                  post['created']),
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  left: 3.0, top: 2.0),
+                                              child: const Icon(
+                                                Icons.public,
+                                                size: 12.0,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                                const Spacer(),
+                                // dùng cái này để icon xuống phía bên phải cùng của row
+                                Container(
+                                  margin: const EdgeInsets.only(right: 16.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        splashRadius: 20,
+                                        onPressed: () {
+                                          showModalBottomSheet(
+                                            isScrollControlled: true,
+                                            context: context,
+                                            builder: (context) {
+                                              return DecoratedBox(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.rectangle,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(10),
+                                                    topRight:
+                                                        Radius.circular(10),
+                                                  ),
+                                                  color: Colors.grey[300],
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Container(
+                                                      height: 4,
+                                                      width: 40,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey,
+                                                        shape:
+                                                            BoxShape.rectangle,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        horizontal: 10,
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: InkWell(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              onTap: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) =>
+                                                                         ReportPage(postId: int.parse(post['id']))));
+                                                              },
+                                                              child: ListTile(
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                                tileColor:
+                                                                    Colors
+                                                                        .white,
+                                                                minLeadingWidth:
+                                                                    10,
+                                                                titleAlignment:
+                                                                    ListTileTitleAlignment
+                                                                        .center,
+                                                                leading:
+                                                                    const Icon(
+                                                                  Icons.report,
+                                                                  size: 30,
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                title:
+                                                                    const Text(
+                                                                  'Báo cáo bài viết',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        16,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: InkWell(
+                                                              onTap: () {},
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                      .only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        10),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        10),
+                                                              ),
+                                                              child:
+                                                                  const ListTile(
+                                                                titleAlignment:
+                                                                    ListTileTitleAlignment
+                                                                        .center,
+                                                                tileColor:
+                                                                    Colors
+                                                                        .white,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                  ),
+                                                                ),
+                                                                minLeadingWidth:
+                                                                    10,
+                                                                leading: Icon(
+                                                                  Icons
+                                                                      .add_circle_rounded,
+                                                                  size: 30,
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                title: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Hiển thị thêm',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                                    Text(
+                                                                      'Bạn sẽ nhìn thấy nhiều bài viết tương tự hơn.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black54,
+                                                                        fontSize:
+                                                                            14,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: InkWell(
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                      .only(
+                                                                bottomLeft: Radius
+                                                                    .circular(
+                                                                        10),
+                                                                bottomRight:
+                                                                    Radius
+                                                                        .circular(
+                                                                            10),
+                                                              ),
+                                                              onTap: () {},
+                                                              child:
+                                                                  const ListTile(
+                                                                titleAlignment:
+                                                                    ListTileTitleAlignment
+                                                                        .center,
+                                                                tileColor:
+                                                                    Colors
+                                                                        .white,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .only(
+                                                                    bottomLeft:
+                                                                        Radius.circular(
+                                                                            10),
+                                                                    bottomRight:
+                                                                        Radius.circular(
+                                                                            10),
+                                                                  ),
+                                                                ),
+                                                                minLeadingWidth:
+                                                                    10,
+                                                                leading: Icon(
+                                                                  Icons
+                                                                      .remove_circle,
+                                                                  size: 30,
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                title: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Ẩn bớt',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                                    Text(
+                                                                      'Bạn sẽ nhìn thấy ít bài viết tương tự hơn.',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black54,
+                                                                        fontSize:
+                                                                            14,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: InkWell(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              onTap: () {},
+                                                              child: ListTile(
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                                tileColor:
+                                                                    Colors
+                                                                        .white,
+                                                                minLeadingWidth:
+                                                                    10,
+                                                                titleAlignment:
+                                                                    ListTileTitleAlignment
+                                                                        .center,
+                                                                leading:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .file_copy_rounded,
+                                                                  color: Colors
+                                                                      .black,
+                                                                  size: 30,
+                                                                ),
+                                                                title:
+                                                                    const Text(
+                                                                  'Sao chép liên kết',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        16,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: InkWell(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              onTap: () {},
+                                                              child: ListTile(
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                                tileColor:
+                                                                    Colors
+                                                                        .white,
+                                                                minLeadingWidth:
+                                                                    10,
+                                                                titleAlignment:
+                                                                    ListTileTitleAlignment
+                                                                        .center,
+                                                                leading:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .view_list_rounded,
+                                                                  size: 30,
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                title:
+                                                                    const Text(
+                                                                  'Quản lý bảng feed',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        16,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: const Icon(
+                                            Icons.more_horiz_rounded),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          int postId =
+                                              int.parse(post['id'] ?? "");
+                                          setState(() {
+                                            postVisible[postId] = false;
+                                          });
+                                        },
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 22.0,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+
+                          // Status
+                          Container(
+                            padding:
+                                const EdgeInsets.only(left: 16.0, right: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(post['described'],
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 16))
+                              ],
+                            ),
+                          ),
+
+                          //images of post
+                          const SizedBox(
+                            height: 10.0,
+                          ),
+                          if (post['image'] != null && post['image'].isNotEmpty)
+                            ..._splitImagesIntoPairs(post['image'])
+                                .map<Widget>((imagePair) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: imagePair.map<Widget>((image) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 5.0, vertical: 5.0),
+                                    child: Image.network(
+                                      '${image['url']}',
+                                      height: 150,
+                                      width: 150,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
+
+                          Material(
+                            color: Colors.white,
+                            child: InkWell(
+                                onTap: () {
+                                  // Navigator.pushNamed(context, CommentScreen.routeName,
+                                  //     arguments: widget.post);
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 10.0, top: 5.0),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 6.0, top: 5.0),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  'lib/src/assets/images/reactions/like.png',
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                                Image.asset(
+                                                  'lib/src/assets/images/reactions/angry.png',
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8.0),
+                                                  child: Text(
+                                                    (int.parse(post['feel'] ??
+                                                            '0'))
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 16.0, top: 5.0),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                right: 12.0),
+                                            child: Text(
+                                                "${post['comment_mark']} comments"),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 5.0),
+                            child: const Divider(
+                              color: Colors.black12,
+                              thickness: 1,
+                              height: 1,
+                              indent: 15,
+                              endIndent: 14,
+                            ),
+                          ),
+
+                          //options like comment share
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 10.0),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    String? token =
+                                        await storage.read(key: 'token');
+                                    int postId = int.parse(post['id'] ?? "");
+                                    if (isFeltKudo.containsKey(postId) &&
+                                        (isFeltKudo[postId] == '1' ||
+                                            isFeltKudo[postId] == '0')) {
+                                      // xử lý delete feel
+                                      try {
+                                        var url = Uri.parse(ListAPI.deleteFeel);
+                                        Map body = {"id": '$postId'};
+                                        http.Response response =
+                                            await http.post(
+                                          url,
+                                          headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': 'Bearer $token'
+                                          },
+                                          body: jsonEncode(body),
+                                        );
+
+                                        //cập nhật lại trạng thái của isFeltKudo
+                                        setState(() {
+                                          isFeltKudo[postId] = '-1';
+                                        });
+
+                                        // Chuyển chuỗi JSON thành một đối tượng Dart
+                                        var responseBody =
+                                            jsonDecode(response.body);
+                                        print(responseBody);
+                                      } catch (e) {
+                                        print('Error: $e');
+                                      }
+                                    } else {
+                                      // xử lý set feel kudo
+                                      try {
+                                        var url = Uri.parse(ListAPI.feel);
+                                        Map body = {
+                                          "id": '$postId',
+                                          "type": "1"
+                                        };
+                                        http.Response response =
+                                            await http.post(
+                                          url,
+                                          headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': 'Bearer $token'
+                                          },
+                                          body: jsonEncode(body),
+                                        );
+
+                                        //cập nhật lại trạng thái của isFeltKudo
+                                        setState(() {
+                                          isFeltKudo[postId] = '1';
+                                        });
+
+                                        // Chuyển chuỗi JSON thành một đối tượng Dart
+                                        var responseBody =
+                                            jsonDecode(response.body);
+                                        print(responseBody);
+                                      } catch (e) {
+                                        print('Error: $e');
+                                      }
+                                    }
+                                  },
+                                  onLongPress: () {
+                                    // Xử lý khi nhấn giữ nút like
+                                    showReactionMenu(
+                                        context, int.parse(post['id']));
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(right: 5),
+                                        child: () {
+                                          int postId =
+                                              int.parse(post['id'] ?? "");
+                                          if (isFeltKudo.containsKey(postId) &&
+                                              isFeltKudo[postId] == '-1') {
+                                            return Image.asset(
+                                              'lib/src/assets/images/like.png',
+                                              width: 20,
+                                              height: 20,
+                                            );
+                                          } else if (isFeltKudo
+                                                  .containsKey(postId) &&
+                                              isFeltKudo[postId] == '0') {
+                                            return Image.asset(
+                                              'lib/src/assets/images/reactions/angry.png',
+                                              width: 20,
+                                              height: 20,
+                                            );
+                                          } else {
+                                            return Image.asset(
+                                              'lib/src/assets/images/reactions/like.png',
+                                              width: 20,
+                                              height: 20,
+                                            );
+                                          }
+                                        }(),
+                                      ),
+                                      () {
+                                        int postId =
+                                            int.parse(post['id'] ?? "");
+                                        if (isFeltKudo.containsKey(postId) &&
+                                            isFeltKudo[postId] == '-1') {
+                                          return const Text(
+                                            "Like",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16),
+                                          );
+                                        } else if (isFeltKudo
+                                                .containsKey(postId) &&
+                                            isFeltKudo[postId] == '0') {
+                                          return const Text(
+                                            "Phẫn nộ",
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 16),
+                                          );
+                                        } else {
+                                          return const Text(
+                                            "Like",
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 16),
+                                          );
+                                        }
+                                      }(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 10.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    print("I commented this post");
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(right: 5),
+                                        child: const Image(
+                                          image: AssetImage(
+                                              'lib/src/assets/images/comment.png'),
+                                          height: 20,
+                                          width: 20,
+                                        ),
+                                      ),
+                                      const Text(
+                                        "Comment",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 10.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    print("I shared this post");
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(right: 5),
+                                        child: const Image(
+                                          image: AssetImage(
+                                              'lib/src/assets/images/share.png'),
+                                          height: 20,
+                                          width: 20,
+                                        ),
+                                      ),
+                                      const Text(
+                                        "Share",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 20.0),
+                            child: const Divider(
+                              height: 1,
+                              color: Colors.black12,
+                              thickness: 5,
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
                         ),
-                        PostCard(post: e),
-                      ],
-                    ))
-                .toList(),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.visibility_off_rounded,
+                                  color: Colors.blue,
+                                  size: 14,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Đã ẩn',
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(
+                                  child: Text(
+                                    'Việc ẩn bài viết giúp Facebook cá nhân hóa Bảng feed của bạn.',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    int postId = int.parse(post['id'] ?? "");
+                                    setState(() {
+                                      postVisible[postId] = true;
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey[300],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    shadowColor: Colors.transparent,
+                                  ),
+                                  child: const Text(
+                                    'Hoàn tác',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              color: Colors.black12,
+                              thickness: 0.5,
+                              height: 20,
+                            ),
+                            Row(
+                              children: [
+                                DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black12,
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                  child: const CircleAvatar(
+                                    backgroundImage: AssetImage(
+                                        'lib/src/assets/images/avatar.jpg'),
+                                    radius: 15,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text(
+                                  'Tạm ẩn bài viết này trong 30 ngày',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.report,
+                                  color: Colors.black,
+                                  size: 30,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Báo cáo bài viết',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.view_list_rounded,
+                                  color: Colors.black,
+                                  size: 30,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Quản lý Bảng feed',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 10.0),
+                              child: const Divider(
+                                height: 1,
+                                color: Colors.black12,
+                                thickness: 5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }()
+                ],
+              );
+            }).toList(),
           )
         ],
       ),

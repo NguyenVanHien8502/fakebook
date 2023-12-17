@@ -764,12 +764,12 @@ class _MenuScreenState extends State<MenuScreen> {
                   child: Column(
                     children: [
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                  const ChangePasswordPage()));
+                                      const ChangePasswordPage()));
                         },
                         child: Container(
                           width: double.infinity,
@@ -791,7 +791,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                   spreadRadius: 0,
                                 ),
                               ]),
-                          child:const MenuChoice(
+                          child: const MenuChoice(
                               img: 'lib/src/assets/images/change_password.png',
                               title: 'Đổi mật khẩu'),
                         ),
@@ -862,7 +862,6 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   Future<void> handleLogout() async {
-    await storage.delete(key: 'token');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -873,6 +872,7 @@ class _MenuScreenState extends State<MenuScreen> {
           actions: [
             TextButton(
               onPressed: () async {
+                await storage.delete(key: 'token');
                 await storage.delete(key: 'email');
                 await storage.delete(key: 'password');
                 await storage.delete(key: 'currentUser');
@@ -887,7 +887,8 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                await storage.delete(key: 'token');
                 Navigator.pushNamed(
                   context,
                   WelcomePage.routeName,
