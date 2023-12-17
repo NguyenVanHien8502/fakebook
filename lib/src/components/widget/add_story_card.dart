@@ -1,6 +1,7 @@
 import 'package:fakebook/src/constants/global_variables.dart';
 import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class AddStoryCard extends StatelessWidget {
@@ -34,7 +35,7 @@ class AddStoryCard extends StatelessWidget {
                       topLeft: Radius.circular(10),
                       topRight: Radius.circular(10),
                     ),
-                    child: Image.asset(
+                    child: Image.network(
                       user!.avatar,
                       fit: BoxFit.fitWidth,
                     ),

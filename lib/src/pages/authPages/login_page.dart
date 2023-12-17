@@ -344,7 +344,7 @@ class LoginPageState extends State<LoginPage> {
               id: responseBody['data']['id'],
               name: responseBody['data']['username'],
               avatar:
-                  //responseBody['data']['avatar'] ??
+                  responseBody['data']['avatar'] ??
                   'lib/src/assets/images/avatarfb.jpg');
 
           //Cập nhật trạng thái toàn cầu

@@ -194,6 +194,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
             thickness: 5,
           ),
 
+          //Story
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(
