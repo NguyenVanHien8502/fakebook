@@ -2,6 +2,7 @@ import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/friends/friend_suggest.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/features/friends/friend_page.dart';
+import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -79,8 +80,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     id: item['id'].toString(),
                     name: item['username'],
                     avatar:
-                        //item['avatar'] ??
-                        'lib/src/assets/images/avatarfb.jpg',
+                        item['avatar'] ?? 'lib/src/assets/images/avatarfb.jpg',
                   ),
                   mutualFriends: item['same_friends'],
                 );
@@ -429,7 +429,15 @@ class _FriendsScreenState extends State<FriendsScreen> {
 
             for (int i = 0; i < friendRequests.length; i++)
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OtherPersonalPageScreen(
+                          userId: friendRequests[i].user.id),
+                    ),
+                  );
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Row(
@@ -444,7 +452,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                         ),
                         child: CircleAvatar(
                           backgroundImage:
-                              AssetImage(friendRequests[i].user.avatar),
+                              NetworkImage(friendRequests[i].user.avatar),
                           radius: 42,
                         ),
                       ),

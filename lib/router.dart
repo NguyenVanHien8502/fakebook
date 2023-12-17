@@ -1,10 +1,11 @@
+import 'package:fakebook/src/components/widget/story_details.dart';
 import 'package:fakebook/src/features/comment/screens/comment_screen.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/model/post.dart';
+import 'package:fakebook/src/model/story.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
-import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
@@ -15,18 +16,25 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
     case HomeScreen.routeName:
       return MaterialPageRoute(builder: (context) => const HomeScreen());
 
+    case StoryDetails.routeName:
+      final Story story = routeSettings.arguments as Story;
+      return PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (_, __, ___) => StoryDetails(story: story),
+      );
+
     case OtherPersonalPageScreen.routeName:
       final User user = routeSettings.arguments as User;
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            OtherPersonalPageScreen(user: user),
+            OtherPersonalPageScreen(userId: user.id),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
           const curve = Curves.ease;
 
           var tween =
-          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),
@@ -34,6 +42,7 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
           );
         },
       );
+
     case CommentScreen.routeName:
       final Post post = routeSettings.arguments as Post;
       return PageRouteBuilder(
@@ -47,7 +56,7 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
           const curve = Curves.ease;
 
           var tween =
-          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),

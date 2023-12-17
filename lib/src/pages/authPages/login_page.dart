@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
-import 'package:fakebook/src/components/my_textfield.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
@@ -144,7 +143,8 @@ class LoginPageState extends State<LoginPage> {
                               color: Colors.black54,
                             ),
                           ),
-                          cursorColor: Colors.black, //chỉnh màu của cái vạch nháy
+                          cursorColor:
+                              Colors.black, //chỉnh màu của cái vạch nháy
                           textAlignVertical: TextAlignVertical.center,
                         ),
                       ),
@@ -324,7 +324,7 @@ class LoginPageState extends State<LoginPage> {
               id: responseBody['data']['id'],
               name: responseBody['data']['username'],
               avatar:
-                  //responseBody['data']['avatar'] ??
+                  responseBody['data']['avatar'] ??
                   'lib/src/assets/images/avatarfb.jpg');
 
           //Cập nhật trạng thái toàn cầu

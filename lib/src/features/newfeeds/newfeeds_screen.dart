@@ -1,5 +1,11 @@
 import 'dart:convert';
 
+import 'package:fakebook/src/components/widget/add_story_card.dart';
+import 'package:fakebook/src/components/widget/story_card.dart';
+import 'package:fakebook/src/features/newfeeds/post_card.dart';
+import 'package:fakebook/src/model/post.dart';
+import 'package:fakebook/src/model/story.dart';
+import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
@@ -21,6 +27,60 @@ class NewfeedsScreen extends StatefulWidget {
 
 class _NewfeedsScreenState extends State<NewfeedsScreen> {
   Color colorNewPost = Colors.transparent;
+
+  final stories = [
+    Story(
+      user: User(
+        id: "36",
+        name: 'Doraemon',
+        avatar: 'lib/src/assets/images/doraemon.jpg',
+        type: 'page',
+      ),
+      image: ['lib/src/assets/images/1.jpg'],
+      time: ['12 phút'],
+      shareWith: 'public',
+    ),
+    Story(
+      user: User(
+          id: "36",
+          name: 'Sách Cũ Ngọc',
+          avatar: 'lib/src/assets/images/sachcungoc.jpg'),
+      image: ['lib/src/assets/images/2.jpg'],
+      time: ['3 giờ'],
+      shareWith: 'friends',
+    ),
+    Story(
+      user: User(
+        id: "36",
+        name: 'Vietnamese Argentina Football Fan Club (VAFFC)',
+        avatar: 'lib/src/assets/images/vaffc.jpg',
+        type: 'page',
+      ),
+      image: ['lib/src/assets/images/3.jpg'],
+      time: ['5 giờ'],
+      shareWith: 'friends-of-friends',
+    ),
+    Story(
+      user: User(
+          id: "36", name: 'Minh Hương', avatar: 'lib/src/images/minhhuong.jpg'),
+      image: [
+        'lib/src/assets/images/4.jpg',
+        'lib/src/assets/images/5.jpg',
+        'lib/src/assets/images/6.jpg',
+        'lib/src/assets/images/7.jpg',
+      ],
+      video: ['lib/src/assets/images/4.mp4', 'lib/src/assets/images/4.mp4'],
+      time: ['1 phút'],
+      shareWith: 'friends',
+    ),
+    Story(
+      user: User(
+          id: "36", name: 'Khánh Vy', avatar: 'lib/src/images/khanhvy.jpg'),
+      video: ['lib/src/assets/images/4.mp4'],
+      time: ['1 phút'],
+      shareWith: 'friends',
+    ),
+  ];
 
   ScrollController scrollController =
       ScrollController(initialScrollOffset: NewfeedsScreen.offset);
@@ -310,6 +370,41 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
             height: 1,
             color: Colors.black12,
             thickness: 5,
+          ),
+
+          //Story
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 5,
+                  ),
+                  child: AddStoryCard(),
+                ),
+                ...stories
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                          ),
+                          child: StoryCard(story: e),
+                        ))
+                    .toList()
+              ]),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: double.infinity,
+            height: 5,
+            color: Colors.black26,
           ),
 
           // List posts

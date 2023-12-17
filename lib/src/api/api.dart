@@ -1,6 +1,5 @@
 class ListAPI {
-  static const baseHost =
-      "https://it4788.catan.io.vn";
+  static const baseHost = "https://it4788.catan.io.vn";
 
   ///Auth
   static const signup = "$baseHost/signup";
@@ -26,6 +25,10 @@ class ListAPI {
   static const reportPost = "$baseHost/report_post";
 
 //Search
+  static const search = "$baseHost/search";
+  static const searchUsers = "$baseHost/search_user";
+  static const getSavedSearch = "$baseHost/get_saved_search";
+  static const delSavedSearch = "$baseHost/del_saved_search";
 
 //Friend
   static const getRequestedFriend = "$baseHost/get_requested_friends";
@@ -37,6 +40,9 @@ class ListAPI {
   static const delRequestFriend = "$baseHost/del_request_friend";
 
 //Block
+  static const getListBlocks = "$baseHost/get_list_blocks";
+  static const setBlock = "$baseHost/set_block";
+  static const unBlock = "$baseHost/unblock";
 
 //Settings
 

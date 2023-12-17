@@ -196,7 +196,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                   margin: const EdgeInsets.only(right: 6.0),
                                   child: const Image(
                                     image: AssetImage(
-                                        'lib/src/assets/images/avatar.jpg'),
+                                        'lib/src/assets/images/avatarfb.jpg'),
                                     height: 50,
                                     width: 50,
                                   ),
@@ -817,7 +817,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               ),
                             ]),
                         child: const MenuChoice(
-                            img: 'lib/src/assets/images/avatar.jpg',
+                            img: 'lib/src/assets/images/settings2.png',
                             title: 'Cài đặt'),
                       ),
                     ],

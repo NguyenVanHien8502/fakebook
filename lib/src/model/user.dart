@@ -6,6 +6,7 @@ class User {
   final String name;
   final String avatar;
   bool? verified;
+  final String? description;
   final String? cover;
   final int? friends;
   final int? likes;
@@ -27,6 +28,7 @@ class User {
     required this.name,
     required this.avatar,
     this.verified,
+    this.description,
     this.cover,
     this.friends,
     this.likes,
@@ -50,6 +52,7 @@ class User {
     String? name,
     String? avatar,
     bool? verified,
+    String? description,
     String? cover,
     int? friends,
     int? likes,
@@ -72,6 +75,7 @@ class User {
       name: name ?? this.name,
       avatar: avatar ?? this.avatar,
       verified: verified ?? this.verified,
+      description: description ?? this.description,
       cover: cover ?? this.cover,
       friends: friends ?? this.friends,
       likes: likes ?? this.likes,

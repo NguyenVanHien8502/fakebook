@@ -1,5 +1,6 @@
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/model/user.dart';
+import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -69,8 +70,8 @@ class FriendPageState extends State<FriendPage> {
                     id: item['id'].toString(),
                     name: item['username'],
                     avatar:
-                        //item['avatar'] ??
-                        'lib/src/assets/images/avatarfb.jpg',
+                        item['avatar'] == null ? 'lib/src/assets/images/avatarfb.jpg' :
+                        item['avatar'],
                   ),
                   mutualFriends: item['same_friends'],
                 );
@@ -99,9 +100,6 @@ class FriendPageState extends State<FriendPage> {
 
   @override
   Widget build(BuildContext context) {
-    double w = MediaQuery.of(context).size.width;
-    double h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -201,12 +199,13 @@ class FriendPageState extends State<FriendPage> {
                       for (int i = 0; i < friendRequests.length; i++)
                         InkWell(
                           onTap: () {
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   OtherPersonalPageScreen.routeName,
-                            //   arguments: user,
-                            // );
-                            print("Ban be");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OtherPersonalPageScreen(
+                                    userId: friendRequests[i].user.id),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -217,7 +216,7 @@ class FriendPageState extends State<FriendPage> {
                                 Container(
                                   margin: const EdgeInsets.only(left: 16.0),
                                   child: CircleAvatar(
-                                    backgroundImage: AssetImage(
+                                    backgroundImage: NetworkImage(
                                         friendRequests[i].user.avatar),
                                     radius: 25,
                                   ),
@@ -296,28 +295,28 @@ class FriendPageState extends State<FriendPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Bạn muốn hoàn thành bài viết của mình sau ư?",
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                        textAlign: TextAlign.start,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "Hãy lưu làm bản nháp hoặc tiếp tục chỉnh sửa.",
-                        style: TextStyle(fontSize: 17),
-                      ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.all(6),
+                //   child: const Column(
+                //     mainAxisAlignment: MainAxisAlignment.start,
+                //     children: [
+                //       Text(
+                //         "Bạn muốn hoàn thành bài viết của mình sau ư?",
+                //         style: TextStyle(
+                //           fontSize: 18,
+                //         ),
+                //         textAlign: TextAlign.start,
+                //       ),
+                //       SizedBox(
+                //         width: 5,
+                //       ),
+                //       Text(
+                //         "Hãy lưu làm bản nháp hoặc tiếp tục chỉnh sửa.",
+                //         style: TextStyle(fontSize: 17),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 const SizedBox(height: 10),
                 ListView(
                   shrinkWrap: true,
@@ -423,7 +422,7 @@ class FriendPageState extends State<FriendPage> {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).pop();
+                        handleBlock(friendr.user.name, friendr.user.id);
                       },
                       child: Container(
                         padding: const EdgeInsets.only(left: 16),
@@ -465,12 +464,12 @@ class FriendPageState extends State<FriendPage> {
                                 const Padding(
                                   padding: EdgeInsets.all(4),
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Column(
                                     children: [
                                       Text(
                                         "sẽ không thể thấy bạn hoặc ",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 14,
                                           fontFamily: "FacebookFont",
                                         ),
@@ -563,6 +562,41 @@ class FriendPageState extends State<FriendPage> {
     );
   }
 
+  Future<void> handleBlock(String name, String id) async {
+    Navigator.of(context).pop();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Chặn trang cá nhân của ${name}'),
+          content: const Text(
+              'Những người bạn chặn sẽ không thể gắn thẻ hay mời tham gia nhóm hoặc sự kiện, cũng không thể bắt đầu trò chuyện.'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Huỷ',
+                style: TextStyle(color: Colors.blue, fontSize: 14),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                blockFriend(context, id);
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Xác nhận',
+                style: TextStyle(color: Colors.blue, fontSize: 14),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> handledelete(String name, String id) async {
     Navigator.of(context).pop();
     showDialog(
@@ -623,6 +657,44 @@ class FriendPageState extends State<FriendPage> {
         if (response.statusCode == 200) {
           if (responseBody['code'] == '1000') {
             return print("Đã xóa");
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
+  }
+
+  Future<void> blockFriend(BuildContext context, String id) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.setBlock);
+        Map body = {
+          "user_id": id,
+        };
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            return print("Đã block");
           } else {
             print('API returned an error: ${responseBody['message']}');
           }
