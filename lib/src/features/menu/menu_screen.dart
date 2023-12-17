@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fakebook/src/features/menu/menu_choice.dart';
 import 'package:fakebook/src/features/menu/shortcut.dart';
+import 'package:fakebook/src/pages/authPages/change_password_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
@@ -214,7 +215,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         ),
                                       )
                                     : const Text(
-                                        'Lỗi hiển thị',
+                                        'Lỗi hiển thị username',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -762,6 +763,39 @@ class _MenuScreenState extends State<MenuScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ChangePasswordPage()));
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child: const MenuChoice(
+                              img: 'lib/src/assets/images/change_password.png',
+                              title: 'Đổi mật khẩu'),
+                        ),
+                      ),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(10),
@@ -828,7 +862,6 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   Future<void> handleLogout() async {
-    await storage.delete(key: 'token');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -839,6 +872,7 @@ class _MenuScreenState extends State<MenuScreen> {
           actions: [
             TextButton(
               onPressed: () async {
+                await storage.delete(key: 'token');
                 await storage.delete(key: 'email');
                 await storage.delete(key: 'password');
                 await storage.delete(key: 'currentUser');
@@ -853,7 +887,8 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                await storage.delete(key: 'token');
                 Navigator.pushNamed(
                   context,
                   WelcomePage.routeName,

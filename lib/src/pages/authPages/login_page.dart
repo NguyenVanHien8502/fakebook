@@ -76,16 +76,6 @@ class LoginPageState extends State<LoginPage> {
                   height: 200,
                   child: Column(
                     children: [
-                      // MyTextField(
-                      //   controller: emailController,
-                      //   hintText: 'Email',
-                      //   obscureText: false,
-                      //   hintPadding: const EdgeInsets.only(left: 20.0),
-                      //   prefixIcon: const Icon(
-                      //     Icons.email,
-                      //     color: Colors.black54,
-                      //   ),
-                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextField(
@@ -127,16 +117,6 @@ class LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 30,
                       ),
-                      // MyTextField(
-                      //   controller: passwordController,
-                      //   hintText: 'Password',
-                      //   obscureText: true,
-                      //   hintPadding: const EdgeInsets.only(left: 20.0),
-                      //   prefixIcon: const Icon(
-                      //     Icons.password,
-                      //     color: Colors.black54,
-                      //   ),
-                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextField(
