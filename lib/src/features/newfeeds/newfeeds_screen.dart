@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:fakebook/src/components/widget/add_story_card.dart';
 import 'package:fakebook/src/components/widget/story_card.dart';
-import 'package:fakebook/src/features/newfeeds/post_card.dart';
-import 'package:fakebook/src/model/post.dart';
 import 'package:fakebook/src/model/story.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/api/api.dart';
@@ -62,7 +60,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     ),
     Story(
       user: User(
-          id: "36", name: 'Minh Hương', avatar: 'lib/src/images/minhhuong.jpg'),
+          id: "36", name: 'Minh Hương', avatar: 'lib/src/assets/images/minhhuong.jpg'),
       image: [
         'lib/src/assets/images/4.jpg',
         'lib/src/assets/images/5.jpg',
@@ -75,7 +73,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     ),
     Story(
       user: User(
-          id: "36", name: 'Khánh Vy', avatar: 'lib/src/images/khanhvy.jpg'),
+          id: "36", name: 'Khánh Vy', avatar: 'lib/src/assets/images/khanhvy.jpg'),
       video: ['lib/src/assets/images/4.mp4'],
       time: ['1 phút'],
       shareWith: 'friends',
