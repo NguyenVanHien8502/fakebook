@@ -23,6 +23,7 @@ class ListAPI {
   static const getPost = "$baseHost/get_post";
   static const deletePost = "$baseHost/delete_post";
   static const editPost = "$baseHost/edit_post";
+  static const reportPost = "$baseHost/report_post";
 
 //Search
 
