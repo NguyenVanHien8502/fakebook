@@ -356,15 +356,27 @@ class DetailPostPageState extends State<DetailPostPage> {
                     children: [
                       Container(
                         margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                        child: ClipOval(
-                          child: Image.network(
-                            '${post['author']?['avatar'] ?? 'https://it4788.catan.io.vn/files/avatar-1702481624085-946922318.jpg'}',
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit
-                                .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                          ),
-                        ),
+                        child: () {
+                          if (post['author'] != null &&
+                              post['author']['avatar'] != null &&
+                              post['author']['avatar'] != '') {
+                            return ClipOval(
+                              child: Image.network(
+                                '${post['author']['avatar']}',
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit
+                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                              ),
+                            );
+                          } else {
+                            return Image.asset(
+                              'lib/src/assets/images/avatar.jpg',
+                              width: 50,
+                              height: 50,
+                            );
+                          }
+                        }(),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -625,11 +637,9 @@ class DetailPostPageState extends State<DetailPostPage> {
                       margin: const EdgeInsets.only(top: 10.0),
                       child: GestureDetector(
                         onTap: () {
-                          _commentFocusNode
-                              .requestFocus();
+                          _commentFocusNode.requestFocus();
                           setState(() {
-                            isTextFieldFocusDirectly =
-                            true;
+                            isTextFieldFocusDirectly = true;
                           });
                         },
                         child: Row(
@@ -741,13 +751,33 @@ class DetailPostPageState extends State<DetailPostPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        ClipOval(
-                                            child: Image.network(
-                                          '${markComment['poster']['avatar']}',
-                                          height: 40,
-                                          width: 40,
-                                          fit: BoxFit.cover,
-                                        )),
+                                        // ClipOval(
+                                        //     child: Image.network(
+                                        //   '${markComment['poster']['avatar']}',
+                                        //   height: 40,
+                                        //   width: 40,
+                                        //   fit: BoxFit.cover,
+                                        // )),
+                                        () {
+                                          if (markComment['poster']['avatar'] !=
+                                              '') {
+                                            return ClipOval(
+                                              child: Image.network(
+                                                '${markComment['poster']['avatar']}',
+                                                height: 40,
+                                                width: 40,
+                                                fit: BoxFit
+                                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                              ),
+                                            );
+                                          } else {
+                                            return Image.asset(
+                                              'lib/src/assets/images/avatar.jpg',
+                                              width: 40,
+                                              height: 40,
+                                            );
+                                          }
+                                        }(),
                                         const SizedBox(
                                           width: 15.0,
                                         ),
@@ -865,14 +895,36 @@ class DetailPostPageState extends State<DetailPostPage> {
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        ClipOval(
-                                                            child:
-                                                                Image.network(
-                                                          '${comment['poster']['avatar']}',
-                                                          height: 40,
-                                                          width: 40,
-                                                          fit: BoxFit.cover,
-                                                        )),
+                                                        // ClipOval(
+                                                        //     child:
+                                                        //         Image.network(
+                                                        //   '${comment['poster']['avatar']}',
+                                                        //   height: 40,
+                                                        //   width: 40,
+                                                        //   fit: BoxFit.cover,
+                                                        // )),
+                                                        () {
+                                                          if (comment['poster']
+                                                                  ['avatar'] !=
+                                                              '') {
+                                                            return ClipOval(
+                                                              child:
+                                                                  Image.network(
+                                                                '${comment['poster']['avatar']}',
+                                                                height: 40,
+                                                                width: 40,
+                                                                fit: BoxFit
+                                                                    .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            return Image.asset(
+                                                              'lib/src/assets/images/avatar.jpg',
+                                                              width: 40,
+                                                              height: 40,
+                                                            );
+                                                          }
+                                                        }(),
                                                         const SizedBox(
                                                           width: 15.0,
                                                         ),
