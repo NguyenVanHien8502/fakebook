@@ -64,7 +64,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 }
                 if (item['type'] == '2') {
                   textTitle =
-                  '${item['user']['username']} đã chấp nhận lời mời kết bạn';
+                      '${item['user']['username']} đã chấp nhận lời mời kết bạn';
+                }
+                if (item['type'] == '3') {
+                  textTitle =
+                      '${item['user']['username']} đã thêm bài viết mới';
                 }
                 if (item['type'] == '5') {
                   textTitle =
@@ -73,6 +77,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 if (item['type'] == '6') {
                   textTitle =
                       '${item['user']['username']} đã bình luận bài viết của bạn';
+                }
+                if (item['type'] == '9') {
+                  textTitle =
+                      '${item['user']['username']} đã trả lời một bình luận trong bài viết của bạn';
                 }
 
                 return Noti(
@@ -93,8 +101,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         'lib/src/assets/images/avatarfb.jpg',
                   ),
                   feels: Feels(
-                      fellId: item['feel'] != null ? item['feel']['feel_id'] : '1',
+                      fellId:
+                          item['feel'] != null ? item['feel']['feel_id'] : '1',
                       type: item['feel'] != null ? item['feel']['type'] : '1'),
+                  idPost: item['post'] != null ? item['post']['id'] : '1',
                 );
               }).toList();
             });
