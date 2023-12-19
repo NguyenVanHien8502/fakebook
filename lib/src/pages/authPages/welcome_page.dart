@@ -274,7 +274,6 @@ class WelcomePageState extends State<WelcomePage> {
         if (response.statusCode == 200) {
           if (responseBody['code'] == '1000') {
             var token = responseBody['data']['token'];
-            const storage = FlutterSecureStorage();
 
             User user = User(
                 id: responseBody['data']['id'],

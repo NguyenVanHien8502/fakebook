@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 class StoryCard extends StatefulWidget {
   final Story story;
   final bool? hidden;
+
   const StoryCard({super.key, required this.story, this.hidden});
 
   @override
@@ -15,6 +16,7 @@ class StoryCard extends StatefulWidget {
 
 class _StoryCardState extends State<StoryCard> {
   late VideoPlayerController controller;
+
   @override
   void initState() {
     super.initState();
