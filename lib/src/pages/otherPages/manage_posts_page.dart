@@ -31,7 +31,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
     getListPosts();
 
     _scrollController.addListener(() {
-      if(_scrollController.position.pixels==_scrollController.position.maxScrollExtent){
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         _loadMore();
       }
     });
@@ -40,9 +41,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
   //get list post
   var listPosts = [];
   int followLastId = 0;
-  int lastId=0;
-  int index=0;
-  int count=3;
+  int lastId = 0;
+  int index = 0;
+  int count = 3;
+
   Future<void> getListPosts() async {
     String? token = await storage.read(key: 'token');
     dynamic currentUser = await storage.read(key: 'currentUser');
@@ -93,6 +95,14 @@ class ManagePostsPageState extends State<ManagePostsPage> {
           });
         }
       }
+
+      for (var i = 0; i < listPosts.length; i++) {
+        int postId = int.parse(listPosts[i]['id'] ?? "");
+        int feelOfPost = int.parse(listPosts[i]['feel']);
+        setState(() {
+          feel[postId] = feelOfPost;
+        });
+      }
     } catch (e) {
       print('Error: $e');
     }
@@ -100,6 +110,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
 
   Map<int, String> isFeltKudo =
       {}; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
+  Map<int, int> feel = {};
 
 // Hàm hiển thị menu tùy chọn
   void showReactionMenu(BuildContext context, int postId) {
@@ -144,6 +155,9 @@ class ManagePostsPageState extends State<ManagePostsPage> {
     ).then((value) async {
       if (value != null) {
         setState(() {
+          if (isFeltKudo[postId] == '-1') {
+            feel[postId] = (feel[postId]! + 1)!;
+          }
           isFeltKudo[postId] = value == '1' ? '1' : '0';
         });
         // Thực hiện các hành động tương ứng
@@ -213,12 +227,13 @@ class ManagePostsPageState extends State<ManagePostsPage> {
   }
 
   //xử lý pull up to load more data
-  final ScrollController _scrollController=ScrollController();
+  final ScrollController _scrollController = ScrollController();
+
   Future<bool> _loadMore() async {
     print("Start Loading More");
     try {
       setState(() {
-        lastId=followLastId;
+        lastId = followLastId;
       });
       await Future.delayed(const Duration(seconds: 1, milliseconds: 100));
       await getListPosts();
@@ -246,7 +261,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: ()async{
+          onRefresh: () async {
             await _loadResources(true);
           },
           child: SingleChildScrollView(
@@ -264,8 +279,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => DetailPostPage(
-                                      postId: int.parse(post['id']),
-                                    )));
+                                          postId: int.parse(post['id']),
+                                        )));
                           },
                           child: Row(
                             children: [
@@ -315,12 +330,13 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                       margin: const EdgeInsets.only(left: 16.0),
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Text(
-                                            formatTimeDifference(post['created']),
+                                            formatTimeDifference(
+                                                post['created']),
                                             style: const TextStyle(
                                                 color: Colors.black),
                                           ),
@@ -356,7 +372,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.rectangle,
                                                 borderRadius:
-                                                const BorderRadius.only(
+                                                    const BorderRadius.only(
                                                   topLeft: Radius.circular(10),
                                                   topRight: Radius.circular(10),
                                                 ),
@@ -364,10 +380,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                               ),
                                               child: Column(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                                    MainAxisAlignment.start,
                                                 mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                                    CrossAxisAlignment.center,
                                                 children: [
                                                   const SizedBox(
                                                     height: 5,
@@ -379,8 +395,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                       color: Colors.grey,
                                                       shape: BoxShape.rectangle,
                                                       borderRadius:
-                                                      BorderRadius.circular(
-                                                          20),
+                                                          BorderRadius.circular(
+                                                              20),
                                                     ),
                                                   ),
                                                   const SizedBox(
@@ -394,8 +410,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                     child: Column(
                                                       children: [
                                                         Material(
-                                                          color:
-                                                          Colors.transparent,
+                                                          color: Colors
+                                                              .transparent,
                                                           child: InkWell(
                                                             onTap: () {
                                                               Navigator.push(
@@ -403,58 +419,59 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                                 MaterialPageRoute(
                                                                   builder:
                                                                       (context) =>
-                                                                      EditPostPage(
-                                                                        postId: int
-                                                                            .parse(post[
-                                                                        'id']),
-                                                                      ),
+                                                                          EditPostPage(
+                                                                    postId: int
+                                                                        .parse(post[
+                                                                            'id']),
+                                                                  ),
                                                                 ),
                                                               );
                                                             },
                                                             borderRadius:
-                                                            const BorderRadius
-                                                                .only(
-                                                              topLeft:
-                                                              Radius.circular(
-                                                                  10),
-                                                              topRight:
-                                                              Radius.circular(
-                                                                  10),
-                                                            ),
-                                                            child: const ListTile(
-                                                              titleAlignment:
-                                                              ListTileTitleAlignment
-                                                                  .center,
-                                                              tileColor:
-                                                              Colors.white,
-                                                              shape:
-                                                              RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                BorderRadius
+                                                                const BorderRadius
                                                                     .only(
+                                                              topLeft: Radius
+                                                                  .circular(10),
+                                                              topRight: Radius
+                                                                  .circular(10),
+                                                            ),
+                                                            child:
+                                                                const ListTile(
+                                                              titleAlignment:
+                                                                  ListTileTitleAlignment
+                                                                      .center,
+                                                              tileColor:
+                                                                  Colors.white,
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .only(
                                                                   topLeft: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                   topRight: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                 ),
                                                               ),
-                                                              minLeadingWidth: 10,
+                                                              minLeadingWidth:
+                                                                  10,
                                                               leading: Icon(
                                                                 Icons.edit,
                                                                 size: 30,
-                                                                color:
-                                                                Colors.black,
+                                                                color: Colors
+                                                                    .black,
                                                               ),
                                                               title: Text(
                                                                 'Chỉnh sửa bài viết',
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   color: Colors
                                                                       .black,
                                                                   fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
+                                                                      FontWeight
+                                                                          .w500,
                                                                   fontSize: 16,
                                                                 ),
                                                               ),
@@ -462,21 +479,22 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                           ),
                                                         ),
                                                         Material(
-                                                          color:
-                                                          Colors.transparent,
+                                                          color: Colors
+                                                              .transparent,
                                                           child: InkWell(
                                                             onTap: () {
                                                               showDialog(
-                                                                context: context,
+                                                                context:
+                                                                    context,
                                                                 builder:
                                                                     (BuildContext
-                                                                context) {
+                                                                        context) {
                                                                   return AlertDialog(
                                                                     title: const Text(
                                                                         'Xóa bài viết?'),
                                                                     content:
-                                                                    const Text(
-                                                                        'Bạn có thể chỉnh sửa bài viết nếu cần thay đổi.'),
+                                                                        const Text(
+                                                                            'Bạn có thể chỉnh sửa bài viết nếu cần thay đổi.'),
                                                                     actions: [
                                                                       TextButton(
                                                                         onPressed:
@@ -486,11 +504,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                                               post['id']);
                                                                         },
                                                                         child:
-                                                                        const Text(
+                                                                            const Text(
                                                                           'Xóa',
                                                                           style: TextStyle(
-                                                                              color:
-                                                                              Colors.blue,
+                                                                              color: Colors.blue,
                                                                               fontSize: 14),
                                                                         ),
                                                                       ),
@@ -501,19 +518,17 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                                               .push(
                                                                             context,
                                                                             MaterialPageRoute(
-                                                                              builder: (context) =>
-                                                                                  EditPostPage(
-                                                                                    postId: int.parse(post['id']),
-                                                                                  ),
+                                                                              builder: (context) => EditPostPage(
+                                                                                postId: int.parse(post['id']),
+                                                                              ),
                                                                             ),
                                                                           );
                                                                         },
                                                                         child:
-                                                                        const Text(
+                                                                            const Text(
                                                                           'Chỉnh sửa',
                                                                           style: TextStyle(
-                                                                              color:
-                                                                              Colors.black,
+                                                                              color: Colors.black,
                                                                               fontSize: 14),
                                                                         ),
                                                                       ),
@@ -524,11 +539,10 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                                               .pop();
                                                                         },
                                                                         child:
-                                                                        const Text(
+                                                                            const Text(
                                                                           'Hủy',
                                                                           style: TextStyle(
-                                                                              color:
-                                                                              Colors.black,
+                                                                              color: Colors.black,
                                                                               fontSize: 14),
                                                                         ),
                                                                       ),
@@ -538,50 +552,51 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                                               );
                                                             },
                                                             borderRadius:
-                                                            const BorderRadius
-                                                                .only(
-                                                              topLeft:
-                                                              Radius.circular(
-                                                                  10),
-                                                              topRight:
-                                                              Radius.circular(
-                                                                  10),
-                                                            ),
-                                                            child: const ListTile(
-                                                              titleAlignment:
-                                                              ListTileTitleAlignment
-                                                                  .center,
-                                                              tileColor:
-                                                              Colors.white,
-                                                              shape:
-                                                              RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                BorderRadius
+                                                                const BorderRadius
                                                                     .only(
+                                                              topLeft: Radius
+                                                                  .circular(10),
+                                                              topRight: Radius
+                                                                  .circular(10),
+                                                            ),
+                                                            child:
+                                                                const ListTile(
+                                                              titleAlignment:
+                                                                  ListTileTitleAlignment
+                                                                      .center,
+                                                              tileColor:
+                                                                  Colors.white,
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .only(
                                                                   topLeft: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                   topRight: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                 ),
                                                               ),
-                                                              minLeadingWidth: 10,
+                                                              minLeadingWidth:
+                                                                  10,
                                                               leading: Icon(
                                                                 Icons
                                                                     .delete_forever,
                                                                 size: 30,
-                                                                color:
-                                                                Colors.black,
+                                                                color: Colors
+                                                                    .black,
                                                               ),
                                                               title: Text(
                                                                 'Xóa bài viết',
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   color: Colors
                                                                       .black,
                                                                   fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
+                                                                      FontWeight
+                                                                          .w500,
                                                                   fontSize: 16,
                                                                 ),
                                                               ),
@@ -600,7 +615,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                           },
                                         );
                                       },
-                                      icon: const Icon(Icons.more_horiz_rounded),
+                                      icon:
+                                          const Icon(Icons.more_horiz_rounded),
                                     ),
                                   ],
                                 ),
@@ -611,7 +627,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
 
                         // Status
                         Container(
-                          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                          padding:
+                              const EdgeInsets.only(left: 16.0, right: 16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -639,7 +656,6 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                     '${image['url']}',
                                     height: 150,
                                     width: 150,
-                                    fit: BoxFit.cover,
                                   ),
                                 );
                               }).toList(),
@@ -654,7 +670,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                 //     arguments: widget.post);
                               },
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.only(
@@ -678,10 +695,12 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                               ),
                                               Container(
                                                 margin:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 8.0),
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
                                                 child: Text(
-                                                  (int.parse(post['feel'] ?? '0'))
+                                                  (feel[int.parse(post['id'] ??
+                                                              '0')] ??
+                                                          '0')
                                                       .toString(),
                                                   style: const TextStyle(
                                                       color: Colors.black,
@@ -700,8 +719,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                     child: Row(
                                       children: [
                                         Container(
-                                          margin:
-                                          const EdgeInsets.only(right: 12.0),
+                                          margin: const EdgeInsets.only(
+                                              right: 12.0),
                                           child: Text(
                                               "${post['comment_mark']} comments"),
                                         ),
@@ -731,7 +750,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                               child: GestureDetector(
                                 onTap: () async {
                                   String? token =
-                                  await storage.read(key: 'token');
+                                      await storage.read(key: 'token');
                                   int postId = int.parse(post['id'] ?? "");
                                   if (isFeltKudo.containsKey(postId) &&
                                       (isFeltKudo[postId] == '1' ||
@@ -752,11 +771,12 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                       //cập nhật lại trạng thái của isFeltKudo
                                       setState(() {
                                         isFeltKudo[postId] = '-1';
+                                        feel[postId] = (feel[postId]! - 1)!;
                                       });
 
                                       // Chuyển chuỗi JSON thành một đối tượng Dart
                                       var responseBody =
-                                      jsonDecode(response.body);
+                                          jsonDecode(response.body);
                                       print(responseBody);
                                     } catch (e) {
                                       print('Error: $e');
@@ -778,11 +798,12 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                       //cập nhật lại trạng thái của isFeltKudo
                                       setState(() {
                                         isFeltKudo[postId] = '1';
+                                        feel[postId] = (feel[postId]! + 1)!;
                                       });
 
                                       // Chuyển chuỗi JSON thành một đối tượng Dart
                                       var responseBody =
-                                      jsonDecode(response.body);
+                                          jsonDecode(response.body);
                                       print(responseBody);
                                     } catch (e) {
                                       print('Error: $e');
@@ -799,7 +820,8 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                     Container(
                                       margin: const EdgeInsets.only(right: 5),
                                       child: () {
-                                        int postId = int.parse(post['id'] ?? "");
+                                        int postId =
+                                            int.parse(post['id'] ?? "");
                                         if (isFeltKudo.containsKey(postId) &&
                                             isFeltKudo[postId] == '-1') {
                                           return Image.asset(
@@ -808,7 +830,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                             height: 20,
                                           );
                                         } else if (isFeltKudo
-                                            .containsKey(postId) &&
+                                                .containsKey(postId) &&
                                             isFeltKudo[postId] == '0') {
                                           return Image.asset(
                                             'lib/src/assets/images/reactions/angry.png',
@@ -824,21 +846,24 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                         }
                                       }(),
                                     ),
-                                        () {
+                                    () {
                                       int postId = int.parse(post['id'] ?? "");
                                       if (isFeltKudo.containsKey(postId) &&
                                           isFeltKudo[postId] == '-1') {
                                         return const Text(
                                           "Like",
                                           style: TextStyle(
-                                              color: Colors.black, fontSize: 16),
+                                              color: Colors.black,
+                                              fontSize: 16),
                                         );
-                                      } else if (isFeltKudo.containsKey(postId) &&
+                                      } else if (isFeltKudo
+                                              .containsKey(postId) &&
                                           isFeltKudo[postId] == '0') {
                                         return const Text(
                                           "Phẫn nộ",
                                           style: TextStyle(
-                                              color: Colors.green, fontSize: 16),
+                                              color: Colors.green,
+                                              fontSize: 16),
                                         );
                                       } else {
                                         return const Text(

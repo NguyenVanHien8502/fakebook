@@ -6,6 +6,7 @@ import 'package:fakebook/src/model/story.dart';
 import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
+import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:fakebook/src/pages/otherPages/report_page.dart';
 import 'package:flutter/material.dart';
@@ -177,8 +178,10 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
       for (var i = 0; i < listPosts.length; i++) {
         int postId = int.parse(listPosts[i]['id'] ?? "");
+        int feelOfPost = int.parse(listPosts[i]['feel']);
         setState(() {
           postVisible[postId] = true;
+          feel[postId] = feelOfPost;
         });
       }
     } catch (e) {
@@ -188,6 +191,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
   Map<int, String> isFeltKudo =
       {}; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
+  Map<int, int> feel = {};
 
 // Hàm hiển thị menu tùy chọn
   void showReactionMenu(BuildContext context, int postId) {
@@ -232,6 +236,9 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     ).then((value) async {
       if (value != null) {
         setState(() {
+          if (isFeltKudo[postId] == '-1') {
+            feel[postId] = (feel[postId]! + 1)!;
+          }
           isFeltKudo[postId] = value == '1' ? '1' : '0';
         });
         // Thực hiện các hành động tương ứng
@@ -464,28 +471,39 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                               },
                               child: Row(
                                 children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 16.0, top: 16.0, bottom: 16.0),
-                                    child: () {
-                                      if (post['author']['avatar'] != '') {
-                                        return ClipOval(
-                                          child: Image.network(
-                                            '${post['author']['avatar']}',
-                                            height: 50,
+                                  GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => OtherPersonalPageScreen(
+                                              userId: post['author']['id']),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 16.0, top: 16.0, bottom: 16.0),
+                                      child: () {
+                                        if (post['author']['avatar'] != '') {
+                                          return ClipOval(
+                                            child: Image.network(
+                                              '${post['author']['avatar']}',
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit
+                                                  .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                            ),
+                                          );
+                                        } else {
+                                          return Image.asset(
+                                            'lib/src/assets/images/avatar.jpg',
                                             width: 50,
-                                            fit: BoxFit
-                                                .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                                          ),
-                                        );
-                                      } else {
-                                        return Image.asset(
-                                          'lib/src/assets/images/avatar.jpg',
-                                          width: 50,
-                                          height: 50,
-                                        );
-                                      }
-                                    }(),
+                                            height: 50,
+                                          );
+                                        }
+                                      }(),
+                                    ),
                                   ),
                                   Column(
                                     crossAxisAlignment:
@@ -1008,7 +1026,6 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                         '${image['url']}',
                                         height: 150,
                                         width: 150,
-                                        fit: BoxFit.cover,
                                       ),
                                     );
                                   }).toList(),
@@ -1051,8 +1068,10 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                         .symmetric(
                                                         horizontal: 8.0),
                                                     child: Text(
-                                                      (int.parse(post['feel'] ??
-                                                              '0'))
+                                                      (feel[int.parse(
+                                                                  post['id'] ??
+                                                                      '0')] ??
+                                                              '0')
                                                           .toString(),
                                                       style: const TextStyle(
                                                           color: Colors.black,
@@ -1126,6 +1145,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                           //cập nhật lại trạng thái của isFeltKudo
                                           setState(() {
                                             isFeltKudo[postId] = '-1';
+                                            feel[postId] = (feel[postId]! - 1)!;
                                           });
 
                                           // Chuyển chuỗi JSON thành một đối tượng Dart
@@ -1157,6 +1177,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                           //cập nhật lại trạng thái của isFeltKudo
                                           setState(() {
                                             isFeltKudo[postId] = '1';
+                                            feel[postId] = (feel[postId]! + 1)!;
                                           });
 
                                           // Chuyển chuỗi JSON thành một đối tượng Dart
