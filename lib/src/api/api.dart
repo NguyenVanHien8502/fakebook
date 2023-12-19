@@ -45,6 +45,7 @@ class ListAPI {
   static const unBlock = "$baseHost/unblock";
 
 //Settings
+  static const buyCoins = "$baseHost/buy_coins";
 
 //Comment
   static const feel = "$baseHost/feel";
@@ -52,4 +53,7 @@ class ListAPI {
   static const getMarkComment = "$baseHost/get_mark_comment";
   static const setMarkComment = "$baseHost/set_mark_comment";
   static const deleteFeel = "$baseHost/delete_feel";
+
+//Notification
+  static const getNotification = "$baseHost/get_notification";
 }

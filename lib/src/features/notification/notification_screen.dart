@@ -1,6 +1,15 @@
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/notification/single_notification.dart';
+import 'package:fakebook/src/model/feel.dart';
 import 'package:fakebook/src/model/noti.dart';
+import 'package:fakebook/src/model/user.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class NotificationScreen extends StatefulWidget {
   static double offset = 0;
@@ -11,121 +20,109 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  List<Noti> notifications = [
-    Noti(
-      content: 'Khánh Vy đã gửi cho bạn lời mời kết bạn',
-      bold: ['Khánh Vy'],
-      image: 'lib/src/assets/images/home.png',
-      time: '5 thg 8 lúc 0:47',
-      type: 'friend',
-    ),
-    Noti(
-      content: 'Leo Messi đã nhắc đến bạn trong một bình luận',
-      bold: ['Leo Messi'],
-      image: 'lib/src/assets/images/home.png',
-      time: '18 thg 8 lúc 11:31',
-      type: 'comment',
-    ),
-    Noti(
-        content: 'Hôm nay, bạn có thể ôn lại kỷ niệm.',
-        image: 'lib/src/assets/images/home.png',
-        time: '12 giờ trước',
-        type: 'memory',
-        seen: true),
-    Noti(
-        content:
-            'Trang Đào Xuân Trường... mà bạn theo dõi đã đổi tên thành KHTN Confession',
-        image: 'lib/src/assets/images/home.png',
-        time: '22 thg 7 lúc 1:39',
-        type: 'page',
-        bold: ['Đào Xuân Trường', 'KHTN Confession'],
-        seen: true),
-    Noti(
-        content:
-            'Một quản trị viên đã thay đổi tên của nhóm 2K5 Quyết Đỗ Đại Học thành 2K6 Quyết Đỗ Đại Học',
-        image: 'lib/src/assets/images/home.png',
-        time: '21 thg 8 lúc 15:45',
-        type: 'group',
-        bold: ['2K5 Quyết Đỗ Đại Học', '2K6 Quyết Đỗ Đại Học'],
-        seen: true),
-    Noti(
-      content:
-          'Vào 11:45, 8 tháng 8, 2023, bạn đã đăng nhập vào TopCV. Nếu đó không phải bạn thì bạn có thể gỡ ứng dụng này.',
-      image: 'lib/src/assets/images/home.png',
-      time: '8 thg 8 lúc 11:45',
-      type: 'security',
-    ),
-    Noti(
-      content:
-          'Người hẹn hò không nhìn thấy trang cá nhân vì không hoạt động. Truy cập phần Hẹn hò để được quảng cáo miễn phí!',
-      image: 'lib/src/assets/images/home.png',
-      time: '12 thg 8 lúc 0:02',
-      type: 'date',
-    ),
-    Noti(
-      content:
-          'Bạn đã nhận được huy hiệu fan cứng vì là một trong những người theo dõi sôi nổi nhất của Trung Tâm Hỗ Trợ Sinh Viên - Trường ĐH. Khoa Học Tự Nhiên, ĐHQG-HCM.',
-      image: 'lib/src/assets/images/home.png',
-      time: '9 thg 8 lúc 21:04',
-      type: 'badge',
-      bold: [
-        'Trung Tâm Hỗ Trợ Sinh Viên - Trường ĐH. Khoa Học Tự Nhiên, ĐHQG-HCM'
-      ],
-    ),
-    Noti(
-      content:
-          'Khánh Vy và 454 người khác đã bày tỏ cảm xúc về một ảnh: #ChienBinhAndroid #ComposeCamp Profile: https://g.dev/datle Chi tiết: https://goo.gle/ChienbinhAndroid',
-      image: 'lib/src/assets/images/home.png',
-      time: '1 thg 8 lúc 8:37',
-      type: 'like',
-      bold: ['Khánh Vy'],
-    ),
-    Noti(
-      content:
-          'Minh Hương và 2002 người khác đã bày tỏ cảm xúc về một bài viết: #QuanQuanGCP5 #CloudStudyJam Link profile: https://www.cloudskillsboost.google/.../4465a5ac-14b5... Link event: goo.gle/quanquanGCP5',
-      image: 'lib/src/assets/images/home.png',
-      time: '4 thg 7 lúc 20:13',
-      type: 'love',
-      bold: ['Minh Hương'],
-    ),
-    Noti(
-        content: 'Minh Trí và 1310 người khác đã bày tỏ cảm xúc về một ảnh.',
-        image: 'lib/src/assets/images/home.png',
-        time: '1 thg 7 lúc 10:20',
-        type: 'haha',
-        bold: ['Minh Trí'],
-        seen: true),
-    Noti(
-        content:
-            'Vuong Hong Thuy và 100 người khác đã bày tỏ cảm xúc về một ảnh.',
-        image: 'lib/src/assets/images/home.png',
-        time: '30 thg 6 lúc 11:21',
-        type: 'sad',
-        bold: ['Vuong Hong Thuy'],
-        seen: true),
-    Noti(
-      content:
-          'Nguyễn Thị Minh Tuyền và 99 người khác đã bày tỏ cảm xúc về một ảnh.',
-      image: 'lib/src/assets/images/home.png',
-      time: '29 thg 6 lúc 01:23',
-      type: 'lovelove',
-      bold: ['Nguyễn Thị Minh Tuyền'],
-    ),
-    Noti(
-        content: 'Hà Linhh và 199 người khác đã bày tỏ cảm xúc về một ảnh.',
-        image: 'lib/src/assets/images/home.png',
-        time: '25 thg 6 lúc 07:44',
-        type: 'wow',
-        bold: ['Hà Linhh'],
-        seen: true),
-    Noti(
-        content: 'Bảo Ngân và 299 người khác đã bày tỏ cảm xúc về một ảnh.',
-        image: 'lib/src/assets/images/home.png',
-        time: '21 thg 6 lúc 08:22',
-        type: 'angry',
-        bold: ['Bảo Ngân'],
-        seen: true),
-  ];
+  List<Noti> notifications = [];
+
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
+
+  Future<void> fetchNotificationList(BuildContext context) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.getNotification);
+        Map body = {"index": "0", "count": "10"};
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            final List<dynamic> friendsData = responseBody['data'];
+
+            setState(() {
+              notifications = friendsData.map((item) {
+                final createdDateTime = DateTime.parse(item['created']);
+                final now = DateTime.now();
+                final difference = now.difference(createdDateTime);
+                String textTitle = '${item['user']['username']}';
+                if (item['type'] == '1') {
+                  textTitle =
+                      '${item['user']['username']} đã gửi cho bạn lời mời kết bạn';
+                }
+                if (item['type'] == '2') {
+                  textTitle =
+                  '${item['user']['username']} đã chấp nhận lời mời kết bạn';
+                }
+                if (item['type'] == '5') {
+                  textTitle =
+                      '${item['user']['username']} đã bày tỏ cảm xúc về bài viết của bạn';
+                }
+                if (item['type'] == '6') {
+                  textTitle =
+                      '${item['user']['username']} đã bình luận bài viết của bạn';
+                }
+
+                return Noti(
+                  type: item['type'].toString() ?? '5',
+                  object_id: item['object_id'] ?? '36',
+                  title: textTitle,
+                  noti_id: item['noti_id'] ?? "36",
+                  created: formatDuration(difference) ?? 'vừa xong',
+                  avatar:
+                      item['avatar'] ?? 'lib/src/assets/images/avatarfb.jpg',
+                  read: item['read'] ?? '0',
+                  group: item['group'] ?? 0,
+                  bold: item['user']['username'] ?? 'name',
+                  user: User(
+                    id: item['user']['id'] ?? '36',
+                    name: item['user']['name'] ?? 'name',
+                    avatar: item['user']['avatar'] ??
+                        'lib/src/assets/images/avatarfb.jpg',
+                  ),
+                  feels: Feels(
+                      fellId: item['feel'] != null ? item['feel']['feel_id'] : '1',
+                      type: item['feel'] != null ? item['feel']['type'] : '1'),
+                );
+              }).toList();
+            });
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
+  }
+
+  String formatDuration(Duration duration) {
+    if (duration.inDays > 0) {
+      return '${duration.inDays} ngày trước';
+    } else if (duration.inHours > 0) {
+      return '${duration.inHours} giờ trước';
+    } else if (duration.inMinutes > 0) {
+      return '${duration.inMinutes} phút trước';
+    } else {
+      return 'vừa xong';
+    }
+  }
 
   ScrollController scrollController =
       ScrollController(initialScrollOffset: NotificationScreen.offset);
@@ -134,6 +131,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
+    User? user = Provider.of<UserProvider>(context, listen: false).user;
+    fetchNotificationList(context);
   }
 
   @override

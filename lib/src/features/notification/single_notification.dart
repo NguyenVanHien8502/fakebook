@@ -1,4 +1,5 @@
 import 'package:fakebook/src/model/noti.dart';
+import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:flutter/material.dart';
 
 class SingleNotification extends StatefulWidget {
@@ -17,18 +18,18 @@ class _SingleNotificationState extends State<SingleNotification> {
     setState(() {
       texts = [];
       int s = 0;
-      if (widget.notification.bold != null) {
-        for (int i = 0; i < widget.notification.bold!.length; i++) {
-          int j =
-              widget.notification.content.indexOf(widget.notification.bold![i]);
-          texts.add(widget.notification.content.substring(s, j));
-          texts.add(widget.notification.bold![i]);
-          s = j + widget.notification.bold![i].length;
-        }
-      }
+      // if (widget.notification.bold != null) {
+      //   for (int i = 0; i < widget.notification.bold!.length; i++) {
+      //     int j =
+      //         widget.notification.title.indexOf(widget.notification.bold![i]);
+      //     texts.add(widget.notification.title.substring(s, j));
+      //     texts.add(widget.notification.bold![i]);
+      //     s = j + widget.notification.bold![i].length;
+      //   }
+      // }
 
-      texts.add(widget.notification.content
-          .substring(s, widget.notification.content.length));
+      texts.add(widget.notification.title
+          .substring(s, widget.notification.title.length));
     });
   }
 
@@ -37,10 +38,20 @@ class _SingleNotificationState extends State<SingleNotification> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          if (widget.notification.type == '1') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtherPersonalPageScreen(
+                    userId: widget.notification.user.id),
+              ),
+            );
+          }
+        },
         child: Container(
           decoration: BoxDecoration(
-            color: widget.notification.seen == true
+            color: widget.notification.read == 1
                 ? Colors.white.withOpacity(0.1)
                 : Colors.blue.withOpacity(0.1),
           ),
@@ -55,11 +66,13 @@ class _SingleNotificationState extends State<SingleNotification> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                //avatar thông báo + icon
                 SizedBox(
                   height: 60,
                   width: 60,
                   child: Stack(
                     children: [
+                      //Avatar thông báo
                       DecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -70,10 +83,11 @@ class _SingleNotificationState extends State<SingleNotification> {
                         ),
                         child: CircleAvatar(
                           backgroundImage:
-                              AssetImage(widget.notification.image),
+                              NetworkImage(widget.notification.avatar),
                           radius: 40,
                         ),
                       ),
+                      //icon thông báo
                       Positioned(
                         right: 0,
                         bottom: 0,
@@ -84,7 +98,7 @@ class _SingleNotificationState extends State<SingleNotification> {
                           height: 30,
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: widget.notification.type == 'friend'
+                              color: widget.notification.type == '1'
                                   ? Colors.blue
                                   : widget.notification.type == 'comment'
                                       ? Colors.green[400]
@@ -110,16 +124,17 @@ class _SingleNotificationState extends State<SingleNotification> {
                                   color: Colors.blue,
                                   size: 30,
                                 )
-                              : (widget.notification.type == 'friend')
+                              : (widget.notification.type ==
+                                      '1') // Lời mời kết bạn
                                   ? const Icon(
-                                      Icons.person_rounded,
-                                      color: Colors.white,
-                                      size: 22,
-                                    )
-                                  : (widget.notification.type == 'comment')
+                            Icons.person_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          )
+                                  : (widget.notification.type == '6')
                                       ? const ImageIcon(
                                           AssetImage(
-                                              'lib/src/assets/images/home.png'),
+                                              'lib/src/assets/images/white-cmt.png'),
                                           color: Colors.white,
                                           size: 16,
                                         )
@@ -128,10 +143,10 @@ class _SingleNotificationState extends State<SingleNotification> {
                                               backgroundImage: AssetImage(
                                                   'lib/src/assets/images/home.png'))
                                           : (widget.notification.type ==
-                                                  'group')
+                                                  '2')
                                               ? const Icon(
                                                   Icons.groups_rounded,
-                                                  color: Colors.white,
+                                                  color: Colors.grey,
                                                   size: 24,
                                                 )
                                               : (widget.notification.type ==
@@ -160,31 +175,33 @@ class _SingleNotificationState extends State<SingleNotification> {
                                                               color:
                                                                   Colors.white,
                                                             )
-                                                          : (widget.notification
+                                                          : (widget
+                                                                      .notification
+                                                                      .feels
                                                                       .type ==
-                                                                  'like')
+                                                                  '1')
                                                               ? Image.asset(
-                                                                  'lib/src/assets/images/home.png')
+                                                                  'lib/src/assets/images/reactions/like.png')
                                                               : (widget.notification
                                                                           .type ==
                                                                       'love')
                                                                   ? Image.asset(
-                                                                      'lib/src/assets/images/home.png')
+                                                                      'lib/src/assets/images/reactions/love.png')
                                                                   : (widget.notification
                                                                               .type ==
                                                                           'haha')
                                                                       ? Image.asset(
-                                                                          'lib/src/assets/images/home.png')
+                                                                          'lib/src/assets/images/reactions/haha.png')
                                                                       : (widget.notification.type ==
                                                                               'wow')
                                                                           ? Image.asset(
-                                                                              'lib/src/assets/images/home.png')
+                                                                              'lib/src/assets/images/reactions/wow.png')
                                                                           : (widget.notification.type == 'lovelove')
-                                                                              ? Image.asset('lib/src/assets/images/home.png')
+                                                                              ? Image.asset('lib/src/assets/images/reactions/care.png')
                                                                               : (widget.notification.type == 'sad')
-                                                                                  ? Image.asset('lib/src/assets/images/home.png')
-                                                                                  : (widget.notification.type == 'angry')
-                                                                                      ? Image.asset('lib/src/assets/images/home.png')
+                                                                                  ? Image.asset('lib/src/assets/images/reactions/sad.png')
+                                                                                  : (widget.notification.feels.type == '0')
+                                                                                      ? Image.asset('lib/src/assets/images/reactions/angry.png')
                                                                                       : const Icon(
                                                                                           Icons.facebook,
                                                                                           color: Colors.blue,
@@ -195,6 +212,7 @@ class _SingleNotificationState extends State<SingleNotification> {
                     ],
                   ),
                 ),
+                //Nội dung thông báo
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.only(left: 10),
@@ -202,12 +220,11 @@ class _SingleNotificationState extends State<SingleNotification> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        //Thông báo nổi bật
                         RichText(
                           overflow: TextOverflow.ellipsis,
                           maxLines: 3,
                           text: TextSpan(
-                              // Note: Styles for TextSpans must be explicitly defined.
-                              // Child text spans will inherit styles from parent
                               style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -228,17 +245,19 @@ class _SingleNotificationState extends State<SingleNotification> {
                                   )
                                   .toList()),
                         ),
+                        ////
                         Padding(
                           padding: const EdgeInsets.only(top: 5),
                           child: Text(
-                            widget.notification.time,
+                            widget.notification.created,
                             style: const TextStyle(
                               color: Colors.black54,
                               fontSize: 14,
                             ),
                           ),
                         ),
-                        if (widget.notification.type == 'friend')
+                        //
+                        if (widget.notification.type == '1')
                           Row(
                             children: [
                               Expanded(

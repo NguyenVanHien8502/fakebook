@@ -480,6 +480,10 @@ class _FriendsScreenState extends State<FriendsScreen> {
                             const SizedBox(
                               height: 5,
                             ),
+                            Text(
+                              '${friendRequests[i].mutualFriends} bạn chung',
+                              style: TextStyle(fontSize: 12),
+                            ),
                             if (friendRequests[i].isFriend == 0)
                               Row(
                                 children: [

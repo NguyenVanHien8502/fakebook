@@ -1,17 +1,31 @@
+import 'package:fakebook/src/model/feel.dart';
+import 'package:fakebook/src/model/user.dart';
+
 class Noti {
-  final String content;
-  final List<String>? bold;
-  final String image;
-  final String time;
   final String type;
-  final bool? seen;
+  final String object_id;
+  final String title;
+  final String noti_id;
+  final String created;
+  final String avatar;
+  final String read;
+  final String bold;
+  final String group;
+  final User user;
+  final Feels feels;
+
   Noti(
-      {required this.content,
-      this.bold,
-      required this.image,
-      required this.time,
-      required this.type,
-      this.seen});
+      {required this.type,
+      required this.object_id,
+      required this.title,
+      required this.noti_id,
+      required this.created,
+      required this.avatar,
+      required this.read,
+      required this.bold,
+      required this.group,
+      required this.user,
+      required this.feels});
 }
 
 

@@ -69,9 +69,9 @@ class FriendPageState extends State<FriendPage> {
                   user: User(
                     id: item['id'].toString(),
                     name: item['username'],
-                    avatar:
-                        item['avatar'] == null ? 'lib/src/assets/images/avatarfb.jpg' :
-                        item['avatar'],
+                    avatar: item['avatar'] == null
+                        ? 'lib/src/assets/images/avatarfb.jpg'
+                        : item['avatar'],
                   ),
                   mutualFriends: item['same_friends'],
                 );
@@ -656,6 +656,9 @@ class FriendPageState extends State<FriendPage> {
 
         if (response.statusCode == 200) {
           if (responseBody['code'] == '1000') {
+            setState(() {
+              friendRequests.removeWhere((friend) => friend.user.id == id);
+            });
             return print("Đã xóa");
           } else {
             print('API returned an error: ${responseBody['message']}');
