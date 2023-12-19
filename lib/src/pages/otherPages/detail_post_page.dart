@@ -86,19 +86,6 @@ class DetailPostPageState extends State<DetailPostPage> {
     }
   }
 
-  //Xử lý hiển thị ảnh của post
-  List<List<Map<String, dynamic>>> _splitImagesIntoPairs(List<dynamic> images) {
-    List<List<Map<String, dynamic>>> imagePairs = [];
-    for (int i = 0; i < images.length; i += 2) {
-      int endIndex = i + 2;
-      if (endIndex > images.length) {
-        endIndex = images.length;
-      }
-      imagePairs.add(images.sublist(i, endIndex).cast<Map<String, dynamic>>());
-    }
-    return imagePairs;
-  }
-
   //get list feel
   var listFeels = [];
   dynamic userId;
@@ -126,9 +113,9 @@ class DetailPostPageState extends State<DetailPostPage> {
       // print(responseBody['data']);
       setState(() {
         listFeels = responseBody['data'];
+        feel = listFeels.length;
       });
       dynamic isFelt = listFeels.firstWhere((element) {
-        print(element['feel']['user']['id'] == userId);
         return element['feel']['user']['id'] == userId;
       }, orElse: () => null);
       if (isFelt == null) {
@@ -153,6 +140,7 @@ class DetailPostPageState extends State<DetailPostPage> {
 
   dynamic
       isFeltKudo; //-1, 0, 1 lần lượt là không bày tỏ cảm xúc, bày tỏ phẫn nộ và bày tỏ like
+  dynamic feel;
 
 // Hàm hiển thị menu tùy chọn
   void showReactionMenu(BuildContext context) {
@@ -207,6 +195,9 @@ class DetailPostPageState extends State<DetailPostPage> {
     ).then((value) async {
       if (value != null) {
         setState(() {
+          if (isFeltKudo == '-1') {
+            feel = feel + 1;
+          }
           isFeltKudo = value == '1' ? '1' : '0';
         });
         // Thực hiện các hành động tương ứng
@@ -316,6 +307,8 @@ class DetailPostPageState extends State<DetailPostPage> {
 
   @override
   Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -472,41 +465,26 @@ class DetailPostPageState extends State<DetailPostPage> {
                 const SizedBox(
                   height: 10.0,
                 ),
-                if (post['image'] != null && post['image'].isNotEmpty)
-                  // Column(
-                  //   mainAxisAlignment: MainAxisAlignment.start,
-                  //   children: post['image'].map((image) {
-                  //     return Column(
-                  //       children: [
-                  //         Image.network(
-                  //           '${image['url']}',
-                  //           height: 150,
-                  //           width: 150,
-                  //           fit: BoxFit.cover,
-                  //         ),
-                  //         const SizedBox(height: 10.0,),
-                  //       ],
-                  //     );
-                  //   }),
-                  // ),
-                  ..._splitImagesIntoPairs(post['image'])
-                      .map<Widget>((imagePair) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: imagePair.map<Widget>((image) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 5.0),
-                          child: Image.network(
-                            '${image['url']}',
-                            height: 150,
-                            width: 150,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }),
+                Column(
+                  children: [
+                    if (post['image'] != null && post['image'].isNotEmpty)
+                      ...post['image'].map((image) => Column(
+                            children: [
+                              Container(
+                                color: const Color(0xFFFFF2EE),
+                                child: Image.network(
+                                  '${image['url']}',
+                                  height: 200,
+                                  width: w,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
+                            ],
+                          )),
+                  ],
+                ),
 
                 Container(
                   margin: const EdgeInsets.only(top: 14.0),
@@ -543,6 +521,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                               //cập nhật lại trạng thái của isFeltKudo
                               setState(() {
                                 isFeltKudo = '-1';
+                                feel = feel - 1;
                               });
 
                               // Chuyển chuỗi JSON thành một đối tượng Dart
@@ -568,6 +547,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                               //cập nhật lại trạng thái của isFeltKudo
                               setState(() {
                                 isFeltKudo = '1';
+                                feel = feel + 1;
                               });
 
                               // Chuyển chuỗi JSON thành một đối tượng Dart
@@ -718,13 +698,15 @@ class DetailPostPageState extends State<DetailPostPage> {
                           ),
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              (int.parse(post['kudos'] ?? '0') +
-                                      int.parse(post['disappointed'] ?? '0'))
-                                  .toString(),
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 16),
-                            ),
+                            child: () {
+                              if (feel != null) {
+                                return Text(
+                                  feel.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                );
+                              }
+                            }(),
                           )
                         ],
                       ),
