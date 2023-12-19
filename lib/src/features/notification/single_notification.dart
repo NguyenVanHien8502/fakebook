@@ -1,4 +1,5 @@
 import 'package:fakebook/src/model/noti.dart';
+import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -45,6 +46,19 @@ class _SingleNotificationState extends State<SingleNotification> {
               MaterialPageRoute(
                 builder: (context) => OtherPersonalPageScreen(
                     userId: widget.notification.user.id),
+              ),
+            );
+          }
+          if (widget.notification.type == '3' ||
+              widget.notification.type == '5' ||
+              widget.notification.type == '6' ||
+              widget.notification.type == '9') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailPostPage(
+                  postId: int.parse(widget.notification.idPost),
+                ),
               ),
             );
           }
@@ -98,12 +112,14 @@ class _SingleNotificationState extends State<SingleNotification> {
                           height: 30,
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: widget.notification.type == '1'
+                              color: widget.notification.type ==
+                                      '1' //lời mời kết bạn
                                   ? Colors.blue
-                                  : widget.notification.type == 'comment'
+                                  : widget.notification.type == '6' //Bình luận
                                       ? Colors.green[400]
-                                      : widget.notification.type == 'page'
-                                          ? Colors.orange
+                                      : widget.notification.type ==
+                                              '9' //trả lời bình luận
+                                          ? Colors.green[400]
                                           : widget.notification.type == 'group'
                                               ? Colors.blue
                                               : widget.notification.type ==
@@ -127,34 +143,37 @@ class _SingleNotificationState extends State<SingleNotification> {
                               : (widget.notification.type ==
                                       '1') // Lời mời kết bạn
                                   ? const Icon(
-                            Icons.person_rounded,
-                            color: Colors.white,
-                            size: 22,
-                          )
-                                  : (widget.notification.type == '6')
+                                      Icons.person_rounded,
+                                      color: Colors.white,
+                                      size: 22,
+                                    )
+                                  : (widget.notification.type ==
+                                          '6') //Bình luận
                                       ? const ImageIcon(
                                           AssetImage(
                                               'lib/src/assets/images/white-cmt.png'),
                                           color: Colors.white,
                                           size: 16,
                                         )
-                                      : (widget.notification.type == 'page')
+                                      : (widget.notification.type ==
+                                              '3') //Thêm bài viết mới
                                           ? const CircleAvatar(
                                               backgroundImage: AssetImage(
                                                   'lib/src/assets/images/home.png'))
                                           : (widget.notification.type ==
-                                                  '2')
+                                                  '2') // chấp nhận lời mời kết bạn
                                               ? const Icon(
                                                   Icons.groups_rounded,
                                                   color: Colors.grey,
                                                   size: 24,
                                                 )
                                               : (widget.notification.type ==
-                                                      'security')
-                                                  ? const Icon(
-                                                      Icons.security_rounded,
+                                                      '9') // tra lời cmt
+                                                  ? const ImageIcon(
+                                                      AssetImage(
+                                                          'lib/src/assets/images/white-cmt.png'),
                                                       color: Colors.white,
-                                                      size: 20,
+                                                      size: 16,
                                                     )
                                                   : (widget.notification.type ==
                                                           'date')

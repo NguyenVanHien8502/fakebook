@@ -13,6 +13,7 @@ class Noti {
   final String group;
   final User user;
   final Feels feels;
+  final String idPost;
 
   Noti(
       {required this.type,
@@ -25,7 +26,8 @@ class Noti {
       required this.bold,
       required this.group,
       required this.user,
-      required this.feels});
+      required this.feels,
+      required this.idPost});
 }
 
 
