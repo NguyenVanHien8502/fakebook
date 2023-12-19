@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
-import 'package:fakebook/src/pages/authPages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';

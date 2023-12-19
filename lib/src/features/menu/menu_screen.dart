@@ -1,12 +1,15 @@
 import 'dart:convert';
 
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/menu/menu_choice.dart';
 import 'package:fakebook/src/features/menu/shortcut.dart';
 import 'package:fakebook/src/pages/authPages/change_password_page.dart';
+import 'package:fakebook/src/pages/authPages/get_verify_code_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class MenuScreen extends StatefulWidget {
   static double offset = 0;
@@ -796,6 +799,142 @@ class _MenuScreenState extends State<MenuScreen> {
                               title: 'Đổi mật khẩu'),
                         ),
                       ),
+                      GestureDetector(
+                        onTap: () {
+                          if(jsonDecode(currentUser)['active']==null){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Bạn có thực sự muốn vô hiệu hóa tài khoản của mình?'),
+                                  content: const Text('Nếu vô hiệu hóa tài khoản, bạn sẽ không thể sử dụng các tính năng khác của ứng dụng, trừ khi bạn khôi phục lại.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'Hủy',
+                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: handleDeactive,
+                                      child: const Text(
+                                        'Đồng ý',
+                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }else{
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: const Text(
+                                      'Tài khoản của bạn đã bị vô hiệu hóa nên không thể sử dụng tính năng này?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: ()  {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'Ok',
+                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child: const MenuChoice(
+                              img: 'lib/src/assets/images/deactive.png',
+                              title: 'Vô hiệu hóa tài khoản'),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          if(jsonDecode(currentUser)['active']=='-2'){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                    const GetVerifyCodePage()));
+                          }else if(jsonDecode(currentUser)['active']==null){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: const Text(
+                                      'Tài khoản của bạn chưa bị vô hiệu hóa nên không thể sử dụng tính năng này?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: ()  {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'Ok',
+                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child: const MenuChoice(
+                              img: 'lib/src/assets/images/restore.png',
+                              title: 'Khôi phục tài khoản'),
+                        ),
+                      ),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(10),
@@ -866,16 +1005,13 @@ class _MenuScreenState extends State<MenuScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Thông báo'),
-          content: Text(
+          title: const Text('Thông báo'),
+          content: const Text(
               'Bạn có muốn lưu thông tin đăng nhập để lần sau đỡ phải đăng nhập hay không?'),
           actions: [
             TextButton(
               onPressed: () async {
-                await storage.delete(key: 'token');
-                await storage.delete(key: 'email');
-                await storage.delete(key: 'password');
-                await storage.delete(key: 'currentUser');
+                await storage.deleteAll();
                 Navigator.pushNamed(
                   context,
                   WelcomePage.routeName,
@@ -883,7 +1019,7 @@ class _MenuScreenState extends State<MenuScreen> {
               },
               child: const Text(
                 'Không',
-                style: TextStyle(color: Colors.black, fontSize: 14),
+                style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
             TextButton(
@@ -896,12 +1032,77 @@ class _MenuScreenState extends State<MenuScreen> {
               },
               child: const Text(
                 'Có',
-                style: TextStyle(color: Colors.black, fontSize: 14),
+                style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
           ],
         );
       },
     );
+  }
+
+  Future<void> handleDeactive() async {
+    String? token = await storage.read(key: 'token');
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.deactiveUser);
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      if(responseBody['code']=='1000' &&responseBody['message']=='OK'){
+        await storage.deleteAll();
+          Navigator.pushNamed(
+            context,
+            WelcomePage.routeName,
+          );
+      }
+
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> handleRestoreUser() async {
+    String? email=await storage.read(key: "email");
+    dynamic responseBody;
+    try {
+      var url = Uri.parse(ListAPI.deactiveUser);
+
+      Map body={
+        "email":email,
+        // "code_verify":code,
+      };
+
+      http.Response response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Chuyển chuỗi JSON thành một đối tượng Dart
+      responseBody = jsonDecode(response.body);
+      if(responseBody['code']=='1000' &&responseBody['message']=='OK'){
+        await storage.delete(key: 'token');
+        await storage.delete(key: 'email');
+        await storage.delete(key: 'password');
+        await storage.delete(key: 'currentUser');
+        Navigator.pushNamed(
+          context,
+          WelcomePage.routeName,
+        );
+      }
+
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 }

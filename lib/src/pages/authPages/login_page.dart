@@ -143,8 +143,8 @@ class LoginPageState extends State<LoginPage> {
                               color: Colors.black54,
                             ),
                           ),
-                          cursorColor:
-                              Colors.black, //chỉnh màu của cái vạch nháy
+                          cursorColor: Colors.black,
+                          //chỉnh màu của cái vạch nháy
                           textAlignVertical: TextAlignVertical.center,
                         ),
                       ),
@@ -316,58 +316,68 @@ class LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         if (responseBody['code'] == '1000') {
-          var token = responseBody['data']['token'];
-          print(responseBody['data']);
-          const storage = FlutterSecureStorage();
-          await storage.write(key: 'token', value: token);
-          User user = User(
-              id: responseBody['data']['id'],
-              name: responseBody['data']['username'],
-              avatar:
-                  responseBody['data']['avatar'] ??
-                  'lib/src/assets/images/avatarfb.jpg');
-
-          //Cập nhật trạng thái toàn cầu
-          Provider.of<UserProvider>(context, listen: false).updateUse(user);
-
           await storage.write(key: 'email', value: email);
           await storage.write(key: 'password', value: password);
+          if (responseBody['data']['active'] == '1') {
+            var token = responseBody['data']['token'];
+            print(responseBody['data']);
+            await storage.write(key: 'token', value: token);
+            User user = User(
+                id: responseBody['data']['id'],
+                name: responseBody['data']['username'],
+                avatar: responseBody['data']['avatar'] ??
+                    'lib/src/assets/images/avatarfb.jpg');
 
-          var userId = responseBody['data']['id'];
-          try {
-            var url = Uri.parse(ListAPI.getUserInfo);
-            Map body = {
-              "user_id": userId,
-            };
+            //Cập nhật trạng thái toàn cầu
+            Provider.of<UserProvider>(context, listen: false).updateUse(user);
 
-            http.Response response = await http.post(
-              url,
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer $token'
-              },
-              body: jsonEncode(body),
-            );
+            var userId = responseBody['data']['id'];
+            try {
+              var url = Uri.parse(ListAPI.getUserInfo);
+              Map body = {
+                "user_id": userId,
+              };
 
-            // Chuyển chuỗi JSON thành một đối tượng Dart
-            final getUserInfo = jsonDecode(response.body);
-            if (response.statusCode == 201) {
-              if (getUserInfo['code'] == '1000') {
-                var currentUser = getUserInfo['data'];
-                var currentUserJson = jsonEncode(currentUser);
-                await storage.write(key: 'currentUser', value: currentUserJson);
+              http.Response response = await http.post(
+                url,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer $token'
+                },
+                body: jsonEncode(body),
+              );
+
+              // Chuyển chuỗi JSON thành một đối tượng Dart
+              final getUserInfo = jsonDecode(response.body);
+              if (response.statusCode == 201) {
+                if (getUserInfo['code'] == '1000') {
+                  var currentUser = getUserInfo['data'];
+                  var currentUserJson = jsonEncode(currentUser);
+                  await storage.write(
+                      key: 'currentUser', value: currentUserJson);
+                }
               }
+            } catch (e) {
+              print("Error: $e");
             }
-          } catch (e) {
-            print("Error: $e");
-          }
-          emailController.clear();
-          passwordController.clear();
+            emailController.clear();
+            passwordController.clear();
 
-          Navigator.pushNamed(
-            context,
-            HomeScreen.routeName,
-          );
+            Navigator.pushNamed(
+              context,
+              HomeScreen.routeName,
+            );
+          } else if (responseBody['data']['active'] == '-2') {
+            await storage.write(
+                key: 'currentUser', value: jsonEncode(responseBody['data']));
+            emailController.clear();
+            passwordController.clear();
+
+            Navigator.pushNamed(
+              context,
+              HomeScreen.routeName,
+            );
+          }
         } else {
           showDialog(
             context: context,

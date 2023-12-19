@@ -95,7 +95,8 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     getListPosts();
 
     _scrollController.addListener(() {
-      if(_scrollController.position.pixels==_scrollController.position.maxScrollExtent){
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         _loadMore();
       }
     });
@@ -118,9 +119,10 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
   //get list post
   var listPosts = [];
   int followLastId = 0;
-  int lastId=0;
-  int index=0;
-  int count=10;
+  int lastId = 0;
+  int index = 0;
+  int count = 10;
+
   Future<void> getListPosts() async {
     String? token = await storage.read(key: 'token');
     dynamic currentUser = await storage.read(key: 'currentUser');
@@ -299,12 +301,13 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
   }
 
   //xử lý pull up to load more data
-  final ScrollController _scrollController=ScrollController();
+  final ScrollController _scrollController = ScrollController();
+
   Future<bool> _loadMore() async {
     print("Start Loading More");
     try {
       setState(() {
-        lastId=followLastId;
+        lastId = followLastId;
       });
       await Future.delayed(const Duration(seconds: 1, milliseconds: 100));
       await getListPosts();
@@ -334,26 +337,26 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                 children: [
                   currentUser != null
                       ? Container(
-                    margin: const EdgeInsets.only(right: 6.0),
-                    child: ClipOval(
-                      child: Image.network(
-                        '${jsonDecode(currentUser)['avatar']}',
-                        height: 50,
-                        width: 50,
-                        fit: BoxFit
-                            .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                      ),
-                    ),
-                  )
+                          margin: const EdgeInsets.only(right: 6.0),
+                          child: ClipOval(
+                            child: Image.network(
+                              '${jsonDecode(currentUser)['avatar']}',
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit
+                                  .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                            ),
+                          ),
+                        )
                       : Container(
-                    margin: const EdgeInsets.only(right: 6.0),
-                    child: const Image(
-                      image:
-                      AssetImage('lib/src/assets/images/avatar.jpg'),
-                      height: 50,
-                      width: 50,
-                    ),
-                  ),
+                          margin: const EdgeInsets.only(right: 6.0),
+                          child: const Image(
+                            image:
+                                AssetImage('lib/src/assets/images/avatar.jpg'),
+                            height: 50,
+                            width: 50,
+                          ),
+                        ),
                   Expanded(
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
@@ -411,7 +414,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child:
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 5,
@@ -420,11 +423,11 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                   ),
                   ...stories
                       .map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                    ),
-                    child: StoryCard(story: e),
-                  ))
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                            ),
+                            child: StoryCard(story: e),
+                          ))
                       .toList()
                 ]),
               ),
@@ -441,10 +444,10 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
             // List posts
             Column(
               children:
-              listPosts.where((post) => post['id'] != null).map((post) {
+                  listPosts.where((post) => post['id'] != null).map((post) {
                 return Column(
                   children: <Widget>[
-                        () {
+                    () {
                       int postId = int.parse(post['id']);
                       if (postVisible[postId] == true) {
                         return Column(
@@ -456,8 +459,8 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => DetailPostPage(
-                                          postId: int.parse(post['id']),
-                                        )));
+                                              postId: int.parse(post['id']),
+                                            )));
                               },
                               child: Row(
                                 children: [
@@ -486,11 +489,11 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                   ),
                                   Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                           margin:
-                                          const EdgeInsets.only(left: 16.0),
+                                              const EdgeInsets.only(left: 16.0),
                                           child: Row(
                                             children: [
                                               Container(
@@ -501,7 +504,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                   style: const TextStyle(
                                                       color: Colors.black,
                                                       fontWeight:
-                                                      FontWeight.bold,
+                                                          FontWeight.bold,
                                                       fontSize: 16),
                                                 ),
                                               ),
@@ -518,12 +521,12 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                           )),
                                       Container(
                                           margin:
-                                          const EdgeInsets.only(left: 16.0),
+                                              const EdgeInsets.only(left: 16.0),
                                           child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                                CrossAxisAlignment.center,
                                             children: [
                                               Text(
                                                 formatTimeDifference(
@@ -550,9 +553,9 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                     margin: const EdgeInsets.only(right: 16.0),
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.center,
+                                          CrossAxisAlignment.center,
                                       children: [
                                         IconButton(
                                           splashRadius: 20,
@@ -565,22 +568,22 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.rectangle,
                                                     borderRadius:
-                                                    const BorderRadius.only(
+                                                        const BorderRadius.only(
                                                       topLeft:
-                                                      Radius.circular(10),
+                                                          Radius.circular(10),
                                                       topRight:
-                                                      Radius.circular(10),
+                                                          Radius.circular(10),
                                                     ),
                                                     color: Colors.grey[300],
                                                   ),
                                                   child: Column(
                                                     mainAxisAlignment:
-                                                    MainAxisAlignment.start,
+                                                        MainAxisAlignment.start,
                                                     mainAxisSize:
-                                                    MainAxisSize.min,
+                                                        MainAxisSize.min,
                                                     crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .center,
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
                                                       const SizedBox(
                                                         height: 5,
@@ -589,13 +592,13 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                         height: 4,
                                                         width: 40,
                                                         decoration:
-                                                        BoxDecoration(
+                                                            BoxDecoration(
                                                           color: Colors.grey,
                                                           shape: BoxShape
                                                               .rectangle,
                                                           borderRadius:
-                                                          BorderRadius
-                                                              .circular(20),
+                                                              BorderRadius
+                                                                  .circular(20),
                                                         ),
                                                       ),
                                                       const SizedBox(
@@ -603,8 +606,8 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                       ),
                                                       Padding(
                                                         padding:
-                                                        const EdgeInsets
-                                                            .symmetric(
+                                                            const EdgeInsets
+                                                                .symmetric(
                                                           horizontal: 10,
                                                         ),
                                                         child: Column(
@@ -614,9 +617,9 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                   .transparent,
                                                               child: InkWell(
                                                                 borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                    10),
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
                                                                 onTap: () {
                                                                   Navigator.push(
                                                                       context,
@@ -626,21 +629,21 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                 },
                                                                 child: ListTile(
                                                                   shape:
-                                                                  RoundedRectangleBorder(
+                                                                      RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                    BorderRadius.circular(
-                                                                        10),
+                                                                        BorderRadius.circular(
+                                                                            10),
                                                                   ),
                                                                   tileColor:
-                                                                  Colors
-                                                                      .white,
+                                                                      Colors
+                                                                          .white,
                                                                   minLeadingWidth:
-                                                                  10,
+                                                                      10,
                                                                   titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
+                                                                      ListTileTitleAlignment
+                                                                          .center,
                                                                   leading:
-                                                                  const Icon(
+                                                                      const Icon(
                                                                     Icons
                                                                         .report,
                                                                     size: 30,
@@ -648,17 +651,17 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                         .black,
                                                                   ),
                                                                   title:
-                                                                  const Text(
+                                                                      const Text(
                                                                     'Báo cáo bài viết',
                                                                     style:
-                                                                    TextStyle(
+                                                                        TextStyle(
                                                                       color: Colors
                                                                           .black,
                                                                       fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
+                                                                          FontWeight
+                                                                              .w500,
                                                                       fontSize:
-                                                                      16,
+                                                                          16,
                                                                     ),
                                                                   ),
                                                                 ),
@@ -673,38 +676,38 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                               child: InkWell(
                                                                 onTap: () {},
                                                                 borderRadius:
-                                                                const BorderRadius
-                                                                    .only(
+                                                                    const BorderRadius
+                                                                        .only(
                                                                   topLeft: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                   topRight: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                 ),
                                                                 child:
-                                                                const ListTile(
+                                                                    const ListTile(
                                                                   titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
+                                                                      ListTileTitleAlignment
+                                                                          .center,
                                                                   tileColor:
-                                                                  Colors
-                                                                      .white,
+                                                                      Colors
+                                                                          .white,
                                                                   shape:
-                                                                  RoundedRectangleBorder(
+                                                                      RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                    BorderRadius
-                                                                        .only(
+                                                                        BorderRadius
+                                                                            .only(
                                                                       topLeft: Radius
                                                                           .circular(
-                                                                          10),
+                                                                              10),
                                                                       topRight:
-                                                                      Radius.circular(
-                                                                          10),
+                                                                          Radius.circular(
+                                                                              10),
                                                                     ),
                                                                   ),
                                                                   minLeadingWidth:
-                                                                  10,
+                                                                      10,
                                                                   leading: Icon(
                                                                     Icons
                                                                         .add_circle_rounded,
@@ -714,33 +717,33 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                   ),
                                                                   title: Column(
                                                                     crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
+                                                                        CrossAxisAlignment
+                                                                            .start,
                                                                     children: [
                                                                       Text(
                                                                         'Hiển thị thêm',
                                                                         style:
-                                                                        TextStyle(
+                                                                            TextStyle(
                                                                           color:
-                                                                          Colors.black,
+                                                                              Colors.black,
                                                                           fontWeight:
-                                                                          FontWeight.w500,
+                                                                              FontWeight.w500,
                                                                           fontSize:
-                                                                          16,
+                                                                              16,
                                                                         ),
                                                                       ),
                                                                       SizedBox(
                                                                         height:
-                                                                        5,
+                                                                            5,
                                                                       ),
                                                                       Text(
                                                                         'Bạn sẽ nhìn thấy nhiều bài viết tương tự hơn.',
                                                                         style:
-                                                                        TextStyle(
+                                                                            TextStyle(
                                                                           color:
-                                                                          Colors.black54,
+                                                                              Colors.black54,
                                                                           fontSize:
-                                                                          14,
+                                                                              14,
                                                                         ),
                                                                       ),
                                                                     ],
@@ -753,39 +756,39 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                   .transparent,
                                                               child: InkWell(
                                                                 borderRadius:
-                                                                const BorderRadius
-                                                                    .only(
+                                                                    const BorderRadius
+                                                                        .only(
                                                                   bottomLeft: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                   bottomRight: Radius
                                                                       .circular(
-                                                                      10),
+                                                                          10),
                                                                 ),
                                                                 onTap: () {},
                                                                 child:
-                                                                const ListTile(
+                                                                    const ListTile(
                                                                   titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
+                                                                      ListTileTitleAlignment
+                                                                          .center,
                                                                   tileColor:
-                                                                  Colors
-                                                                      .white,
+                                                                      Colors
+                                                                          .white,
                                                                   shape:
-                                                                  RoundedRectangleBorder(
+                                                                      RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                    BorderRadius
-                                                                        .only(
+                                                                        BorderRadius
+                                                                            .only(
                                                                       bottomLeft:
-                                                                      Radius.circular(
-                                                                          10),
+                                                                          Radius.circular(
+                                                                              10),
                                                                       bottomRight:
-                                                                      Radius.circular(
-                                                                          10),
+                                                                          Radius.circular(
+                                                                              10),
                                                                     ),
                                                                   ),
                                                                   minLeadingWidth:
-                                                                  10,
+                                                                      10,
                                                                   leading: Icon(
                                                                     Icons
                                                                         .remove_circle,
@@ -795,33 +798,33 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                   ),
                                                                   title: Column(
                                                                     crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
+                                                                        CrossAxisAlignment
+                                                                            .start,
                                                                     children: [
                                                                       Text(
                                                                         'Ẩn bớt',
                                                                         style:
-                                                                        TextStyle(
+                                                                            TextStyle(
                                                                           color:
-                                                                          Colors.black,
+                                                                              Colors.black,
                                                                           fontWeight:
-                                                                          FontWeight.w500,
+                                                                              FontWeight.w500,
                                                                           fontSize:
-                                                                          16,
+                                                                              16,
                                                                         ),
                                                                       ),
                                                                       SizedBox(
                                                                         height:
-                                                                        5,
+                                                                            5,
                                                                       ),
                                                                       Text(
                                                                         'Bạn sẽ nhìn thấy ít bài viết tương tự hơn.',
                                                                         style:
-                                                                        TextStyle(
+                                                                            TextStyle(
                                                                           color:
-                                                                          Colors.black54,
+                                                                              Colors.black54,
                                                                           fontSize:
-                                                                          14,
+                                                                              14,
                                                                         ),
                                                                       ),
                                                                     ],
@@ -837,27 +840,27 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                   .transparent,
                                                               child: InkWell(
                                                                 borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                    10),
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
                                                                 onTap: () {},
                                                                 child: ListTile(
                                                                   shape:
-                                                                  RoundedRectangleBorder(
+                                                                      RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                    BorderRadius.circular(
-                                                                        10),
+                                                                        BorderRadius.circular(
+                                                                            10),
                                                                   ),
                                                                   tileColor:
-                                                                  Colors
-                                                                      .white,
+                                                                      Colors
+                                                                          .white,
                                                                   minLeadingWidth:
-                                                                  10,
+                                                                      10,
                                                                   titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
+                                                                      ListTileTitleAlignment
+                                                                          .center,
                                                                   leading:
-                                                                  const Icon(
+                                                                      const Icon(
                                                                     Icons
                                                                         .file_copy_rounded,
                                                                     color: Colors
@@ -865,17 +868,17 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                     size: 30,
                                                                   ),
                                                                   title:
-                                                                  const Text(
+                                                                      const Text(
                                                                     'Sao chép liên kết',
                                                                     style:
-                                                                    TextStyle(
+                                                                        TextStyle(
                                                                       color: Colors
                                                                           .black,
                                                                       fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
+                                                                          FontWeight
+                                                                              .w500,
                                                                       fontSize:
-                                                                      16,
+                                                                          16,
                                                                     ),
                                                                   ),
                                                                 ),
@@ -889,27 +892,27 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                   .transparent,
                                                               child: InkWell(
                                                                 borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                    10),
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
                                                                 onTap: () {},
                                                                 child: ListTile(
                                                                   shape:
-                                                                  RoundedRectangleBorder(
+                                                                      RoundedRectangleBorder(
                                                                     borderRadius:
-                                                                    BorderRadius.circular(
-                                                                        10),
+                                                                        BorderRadius.circular(
+                                                                            10),
                                                                   ),
                                                                   tileColor:
-                                                                  Colors
-                                                                      .white,
+                                                                      Colors
+                                                                          .white,
                                                                   minLeadingWidth:
-                                                                  10,
+                                                                      10,
                                                                   titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
+                                                                      ListTileTitleAlignment
+                                                                          .center,
                                                                   leading:
-                                                                  const Icon(
+                                                                      const Icon(
                                                                     Icons
                                                                         .view_list_rounded,
                                                                     size: 30,
@@ -917,17 +920,17 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                                         .black,
                                                                   ),
                                                                   title:
-                                                                  const Text(
+                                                                      const Text(
                                                                     'Quản lý bảng feed',
                                                                     style:
-                                                                    TextStyle(
+                                                                        TextStyle(
                                                                       color: Colors
                                                                           .black,
                                                                       fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
+                                                                          FontWeight
+                                                                              .w500,
                                                                       fontSize:
-                                                                      16,
+                                                                          16,
                                                                     ),
                                                                   ),
                                                                 ),
@@ -951,7 +954,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                         GestureDetector(
                                           onTap: () {
                                             int postId =
-                                            int.parse(post['id'] ?? "");
+                                                int.parse(post['id'] ?? "");
                                             setState(() {
                                               postVisible[postId] = false;
                                             });
@@ -1021,7 +1024,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                   },
                                   child: Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
                                         margin: const EdgeInsets.only(
@@ -1049,7 +1052,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                         horizontal: 8.0),
                                                     child: Text(
                                                       (int.parse(post['feel'] ??
-                                                          '0'))
+                                                              '0'))
                                                           .toString(),
                                                       style: const TextStyle(
                                                           color: Colors.black,
@@ -1099,7 +1102,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                   child: GestureDetector(
                                     onTap: () async {
                                       String? token =
-                                      await storage.read(key: 'token');
+                                          await storage.read(key: 'token');
                                       int postId = int.parse(post['id'] ?? "");
                                       if (isFeltKudo.containsKey(postId) &&
                                           (isFeltKudo[postId] == '1' ||
@@ -1107,14 +1110,14 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                         // xử lý delete feel
                                         try {
                                           var url =
-                                          Uri.parse(ListAPI.deleteFeel);
+                                              Uri.parse(ListAPI.deleteFeel);
                                           Map body = {"id": '$postId'};
                                           http.Response response =
-                                          await http.post(
+                                              await http.post(
                                             url,
                                             headers: {
                                               'Content-Type':
-                                              'application/json',
+                                                  'application/json',
                                               'Authorization': 'Bearer $token'
                                             },
                                             body: jsonEncode(body),
@@ -1127,7 +1130,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
                                           // Chuyển chuỗi JSON thành một đối tượng Dart
                                           var responseBody =
-                                          jsonDecode(response.body);
+                                              jsonDecode(response.body);
                                           print(responseBody);
                                         } catch (e) {
                                           print('Error: $e');
@@ -1141,11 +1144,11 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                             "type": "1"
                                           };
                                           http.Response response =
-                                          await http.post(
+                                              await http.post(
                                             url,
                                             headers: {
                                               'Content-Type':
-                                              'application/json',
+                                                  'application/json',
                                               'Authorization': 'Bearer $token'
                                             },
                                             body: jsonEncode(body),
@@ -1158,7 +1161,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
 
                                           // Chuyển chuỗi JSON thành một đối tượng Dart
                                           var responseBody =
-                                          jsonDecode(response.body);
+                                              jsonDecode(response.body);
                                           print(responseBody);
                                         } catch (e) {
                                           print('Error: $e');
@@ -1174,12 +1177,12 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                       children: [
                                         Container(
                                           margin:
-                                          const EdgeInsets.only(right: 5),
+                                              const EdgeInsets.only(right: 5),
                                           child: () {
                                             int postId =
-                                            int.parse(post['id'] ?? "");
+                                                int.parse(post['id'] ?? "");
                                             if (isFeltKudo
-                                                .containsKey(postId) &&
+                                                    .containsKey(postId) &&
                                                 isFeltKudo[postId] == '-1') {
                                               return Image.asset(
                                                 'lib/src/assets/images/like.png',
@@ -1187,7 +1190,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                 height: 20,
                                               );
                                             } else if (isFeltKudo
-                                                .containsKey(postId) &&
+                                                    .containsKey(postId) &&
                                                 isFeltKudo[postId] == '0') {
                                               return Image.asset(
                                                 'lib/src/assets/images/reactions/angry.png',
@@ -1203,9 +1206,9 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                             }
                                           }(),
                                         ),
-                                            () {
+                                        () {
                                           int postId =
-                                          int.parse(post['id'] ?? "");
+                                              int.parse(post['id'] ?? "");
                                           if (isFeltKudo.containsKey(postId) &&
                                               isFeltKudo[postId] == '-1') {
                                             return const Text(
@@ -1215,7 +1218,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                                   fontSize: 16),
                                             );
                                           } else if (isFeltKudo
-                                              .containsKey(postId) &&
+                                                  .containsKey(postId) &&
                                               isFeltKudo[postId] == '0') {
                                             return const Text(
                                               "Phẫn nộ",
@@ -1246,7 +1249,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                       children: [
                                         Container(
                                           margin:
-                                          const EdgeInsets.only(right: 5),
+                                              const EdgeInsets.only(right: 5),
                                           child: const Image(
                                             image: AssetImage(
                                                 'lib/src/assets/images/comment.png'),
@@ -1274,7 +1277,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                       children: [
                                         Container(
                                           margin:
-                                          const EdgeInsets.only(right: 5),
+                                              const EdgeInsets.only(right: 5),
                                           child: const Image(
                                             image: AssetImage(
                                                 'lib/src/assets/images/share.png'),
