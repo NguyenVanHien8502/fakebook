@@ -1,4 +1,3 @@
-import 'package:fakebook/src/model/post.dart';
 import 'package:fakebook/src/model/story.dart';
 import 'package:fakebook/src/model/user.dart';
 
@@ -16,7 +15,7 @@ class User_data {
     ],
     hometown: 'Hà Nội',
     followers: 4576,
-    friends: 4548,
+    friends: "4548",
     hobbies: [
       '💻 Viết mã',
       '📚 Học tập',
