@@ -267,7 +267,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Column(
-              children: listPosts.map((post) {
+              children: listPosts.isNotEmpty?listPosts.map((post) {
                 return Column(
                   children: [
                     Column(
@@ -943,7 +943,11 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                     )
                   ],
                 );
-              }).toList(),
+              }).toList() : [
+                const Center(
+                  child: Text("Bạn không có bài viết nào."),
+                )
+              ],
             ),
           ),
         ),
