@@ -1118,7 +1118,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(top: 10.0),
-                                  child: GestureDetector(
+                                  child: InkWell(
                                     onTap: () async {
                                       String? token =
                                           await storage.read(key: 'token');
@@ -1262,7 +1262,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 10.0),
-                                  child: GestureDetector(
+                                  child: InkWell(
                                     onTap: () {
                                       print("I commented this post");
                                     },
@@ -1290,7 +1290,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 10.0),
-                                  child: GestureDetector(
+                                  child: InkWell(
                                     onTap: () {
                                       print("I shared this post");
                                     },

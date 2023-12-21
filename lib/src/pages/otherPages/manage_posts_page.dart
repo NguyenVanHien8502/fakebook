@@ -267,7 +267,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Column(
-              children: listPosts.map((post) {
+              children: listPosts.isNotEmpty?listPosts.map((post) {
                 return Column(
                   children: [
                     Column(
@@ -747,7 +747,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(top: 10.0),
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () async {
                                   String? token =
                                       await storage.read(key: 'token');
@@ -879,7 +879,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                             ),
                             Container(
                               margin: const EdgeInsets.only(top: 10.0),
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () {
                                   print("I commented this post");
                                 },
@@ -905,7 +905,7 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                             ),
                             Container(
                               margin: const EdgeInsets.only(top: 10.0),
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () {
                                   print("I shared this post");
                                 },
@@ -943,7 +943,11 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                     )
                   ],
                 );
-              }).toList(),
+              }).toList() : [
+                const Center(
+                  child: Text("Bạn không có bài viết nào."),
+                )
+              ],
             ),
           ),
         ),

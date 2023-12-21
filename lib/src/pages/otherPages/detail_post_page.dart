@@ -501,7 +501,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(top: 10.0),
-                      child: GestureDetector(
+                      child: InkWell(
                         onTap: () async {
                           String? token = await storage.read(key: 'token');
                           if (isFeltKudo == '1' || isFeltKudo == '0') {
@@ -615,7 +615,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 10.0),
-                      child: GestureDetector(
+                      child: InkWell(
                         onTap: () {
                           _commentFocusNode.requestFocus();
                           setState(() {
@@ -644,7 +644,7 @@ class DetailPostPageState extends State<DetailPostPage> {
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 10.0),
-                      child: GestureDetector(
+                      child: InkWell(
                         onTap: () {
                           print("I shared this post");
                         },
