@@ -697,6 +697,9 @@ class FriendPageState extends State<FriendPage> {
 
         if (response.statusCode == 200) {
           if (responseBody['code'] == '1000') {
+            setState(() {
+              friendRequests.removeWhere((friend) => friend.user.id == id);
+            });
             return print("Đã block");
           } else {
             print('API returned an error: ${responseBody['message']}');

@@ -5,24 +5,24 @@ class User {
   final String id;
   final String name;
   final String avatar;
+  final String? friends;
   bool? verified;
   final String? description;
+  final String? address;
+  final String? hometown;
   final String? cover;
-  final int? friends;
   final int? likes;
+  final String? isFriend;
   final int? followers;
   final List<String>? hobbies;
   final List<Story>? stories;
   final List<User>? topFriends;
-  final String? hometown;
   List<SocialMedia>? socialMedias;
   final String? bio;
   final String? type;
   final List<Education>? educations;
   final bool? guard;
   final List<Post>? posts;
-  final String? pageType;
-  final String? address;
   User({
     required this.id,
     required this.name,
@@ -43,7 +43,7 @@ class User {
     this.educations,
     this.guard,
     this.posts,
-    this.pageType,
+    this.isFriend,
     this.address,
   });
 
@@ -54,7 +54,7 @@ class User {
     bool? verified,
     String? description,
     String? cover,
-    int? friends,
+    String? friends,
     int? likes,
     int? followers,
     List<String>? hobbies,
@@ -90,7 +90,7 @@ class User {
       educations: educations ?? this.educations,
       guard: guard ?? this.guard,
       posts: posts ?? this.posts,
-      pageType: pageType ?? this.pageType,
+      isFriend: pageType ?? this.isFriend,
       address: address ?? this.address,
     );
   }
