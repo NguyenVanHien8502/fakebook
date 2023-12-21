@@ -6,6 +6,7 @@ import 'package:fakebook/src/features/menu/shortcut.dart';
 import 'package:fakebook/src/pages/authPages/change_password_page.dart';
 import 'package:fakebook/src/pages/authPages/get_verify_code_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
+import 'package:fakebook/src/pages/otherPages/buy_coins.dart';
 import 'package:fakebook/src/pages/otherPages/listblock.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
@@ -808,7 +809,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const ChangePasswordPage()));
+                                      const BuyCoins()));
                         },
                         child: Container(
                           width: double.infinity,
