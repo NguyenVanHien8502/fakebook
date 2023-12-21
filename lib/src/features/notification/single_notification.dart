@@ -1,7 +1,12 @@
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/model/noti.dart';
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/other_personal_page_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class SingleNotification extends StatefulWidget {
   final Noti notification;
@@ -13,6 +18,50 @@ class SingleNotification extends StatefulWidget {
 
 class _SingleNotificationState extends State<SingleNotification> {
   List<String> texts = [];
+  String isFriend = '-1';
+
+  Future<void> getInfoUser(BuildContext context, String id) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.getUserInfo);
+        Map body = {
+          "user_id": id,
+        };
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 201) {
+          if (responseBody['code'] == '1000') {
+            setState(() {
+              isFriend = responseBody['data']['is_friend'];
+            });
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +81,7 @@ class _SingleNotificationState extends State<SingleNotification> {
       texts.add(widget.notification.title
           .substring(s, widget.notification.title.length));
     });
+    getInfoUser(context, widget.notification.user.id);
   }
 
   @override
@@ -142,10 +192,11 @@ class _SingleNotificationState extends State<SingleNotification> {
                                 )
                               : (widget.notification.type ==
                                       '1') // Lời mời kết bạn
-                                  ? const Icon(
-                                      Icons.person_rounded,
+                                  ? const ImageIcon(
+                                      AssetImage(
+                                          'lib/src/assets/images/friends.png'),
                                       color: Colors.white,
-                                      size: 22,
+                                      size: 16,
                                     )
                                   : (widget.notification.type ==
                                           '6') //Bình luận
@@ -157,9 +208,11 @@ class _SingleNotificationState extends State<SingleNotification> {
                                         )
                                       : (widget.notification.type ==
                                               '3') //Thêm bài viết mới
-                                          ? const CircleAvatar(
-                                              backgroundImage: AssetImage(
-                                                  'lib/src/assets/images/home.png'))
+                                          ? const Icon(
+                                              Icons.post_add,
+                                              color: Colors.grey,
+                                              size: 24,
+                                            )
                                           : (widget.notification.type ==
                                                   '2') // chấp nhận lời mời kết bạn
                                               ? const Icon(
@@ -276,12 +329,15 @@ class _SingleNotificationState extends State<SingleNotification> {
                           ),
                         ),
                         //
-                        if (widget.notification.type == '1')
+                        if (widget.notification.type == '1' && isFriend != '1')
                           Row(
                             children: [
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    accecptFriend(
+                                        context, widget.notification.user.id);
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 0,
                                     backgroundColor: Colors.blue,
@@ -317,7 +373,15 @@ class _SingleNotificationState extends State<SingleNotification> {
                                 ),
                               ),
                             ],
-                          )
+                          ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        if (isFriend == '1' && widget.notification.type == '1')
+                          const Text(
+                            'Các bạn đã là bạn bè!',
+                            style: TextStyle(fontSize: 12),
+                          ),
                       ],
                     ),
                   ),
@@ -341,5 +405,55 @@ class _SingleNotificationState extends State<SingleNotification> {
         ),
       ),
     );
+  }
+
+  //
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
+
+  Future<void> accecptFriend(BuildContext context, String id) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.setAcceptFriend);
+        Map body = {
+          "user_id": id,
+          "is_accept": "1",
+        };
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            setState(() {
+              isFriend = '1';
+            });
+            return print("Đã chấp nhận kết bạn");
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
   }
 }

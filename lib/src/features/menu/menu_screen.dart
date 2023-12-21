@@ -6,6 +6,7 @@ import 'package:fakebook/src/features/menu/shortcut.dart';
 import 'package:fakebook/src/pages/authPages/change_password_page.dart';
 import 'package:fakebook/src/pages/authPages/get_verify_code_page.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
+import 'package:fakebook/src/pages/otherPages/listblock.dart';
 import 'package:fakebook/src/pages/otherPages/personal_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -766,6 +767,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
+                      //Change password
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -799,15 +801,85 @@ class _MenuScreenState extends State<MenuScreen> {
                               title: 'Đổi mật khẩu'),
                         ),
                       ),
+                      //Buy Coins
                       GestureDetector(
                         onTap: () {
-                          if(jsonDecode(currentUser)['active']==null){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ChangePasswordPage()));
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child: const MenuChoice(
+                              img: 'lib/src/assets/images/dollar.png',
+                              title: 'Mua Coins'),
+                        ),
+                      ),
+                      //Chặn
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const BlockPage()));
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child: const MenuChoice(
+                              img: 'lib/src/assets/images/block.png',
+                              title: 'Chặn'),
+                        ),
+                      ),
+                      //
+                      GestureDetector(
+                        onTap: () {
+                          if (jsonDecode(currentUser)['active'] == null) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: const Text('Bạn có thực sự muốn vô hiệu hóa tài khoản của mình?'),
-                                  content: const Text('Nếu vô hiệu hóa tài khoản, bạn sẽ không thể sử dụng các tính năng khác của ứng dụng, trừ khi bạn khôi phục lại.'),
+                                  title: const Text(
+                                      'Bạn có thực sự muốn vô hiệu hóa tài khoản của mình?'),
+                                  content: const Text(
+                                      'Nếu vô hiệu hóa tài khoản, bạn sẽ không thể sử dụng các tính năng khác của ứng dụng, trừ khi bạn khôi phục lại.'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -815,21 +887,27 @@ class _MenuScreenState extends State<MenuScreen> {
                                       },
                                       child: const Text(
                                         'Hủy',
-                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                     TextButton(
                                       onPressed: handleDeactive,
                                       child: const Text(
                                         'Đồng ý',
-                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],
                                 );
                               },
                             );
-                          }else{
+                          } else {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -839,12 +917,15 @@ class _MenuScreenState extends State<MenuScreen> {
                                       'Tài khoản của bạn đã bị vô hiệu hóa nên không thể sử dụng tính năng này?'),
                                   actions: [
                                     TextButton(
-                                      onPressed: ()  {
+                                      onPressed: () {
                                         Navigator.pop(context);
                                       },
                                       child: const Text(
                                         'Ok',
-                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],
@@ -880,13 +961,14 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if(jsonDecode(currentUser)['active']=='-2'){
+                          if (jsonDecode(currentUser)['active'] == '-2') {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                    const GetVerifyCodePage()));
-                          }else if(jsonDecode(currentUser)['active']==null){
+                                        const GetVerifyCodePage()));
+                          } else if (jsonDecode(currentUser)['active'] ==
+                              null) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -896,12 +978,15 @@ class _MenuScreenState extends State<MenuScreen> {
                                       'Tài khoản của bạn chưa bị vô hiệu hóa nên không thể sử dụng tính năng này?'),
                                   actions: [
                                     TextButton(
-                                      onPressed: ()  {
+                                      onPressed: () {
                                         Navigator.pop(context);
                                       },
                                       child: const Text(
                                         'Ok',
-                                        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],
@@ -1019,7 +1104,10 @@ class _MenuScreenState extends State<MenuScreen> {
               },
               child: const Text(
                 'Không',
-                style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             TextButton(
@@ -1032,7 +1120,10 @@ class _MenuScreenState extends State<MenuScreen> {
               },
               child: const Text(
                 'Có',
-                style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1057,27 +1148,26 @@ class _MenuScreenState extends State<MenuScreen> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      if(responseBody['code']=='1000' &&responseBody['message']=='OK'){
+      if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
         await storage.deleteAll();
-          Navigator.pushNamed(
-            context,
-            WelcomePage.routeName,
-          );
+        Navigator.pushNamed(
+          context,
+          WelcomePage.routeName,
+        );
       }
-
     } catch (e) {
       print('Error: $e');
     }
   }
 
   Future<void> handleRestoreUser() async {
-    String? email=await storage.read(key: "email");
+    String? email = await storage.read(key: "email");
     dynamic responseBody;
     try {
       var url = Uri.parse(ListAPI.deactiveUser);
 
-      Map body={
-        "email":email,
+      Map body = {
+        "email": email,
         // "code_verify":code,
       };
 
@@ -1090,7 +1180,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      if(responseBody['code']=='1000' &&responseBody['message']=='OK'){
+      if (responseBody['code'] == '1000' && responseBody['message'] == 'OK') {
         await storage.delete(key: 'token');
         await storage.delete(key: 'email');
         await storage.delete(key: 'password');
@@ -1100,7 +1190,6 @@ class _MenuScreenState extends State<MenuScreen> {
           WelcomePage.routeName,
         );
       }
-
     } catch (e) {
       print('Error: $e');
     }
