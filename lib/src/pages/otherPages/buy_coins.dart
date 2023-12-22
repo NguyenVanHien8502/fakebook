@@ -51,8 +51,10 @@ class BuyCoinsState extends State<BuyCoins> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      HomeScreen.routeName,
+                    );
                   },
                   child: const Text(
                     'OK',

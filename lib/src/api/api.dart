@@ -9,6 +9,7 @@ class ListAPI {
   static const getVerifyCode = "$baseHost/get_verify_code";
   static const checkVerifyCode = "$baseHost/check_verify_code";
   static const resetPassword = "$baseHost/reset_password";
+  static const checkEmail = "$baseHost/check_email";
   static const deactiveUser = "$baseHost/deactive_user";
   static const restoreUser = "$baseHost/restore_user";
 

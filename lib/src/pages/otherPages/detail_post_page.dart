@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/pages/otherPages/buy_coins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -158,19 +158,9 @@ class DetailPostPageState extends State<DetailPostPage> {
 
 // Hàm hiển thị menu tùy chọn
   void showReactionMenu(BuildContext context) {
-    // Get the position of the button
-    // RenderBox button = context.findRenderObject() as RenderBox;
-    // Offset buttonPosition = button.localToGlobal(Offset.zero);
-
     showMenu(
       context: context,
       position: const RelativeRect.fromLTRB(-80, 315, 0, 0),
-      // position: RelativeRect.fromLTRB(
-      //   buttonPosition.dx,
-      //   buttonPosition.dy + button.size.height+300,
-      //   buttonPosition.dx + button.size.width,
-      //   buttonPosition.dy + button.size.height, // Height of the menu
-      // ),
       elevation: 0,
       // Đặt độ nâng của PopupMenu để loại bỏ border
       shape: RoundedRectangleBorder(
@@ -208,12 +198,6 @@ class DetailPostPageState extends State<DetailPostPage> {
       ],
     ).then((value) async {
       if (value != null) {
-        setState(() {
-          if (isFeltKudo == '-1') {
-            feel = feel + 1;
-          }
-          isFeltKudo = value == '1' ? '1' : '0';
-        });
         // Thực hiện các hành động tương ứng
         String? token = await storage.read(key: 'token');
         try {
@@ -231,6 +215,48 @@ class DetailPostPageState extends State<DetailPostPage> {
           // Chuyển chuỗi JSON thành một đối tượng Dart
           var responseBody = jsonDecode(response.body);
           print(responseBody);
+
+          if (responseBody['code'] == '1000') {
+            setState(() {
+              if (isFeltKudo == '-1') {
+                feel = feel + 1;
+              }
+              isFeltKudo = value == '1' ? '1' : '0';
+            });
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Thông báo'),
+                  content: Text('${responseBody['message']}'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BuyCoins()));
+                      },
+                      child: const Text(
+                        'MUA COINS',
+                        style: TextStyle(color: Colors.blue, fontSize: 14),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         } catch (e) {
           print('Error: $e');
         }
@@ -310,10 +336,44 @@ class DetailPostPageState extends State<DetailPostPage> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      print(responseBody['data']);
-      setState(() {
-        markComment = responseBody['data'];
-      });
+      print(responseBody);
+
+      if (responseBody['code'] == '1000') {
+        setState(() {
+          markComment = responseBody['data'];
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Thông báo'),
+              content: Text('${responseBody['message']}'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => BuyCoins()));
+                  },
+                  child: const Text(
+                    'MUA COINS',
+                    style: TextStyle(color: Colors.blue, fontSize: 14),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
     } catch (e) {
       print('Error: $e');
     }
@@ -631,15 +691,55 @@ class DetailPostPageState extends State<DetailPostPage> {
                                 body: jsonEncode(body),
                               );
 
-                              //cập nhật lại trạng thái của isFeltKudo
-                              setState(() {
-                                isFeltKudo = '1';
-                                feel = feel + 1;
-                              });
-
                               // Chuyển chuỗi JSON thành một đối tượng Dart
                               var responseBody = jsonDecode(response.body);
                               print(responseBody);
+                              if (responseBody['code'] == '1000') {
+                                //cập nhật lại trạng thái của isFeltKudo
+                                setState(() {
+                                  isFeltKudo = '1';
+                                  feel = feel + 1;
+                                });
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Thông báo'),
+                                      content:
+                                          Text('${responseBody['message']}'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        BuyCoins()));
+                                          },
+                                          child: const Text(
+                                            'MUA COINS',
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 14),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            'OK',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                             } catch (e) {
                               print('Error: $e');
                             }

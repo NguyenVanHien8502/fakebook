@@ -423,14 +423,12 @@ class LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
-      print('Error during login: $e');
-      // Handle the error, e.g., show a general error message to the user
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('An error occurred during login.'),
+            title: Text('Thông báo'),
+            content: Text('Có lỗi xảy ra, vui lòng kiểm tra kết nối mạng của bạn.'),
             actions: [
               TextButton(
                 onPressed: () {
