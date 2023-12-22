@@ -1,9 +1,13 @@
+import 'dart:convert';
+
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/pages/authPages/register_pages/password.dart';
 import 'package:fakebook/src/pages/authPages/welcome_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class EmailRegisterPage extends StatefulWidget {
   const EmailRegisterPage({Key? key}) : super(key: key);
@@ -164,13 +168,57 @@ class EmailRegisterPageState extends State<EmailRegisterPage> {
                         }
                       }
                       if (isEmailValid(emailController.text)) {
-                        await storage.write(
-                            key: 'emailToSignup', value: emailController.text);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const PasswordRegisterPage()));
+                        String email = emailController.text;
+                        var url = Uri.parse(ListAPI.checkEmail);
+                        try {
+                          Map body = {
+                            "email": email,
+                          };
+                          http.Response response = await http.post(url,
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: jsonEncode(body));
+
+                          dynamic responseBody = jsonDecode(response.body);
+                          print(responseBody);
+                          if (responseBody['data']['existed'] == '1') {
+                            //check xem email đã tồn tại chưa
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: Text(
+                                      'Email này đã tồn tại. Vui lòng đăng ký bằng email khác.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'OK',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 14),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            await storage.write(
+                                key: 'emailToSignup',
+                                value: emailController.text);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PasswordRegisterPage()));
+                          }
+                        } catch (e) {
+                          print('Error check email existed or not: $e');
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(

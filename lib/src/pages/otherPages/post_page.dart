@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:async/async.dart';
 import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/home/home_screen.dart';
+import 'package:fakebook/src/pages/otherPages/buy_coins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,7 +53,7 @@ class PostPageState extends State<PostPage> {
   List<XFile>? images = [];
 
   Future<void> getImages() async {
-    if (images != null && images!.length > 4) {
+    if (images!.length > 4) {
       return;
     }
     final List<XFile> selectedImages = await picker.pickMultiImage();
@@ -69,10 +70,12 @@ class PostPageState extends State<PostPage> {
   late File _video = File('');
 
   getVideo() async {
-    if (_video == null || _videoPlayerController == null) {
+    final selectedVideo = await picker.pickVideo(source: ImageSource.gallery);
+    if (selectedVideo == null) {
+      print("Người dùng hủy chọn video");
       return;
     }
-    final selectedVideo = await picker.pickVideo(source: ImageSource.gallery);
+    print("Người dùng đã chọn video");
     _video = File(selectedVideo!.path);
     _videoPlayerController = VideoPlayerController.file(_video)
       ..initialize().then((_) {
@@ -92,7 +95,7 @@ class PostPageState extends State<PostPage> {
       request.fields['described'] = described;
 
       //add image into request
-      if (images != null && images!.isNotEmpty) {
+      if (images!.isNotEmpty) {
         for (var selectedImage in images!) {
           var stream =
               http.ByteStream(DelegatingStream.typed(selectedImage.openRead()));
@@ -109,9 +112,9 @@ class PostPageState extends State<PostPage> {
       }
 
       //add video into request
-      if (_video != null) {
+      if (_video.existsSync()) {
         var videoStream =
-        http.ByteStream(DelegatingStream.typed(_video.openRead()));
+            http.ByteStream(DelegatingStream.typed(_video.openRead()));
         var videoLength = await _video.length();
         var videoMultipart = http.MultipartFile(
           'video',
@@ -159,6 +162,16 @@ class PostPageState extends State<PostPage> {
               title: const Text('Thông báo'),
               content: Text('${decodedResponse['message']}'),
               actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => BuyCoins()));
+                  },
+                  child: const Text(
+                    'MUA COINS',
+                    style: TextStyle(color: Colors.blue, fontSize: 14),
+                  ),
+                ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -562,12 +575,13 @@ class PostPageState extends State<PostPage> {
                           alignment: Alignment.center,
                           children: [
                             Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
                               height: 400,
                               width: MediaQuery.of(context).size.width,
                               child: AspectRatio(
                                 aspectRatio:
-                                _videoPlayerController.value.aspectRatio,
+                                    _videoPlayerController.value.aspectRatio,
                                 child: VideoPlayer(_videoPlayerController),
                               ),
                             ),

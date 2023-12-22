@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/pages/otherPages/buy_coins.dart';
 
 import 'package:fakebook/src/pages/otherPages/detail_post_page.dart';
 import 'package:fakebook/src/pages/otherPages/edit_post_page.dart';
@@ -173,12 +174,6 @@ class ManagePostsPageState extends State<ManagePostsPage> {
       ],
     ).then((value) async {
       if (value != null) {
-        setState(() {
-          if (isFeltKudo[postId] == '-1') {
-            feel[postId] = (feel[postId]! + 1)!;
-          }
-          isFeltKudo[postId] = value == '1' ? '1' : '0';
-        });
         // Thực hiện các hành động tương ứng
         String? token = await storage.read(key: 'token');
         try {
@@ -196,6 +191,48 @@ class ManagePostsPageState extends State<ManagePostsPage> {
           // Chuyển chuỗi JSON thành một đối tượng Dart
           var responseBody = jsonDecode(response.body);
           print(responseBody);
+
+          if (responseBody['code'] == '1000') {
+            setState(() {
+              if (isFeltKudo[postId] == '-1') {
+                feel[postId] = (feel[postId]! + 1)!;
+              }
+              isFeltKudo[postId] = value == '1' ? '1' : '0';
+            });
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Thông báo'),
+                  content: Text('${responseBody['message']}'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BuyCoins()));
+                      },
+                      child: const Text(
+                        'MUA COINS',
+                        style: TextStyle(color: Colors.blue, fontSize: 14),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         } catch (e) {
           print('Error: $e');
         }
@@ -934,17 +971,64 @@ class ManagePostsPageState extends State<ManagePostsPage> {
                                               body: jsonEncode(body),
                                             );
 
-                                            //cập nhật lại trạng thái của isFeltKudo
-                                            setState(() {
-                                              isFeltKudo[postId] = '1';
-                                              feel[postId] =
-                                                  (feel[postId]! + 1)!;
-                                            });
-
                                             // Chuyển chuỗi JSON thành một đối tượng Dart
                                             var responseBody =
                                                 jsonDecode(response.body);
                                             print(responseBody);
+                                            if (responseBody['code'] ==
+                                                '1000') {
+                                              //cập nhật lại trạng thái của isFeltKudo
+                                              setState(() {
+                                                isFeltKudo[postId] = '1';
+                                                feel[postId] =
+                                                    (feel[postId]! + 1)!;
+                                              });
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title:
+                                                        const Text('Thông báo'),
+                                                    content: Text(
+                                                        '${responseBody['message']}'),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          BuyCoins()));
+                                                        },
+                                                        child: const Text(
+                                                          'MUA COINS',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.blue,
+                                                              fontSize: 14),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: const Text(
+                                                          'OK',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            }
                                           } catch (e) {
                                             print('Error: $e');
                                           }
