@@ -69,7 +69,10 @@ class DetailPostPageState extends State<DetailPostPage> {
       print(responseBody['data']);
       setState(() {
         post = responseBody['data'];
-        if (post['video'] != null && post['video']['url'] != null) {
+        if (post['video'] != null &&
+            post['video'].isNotEmpty &&
+            post['video']['url'] != null &&
+            post['video']['url'].isNotEmpty) {
           var videoUrl = Uri.parse(post['video']['url']);
           print(videoUrl);
           videoPlayerController = VideoPlayerController.networkUrl(videoUrl);
@@ -78,7 +81,13 @@ class DetailPostPageState extends State<DetailPostPage> {
         }
       });
     } catch (e) {
-      print('Error: $e');
+      if (e is FormatException) {
+        print('Lỗi giải mã JSON: $e');
+      } else if (e is http.ClientException) {
+        print('Lỗi yêu cầu HTTP: $e');
+      } else {
+        print('Lỗi: $e');
+      }
     }
   }
 
@@ -568,62 +577,62 @@ class DetailPostPageState extends State<DetailPostPage> {
                           post['video']['url'].isNotEmpty) {
                         return FutureBuilder(
                           future: initializeVideoPlayerFuture,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              if (snapshot.hasError) {
-                                print(
-                                    "Lỗi khởi tạo trình phát video: ${snapshot.error}");
-                                return const Text(
-                                    "Lỗi khởi tạo trình phát video");
-                              }
-
-                              if (videoPlayerController.value.isInitialized) {
-                                return Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 5.0),
-                                      height: 400,
-                                      width: MediaQuery.of(context).size.width,
-                                      child: AspectRatio(
-                                        aspectRatio: videoPlayerController
-                                            .value.aspectRatio,
-                                        child:
-                                            VideoPlayer(videoPlayerController),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          videoPlayerController.value.isPlaying
-                                              ? videoPlayerController.pause()
-                                              : videoPlayerController.play();
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                          color: Colors.transparent,
-                                        ),
-                                        child: Icon(
-                                          videoPlayerController.value.isPlaying
-                                              ? Icons.pause
-                                              : Icons.play_arrow,
-                                          size: 60.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return const Text("Video is not initialized");
-                              }
-                            } else {
-                              return const Text(
-                                  "Loading..."); // Hoặc một widget khác khi video vẫn đang khởi tạo
+                          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                            if(snapshot.connectionState==ConnectionState.waiting){
+                              return const Center(
+                                child: CircularProgressIndicator(color: Colors.yellow,),
+                              );
                             }
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                print("Lỗi khởi tạo trình phát video: ${snapshot.error}");
+                                // return const Text("Lỗi khởi tạo trình phát video");
+                                return const Center(
+                                  child: CircularProgressIndicator(color: Colors.red,),
+                                );
+                              }
+                              return Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    height: 400,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: AspectRatio(
+                                      aspectRatio: videoPlayerController
+                                          .value.aspectRatio,
+                                      child:
+                                      VideoPlayer(videoPlayerController),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        videoPlayerController.value.isPlaying
+                                            ? videoPlayerController.pause()
+                                            : videoPlayerController.play();
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                      ),
+                                      child: Icon(
+                                        videoPlayerController.value.isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        size: 60.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            return const Center(
+                              child: CircularProgressIndicator(color: Colors.black,),
+                            );
                           },
                         );
                       } else {

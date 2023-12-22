@@ -1122,90 +1122,97 @@ class _WatchScreenState extends State<WatchScreen> {
                                     return FutureBuilder(
                                       future: initializeVideoPlayerFutures[
                                           int.parse(post['id'])],
-                                      builder: (context, snapshot) {
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<dynamic> snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.yellow,
+                                            ),
+                                          );
+                                        }
                                         if (snapshot.connectionState ==
                                             ConnectionState.done) {
                                           if (snapshot.hasError) {
                                             print(
                                                 "Lỗi khởi tạo trình phát video: ${snapshot.error}");
-                                            return const Text(
-                                                "Lỗi khởi tạo trình phát video");
+                                            // return const Text("Lỗi khởi tạo trình phát video");
+                                            return const Center(
+                                              child: CircularProgressIndicator(
+                                                color: Colors.red,
+                                              ),
+                                            );
                                           }
 
-                                          if (videoPlayerControllers[
-                                                  int.parse(post['id'])]!
-                                              .value
-                                              .isInitialized) {
-                                            return Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 5.0),
-                                                  height: 400,
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  child: AspectRatio(
-                                                    aspectRatio:
-                                                        videoPlayerControllers[
+                                          return Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5.0),
+                                                height: 400,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: AspectRatio(
+                                                  aspectRatio:
+                                                      videoPlayerControllers[
+                                                              int.parse(
+                                                                  post['id'])]!
+                                                          .value
+                                                          .aspectRatio,
+                                                  child: VideoPlayer(
+                                                      videoPlayerControllers[
+                                                          int.parse(
+                                                              post['id'])]!),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    videoPlayerControllers[
                                                                 int.parse(post[
                                                                     'id'])]!
                                                             .value
-                                                            .aspectRatio,
-                                                    child: VideoPlayer(
-                                                        videoPlayerControllers[
-                                                            int.parse(
-                                                                post['id'])]!),
+                                                            .isPlaying
+                                                        ? videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .pause()
+                                                        : videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .play();
+                                                  });
+                                                },
+                                                child: Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  child: Icon(
+                                                    videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .value
+                                                            .isPlaying
+                                                        ? Icons.pause
+                                                        : Icons.play_arrow,
+                                                    size: 60.0,
+                                                    color: Colors.white,
                                                   ),
                                                 ),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      videoPlayerControllers[int
-                                                                  .parse(post[
-                                                                      'id'])]!
-                                                              .value
-                                                              .isPlaying
-                                                          ? videoPlayerControllers[
-                                                                  int.parse(post[
-                                                                      'id'])]!
-                                                              .pause()
-                                                          : videoPlayerControllers[
-                                                                  int.parse(post[
-                                                                      'id'])]!
-                                                              .play();
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      color: Colors.transparent,
-                                                    ),
-                                                    child: Icon(
-                                                      videoPlayerControllers[int
-                                                                  .parse(post[
-                                                                      'id'])]!
-                                                              .value
-                                                              .isPlaying
-                                                          ? Icons.pause
-                                                          : Icons.play_arrow,
-                                                      size: 60.0,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          } else {
-                                            return const Text(
-                                                "Video is not initialized");
-                                          }
-                                        } else {
-                                          return const Text(
-                                              "Loading..."); // Hoặc một widget khác khi video vẫn đang khởi tạo
+                                              ),
+                                            ],
+                                          );
                                         }
+                                        return const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.black,
+                                          ),
+                                        );
                                       },
                                     );
                                   } else {
