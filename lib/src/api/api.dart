@@ -21,6 +21,7 @@ class ListAPI {
 //Post
   static const addPost = "$baseHost/add_post";
   static const getListPosts = "$baseHost/get_list_posts";
+  static const getListVideos = "$baseHost/get_list_videos";
   static const getPost = "$baseHost/get_post";
   static const deletePost = "$baseHost/delete_post";
   static const editPost = "$baseHost/edit_post";
