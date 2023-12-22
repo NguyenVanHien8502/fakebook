@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
+import 'package:video_player/video_player.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -28,6 +29,12 @@ class PostPageState extends State<PostPage> {
     getCurrentUserData();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _videoPlayerController.dispose();
+  }
+
   dynamic currentUser;
 
   Future<void> getCurrentUserData() async {
@@ -39,19 +46,39 @@ class PostPageState extends State<PostPage> {
 
   TextEditingController describedController = TextEditingController();
 
+  final ImagePicker picker = ImagePicker();
+
+  //get images
   List<XFile>? images = [];
-  final ImagePicker imagePicker = ImagePicker();
 
   Future<void> getImages() async {
     if (images != null && images!.length > 4) {
       return;
     }
-    final List<XFile> selectedImages = await imagePicker.pickMultiImage();
+    final List<XFile> selectedImages = await picker.pickMultiImage();
     if (selectedImages!.isNotEmpty) {
       // images!.addAll(selectedImages.sublist(0, 4 - images!.length));
       images = selectedImages.sublist(0, min(selectedImages.length, 4));
     }
     setState(() {});
+  }
+
+  //get video
+  late VideoPlayerController _videoPlayerController =
+      VideoPlayerController.file(File(''));
+  late File _video = File('');
+
+  getVideo() async {
+    if (_video == null || _videoPlayerController == null) {
+      return;
+    }
+    final selectedVideo = await picker.pickVideo(source: ImageSource.gallery);
+    _video = File(selectedVideo!.path);
+    _videoPlayerController = VideoPlayerController.file(_video)
+      ..initialize().then((_) {
+        setState(() {});
+        _videoPlayerController.play();
+      });
   }
 
   Future<void> handleAddPost(BuildContext context) async {
@@ -63,6 +90,8 @@ class PostPageState extends State<PostPage> {
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Content-Type'] = 'multipart/form-data';
       request.fields['described'] = described;
+
+      //add image into request
       if (images != null && images!.isNotEmpty) {
         for (var selectedImage in images!) {
           var stream =
@@ -78,6 +107,22 @@ class PostPageState extends State<PostPage> {
           request.files.add(multipart);
         }
       }
+
+      //add video into request
+      if (_video != null) {
+        var videoStream =
+        http.ByteStream(DelegatingStream.typed(_video.openRead()));
+        var videoLength = await _video.length();
+        var videoMultipart = http.MultipartFile(
+          'video',
+          videoStream,
+          videoLength,
+          filename: basename(_video.path),
+          contentType: MediaType('video', 'mp4'),
+        );
+        request.files.add(videoMultipart);
+      }
+
       var response = await request.send();
       final responseBody = await response.stream.bytesToString();
       final decodedResponse = jsonDecode(responseBody);
@@ -129,7 +174,7 @@ class PostPageState extends State<PostPage> {
         );
       }
     } catch (e) {
-      print("Occur error:: $e");
+      print("Occur error when posting:: $e");
     }
   }
 
@@ -215,6 +260,8 @@ class PostPageState extends State<PostPage> {
                   height: 1,
                   color: Colors.grey,
                 ),
+
+                //avatar + username
                 Container(
                   margin: const EdgeInsets.only(top: 14, left: 18),
                   child: Row(
@@ -259,146 +306,191 @@ class PostPageState extends State<PostPage> {
                     ],
                   ),
                 ),
+
+                // options khi đăng bài
                 Container(
                   margin: const EdgeInsets.only(left: 70.0, top: 5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 5.0),
-                        child: Row(
-                          children: [
-                            InkWell(
-                              borderRadius: BorderRadius.circular(5.0),
-                              onTap: () {},
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.public,
-                                        size: 12.0,
+                      Row(
+                        children: [
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap: () {},
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.public,
+                                      size: 12.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Công khai',
+                                      style: TextStyle(
                                         color: Colors.blueAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
                                       ),
-                                      SizedBox(
-                                        width: 3.0,
-                                      ),
-                                      Text(
-                                        'Công khai',
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                            const SizedBox(
-                              width: 8.0,
-                            ),
-                            InkWell(
-                              borderRadius: BorderRadius.circular(5.0),
-                              onTap: getImages,
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.add,
-                                        size: 16.0,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap: () {},
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Chọn cảm xúc',
+                                      style: TextStyle(
                                         color: Colors.blueAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
                                       ),
-                                      SizedBox(
-                                        width: 3.0,
-                                      ),
-                                      Text(
-                                        'Album',
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 3.0,
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 16.0,
-                                        color: Colors.blueAccent,
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                          ],
-                        ),
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ],
                       ),
                       const SizedBox(
-                        height: 5.0,
+                        height: 10.0,
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 130.0),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(5.0),
-                          onTap: () {},
-                          child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.add,
-                                    size: 16.0,
-                                    color: Colors.blueAccent,
-                                  ),
-                                  SizedBox(
-                                    width: 3.0,
-                                  ),
-                                  Text(
-                                    'Chọn cảm xúc',
-                                    style: TextStyle(
+                      Row(
+                        children: [
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap: getImages,
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 16.0,
                                       color: Colors.blueAccent,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 3.0,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_drop_down,
-                                    size: 16.0,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ],
-                              )),
-                        ),
-                      )
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Chọn ảnh',
+                                      style: TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap: getVideo,
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Chọn video',
+                                      style: TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -410,6 +502,8 @@ class PostPageState extends State<PostPage> {
                   thickness: 0.1,
                   color: Colors.grey,
                 ),
+
+                //description of post
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: TextField(
@@ -435,6 +529,8 @@ class PostPageState extends State<PostPage> {
                         height: 1.4),
                   ),
                 ),
+
+                //hiển thị ảnh
                 images != null && images!.isNotEmpty
                     ? Container(
                         height: 600,
@@ -456,8 +552,51 @@ class PostPageState extends State<PostPage> {
                         ),
                       )
                     : const SizedBox(
-                        height: 200,
+                        height: 80,
                       ),
+
+                // Hiển thị video
+                if (_video != null)
+                  _videoPlayerController.value.isInitialized
+                      ? Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                              height: 400,
+                              width: MediaQuery.of(context).size.width,
+                              child: AspectRatio(
+                                aspectRatio:
+                                _videoPlayerController.value.aspectRatio,
+                                child: VideoPlayer(_videoPlayerController),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _videoPlayerController.value.isPlaying
+                                      ? _videoPlayerController.pause()
+                                      : _videoPlayerController.play();
+                                });
+                              },
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.transparent,
+                                ),
+                                child: Icon(
+                                  _videoPlayerController.value.isPlaying
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  size: 60.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(
+                          height: 10,
+                        ),
               ],
             ),
           ),

@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class NewfeedsScreen extends StatefulWidget {
   static double offset = 0;
@@ -103,6 +104,18 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    videoPlayerControllers.forEach((key, videoPlayerController) {
+      videoPlayerController.dispose();
+    });
+  }
+
+  //xử lý video
+  Map<int, VideoPlayerController> videoPlayerControllers = {};
+  Map<int, Future<void>> initializeVideoPlayerFutures = {};
+
   dynamic currentUser;
 
   Future<void> getCurrentUserData() async {
@@ -110,11 +123,6 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     setState(() {
       currentUser = newData;
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   //get list post
@@ -182,6 +190,17 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
         setState(() {
           postVisible[postId] = true;
           feel[postId] = feelOfPost;
+
+          //set state cho video
+          if (listPosts[i]['video'] != null &&
+              listPosts[i]['video']['url'] != null) {
+            var videoUrl = Uri.parse(listPosts[i]['video']['url']);
+            videoPlayerControllers[postId] =
+                VideoPlayerController.networkUrl(videoUrl);
+            initializeVideoPlayerFutures[postId] =
+                videoPlayerControllers[postId]!.initialize();
+            videoPlayerControllers[postId]?.setLooping(true);
+          }
         });
       }
     } catch (e) {
@@ -472,12 +491,13 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                               child: Row(
                                 children: [
                                   GestureDetector(
-                                    onTap: (){
+                                    onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => OtherPersonalPageScreen(
-                                              userId: post['author']['id']),
+                                          builder: (context) =>
+                                              OtherPersonalPageScreen(
+                                                  userId: post['author']['id']),
                                         ),
                                       );
                                     },
@@ -1032,6 +1052,106 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
                                 );
                               }),
 
+                            //video of post
+                            () {
+                              if (post['video'] != null &&
+                                  post['video'].isNotEmpty &&
+                                  post['video']['url'] != null &&
+                                  post['video']['url'].isNotEmpty) {
+                                return FutureBuilder(
+                                  future: initializeVideoPlayerFutures[
+                                      int.parse(post['id'])],
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      if (snapshot.hasError) {
+                                        print(
+                                            "Lỗi khởi tạo trình phát video: ${snapshot.error}");
+                                        return const Text(
+                                            "Lỗi khởi tạo trình phát video");
+                                      }
+
+                                      if (videoPlayerControllers[
+                                              int.parse(post['id'])]!
+                                          .value
+                                          .isInitialized) {
+                                        return Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5.0),
+                                              height: 400,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: AspectRatio(
+                                                aspectRatio:
+                                                    videoPlayerControllers[
+                                                            int.parse(
+                                                                post['id'])]!
+                                                        .value
+                                                        .aspectRatio,
+                                                child: VideoPlayer(
+                                                    videoPlayerControllers[
+                                                        int.parse(
+                                                            post['id'])]!),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  videoPlayerControllers[
+                                                              int.parse(
+                                                                  post['id'])]!
+                                                          .value
+                                                          .isPlaying
+                                                      ? videoPlayerControllers[
+                                                              int.parse(
+                                                                  post['id'])]!
+                                                          .pause()
+                                                      : videoPlayerControllers[
+                                                              int.parse(
+                                                                  post['id'])]!
+                                                          .play();
+                                                });
+                                              },
+                                              child: Container(
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.transparent,
+                                                ),
+                                                child: Icon(
+                                                  videoPlayerControllers[
+                                                              int.parse(
+                                                                  post['id'])]!
+                                                          .value
+                                                          .isPlaying
+                                                      ? Icons.pause
+                                                      : Icons.play_arrow,
+                                                  size: 60.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      } else {
+                                        return const Text(
+                                            "Video is not initialized");
+                                      }
+                                    } else {
+                                      return const Text(
+                                          "Loading..."); // Hoặc một widget khác khi video vẫn đang khởi tạo
+                                    }
+                                  },
+                                );
+                              } else {
+                                return Container(); // Hoặc một widget khác khi không có video
+                              }
+                            }(),
+
+                            //số lượng cảm xúc và comment
                             Material(
                               color: Colors.white,
                               child: InkWell(

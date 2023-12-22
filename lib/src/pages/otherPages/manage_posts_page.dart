@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class ManagePostsPage extends StatefulWidget {
   const ManagePostsPage({Key? key}) : super(key: key);
@@ -19,11 +20,6 @@ class ManagePostsPage extends StatefulWidget {
 
 class ManagePostsPageState extends State<ManagePostsPage> {
   static const storage = FlutterSecureStorage();
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -38,12 +34,24 @@ class ManagePostsPageState extends State<ManagePostsPage> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    videoPlayerControllers.forEach((key, videoPlayerController) {
+      videoPlayerController.dispose();
+    });
+  }
+
+  //xử lý video
+  Map<int, VideoPlayerController> videoPlayerControllers = {};
+  Map<int, Future<void>> initializeVideoPlayerFutures = {};
+
   //get list post
   var listPosts = [];
   int followLastId = 0;
   int lastId = 0;
   int index = 0;
-  int count = 3;
+  int count = 5;
 
   Future<void> getListPosts() async {
     String? token = await storage.read(key: 'token');
@@ -101,6 +109,17 @@ class ManagePostsPageState extends State<ManagePostsPage> {
         int feelOfPost = int.parse(listPosts[i]['feel']);
         setState(() {
           feel[postId] = feelOfPost;
+
+          //set state cho video
+          if (listPosts[i]['video'] != null &&
+              listPosts[i]['video']['url'] != null) {
+            var videoUrl = Uri.parse(listPosts[i]['video']['url']);
+            videoPlayerControllers[postId] =
+                VideoPlayerController.networkUrl(videoUrl);
+            initializeVideoPlayerFutures[postId] =
+                videoPlayerControllers[postId]!.initialize();
+            videoPlayerControllers[postId]?.setLooping(true);
+          }
         });
       }
     } catch (e) {
@@ -267,687 +286,818 @@ class ManagePostsPageState extends State<ManagePostsPage> {
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Column(
-              children: listPosts.isNotEmpty?listPosts.map((post) {
-                return Column(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DetailPostPage(
-                                          postId: int.parse(post['id']),
-                                        )));
-                          },
-                          child: Row(
+              children: listPosts.isNotEmpty
+                  ? listPosts.map((post) {
+                      return Column(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 16.0, top: 16.0, bottom: 16.0),
-                                child: ClipOval(
-                                  child: Image.network(
-                                    '${post['author']['avatar']}',
-                                    height: 50,
-                                    width: 50,
-                                    fit: BoxFit
-                                        .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                      margin: const EdgeInsets.only(left: 16.0),
-                                      child: Row(
-                                        children: [
-                                          Container(
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => DetailPostPage(
+                                                postId: int.parse(post['id']),
+                                              )));
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 16.0, top: 16.0, bottom: 16.0),
+                                      child: ClipOval(
+                                        child: Image.network(
+                                          '${post['author']['avatar']}',
+                                          height: 50,
+                                          width: 50,
+                                          fit: BoxFit
+                                              .cover, // Đảm bảo ảnh đầy đủ trong hình tròn
+                                        ),
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
                                             margin: const EdgeInsets.only(
-                                                bottom: 8.0),
-                                            child: Text(
-                                              post['author']['name'],
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16),
-                                            ),
-                                          ),
-                                          Container(
+                                                left: 16.0),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      bottom: 8.0),
+                                                  child: Text(
+                                                    post['author']['name'],
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 5.0, bottom: 6.0),
+                                                  child: Image.asset(
+                                                    'lib/src/assets/images/tich_xanh.png',
+                                                    width: 15,
+                                                    height: 15,
+                                                  ),
+                                                ),
+                                              ],
+                                            )),
+                                        Container(
                                             margin: const EdgeInsets.only(
-                                                left: 5.0, bottom: 6.0),
-                                            child: Image.asset(
-                                              'lib/src/assets/images/tich_xanh.png',
-                                              width: 15,
-                                              height: 15,
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                                  Container(
-                                      margin: const EdgeInsets.only(left: 16.0),
+                                                left: 16.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  formatTimeDifference(
+                                                      post['created']),
+                                                  style: const TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 3.0, top: 2.0),
+                                                  child: const Icon(
+                                                    Icons.public,
+                                                    size: 12.0,
+                                                    color: Colors.black54,
+                                                  ),
+                                                ),
+                                              ],
+                                            )),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    // dùng cái này để icon xuống phía bên phải cùng của row
+                                    Container(
+                                      margin:
+                                          const EdgeInsets.only(right: 16.0),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            formatTimeDifference(
-                                                post['created']),
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                          ),
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                left: 3.0, top: 2.0),
-                                            child: const Icon(
-                                              Icons.public,
-                                              size: 12.0,
-                                              color: Colors.black54,
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                                ],
-                              ),
-                              const Spacer(),
-                              // dùng cái này để icon xuống phía bên phải cùng của row
-                              Container(
-                                margin: const EdgeInsets.only(right: 16.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                      splashRadius: 20,
-                                      onPressed: () {
-                                        showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          context: context,
-                                          builder: (context) {
-                                            return DecoratedBox(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.rectangle,
-                                                borderRadius:
-                                                    const BorderRadius.only(
-                                                  topLeft: Radius.circular(10),
-                                                  topRight: Radius.circular(10),
-                                                ),
-                                                color: Colors.grey[300],
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Container(
-                                                    height: 4,
-                                                    width: 40,
+                                          IconButton(
+                                            splashRadius: 20,
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                isScrollControlled: true,
+                                                context: context,
+                                                builder: (context) {
+                                                  return DecoratedBox(
                                                     decoration: BoxDecoration(
-                                                      color: Colors.grey,
                                                       shape: BoxShape.rectangle,
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 10,
+                                                          const BorderRadius
+                                                              .only(
+                                                        topLeft:
+                                                            Radius.circular(10),
+                                                        topRight:
+                                                            Radius.circular(10),
+                                                      ),
+                                                      color: Colors.grey[300],
                                                     ),
                                                     child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
                                                       children: [
-                                                        Material(
-                                                          color: Colors
-                                                              .transparent,
-                                                          child: InkWell(
-                                                            onTap: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          EditPostPage(
-                                                                    postId: int
-                                                                        .parse(post[
-                                                                            'id']),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            },
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Container(
+                                                          height: 4,
+                                                          width: 40,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.grey,
+                                                            shape: BoxShape
+                                                                .rectangle,
                                                             borderRadius:
-                                                                const BorderRadius
-                                                                    .only(
-                                                              topLeft: Radius
-                                                                  .circular(10),
-                                                              topRight: Radius
-                                                                  .circular(10),
-                                                            ),
-                                                            child:
-                                                                const ListTile(
-                                                              titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
-                                                              tileColor:
-                                                                  Colors.white,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .only(
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          10),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          10),
-                                                                ),
-                                                              ),
-                                                              minLeadingWidth:
-                                                                  10,
-                                                              leading: Icon(
-                                                                Icons.edit,
-                                                                size: 30,
-                                                                color: Colors
-                                                                    .black,
-                                                              ),
-                                                              title: Text(
-                                                                'Chỉnh sửa bài viết',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  fontSize: 16,
-                                                                ),
-                                                              ),
-                                                            ),
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
                                                           ),
                                                         ),
-                                                        Material(
-                                                          color: Colors
-                                                              .transparent,
-                                                          child: InkWell(
-                                                            onTap: () {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (BuildContext
-                                                                        context) {
-                                                                  return AlertDialog(
-                                                                    title: const Text(
-                                                                        'Xóa bài viết?'),
-                                                                    content:
-                                                                        const Text(
-                                                                            'Bạn có thể chỉnh sửa bài viết nếu cần thay đổi.'),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          handleDeletePost(
-                                                                              context,
-                                                                              post['id']);
-                                                                        },
-                                                                        child:
-                                                                            const Text(
-                                                                          'Xóa',
-                                                                          style: TextStyle(
-                                                                              color: Colors.blue,
-                                                                              fontSize: 14),
+                                                        const SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 10,
+                                                          ),
+                                                          child: Column(
+                                                            children: [
+                                                              Material(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                child: InkWell(
+                                                                  onTap: () {
+                                                                    Navigator
+                                                                        .push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                EditPostPage(
+                                                                          postId:
+                                                                              int.parse(post['id']),
                                                                         ),
                                                                       ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator
-                                                                              .push(
-                                                                            context,
-                                                                            MaterialPageRoute(
-                                                                              builder: (context) => EditPostPage(
-                                                                                postId: int.parse(post['id']),
+                                                                    );
+                                                                  },
+                                                                  borderRadius:
+                                                                      const BorderRadius
+                                                                          .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                  ),
+                                                                  child:
+                                                                      const ListTile(
+                                                                    titleAlignment:
+                                                                        ListTileTitleAlignment
+                                                                            .center,
+                                                                    tileColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius
+                                                                              .only(
+                                                                        topLeft:
+                                                                            Radius.circular(10),
+                                                                        topRight:
+                                                                            Radius.circular(10),
+                                                                      ),
+                                                                    ),
+                                                                    minLeadingWidth:
+                                                                        10,
+                                                                    leading:
+                                                                        Icon(
+                                                                      Icons
+                                                                          .edit,
+                                                                      size: 30,
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
+                                                                    title: Text(
+                                                                      'Chỉnh sửa bài viết',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Material(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                child: InkWell(
+                                                                  onTap: () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return AlertDialog(
+                                                                          title:
+                                                                              const Text('Xóa bài viết?'),
+                                                                          content:
+                                                                              const Text('Bạn có thể chỉnh sửa bài viết nếu cần thay đổi.'),
+                                                                          actions: [
+                                                                            TextButton(
+                                                                              onPressed: () {
+                                                                                handleDeletePost(context, post['id']);
+                                                                              },
+                                                                              child: const Text(
+                                                                                'Xóa',
+                                                                                style: TextStyle(color: Colors.blue, fontSize: 14),
                                                                               ),
                                                                             ),
-                                                                          );
-                                                                        },
-                                                                        child:
-                                                                            const Text(
-                                                                          'Chỉnh sửa',
-                                                                          style: TextStyle(
-                                                                              color: Colors.black,
-                                                                              fontSize: 14),
-                                                                        ),
+                                                                            TextButton(
+                                                                              onPressed: () {
+                                                                                Navigator.push(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                    builder: (context) => EditPostPage(
+                                                                                      postId: int.parse(post['id']),
+                                                                                    ),
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                              child: const Text(
+                                                                                'Chỉnh sửa',
+                                                                                style: TextStyle(color: Colors.black, fontSize: 14),
+                                                                              ),
+                                                                            ),
+                                                                            TextButton(
+                                                                              onPressed: () {
+                                                                                Navigator.of(context).pop();
+                                                                              },
+                                                                              child: const Text(
+                                                                                'Hủy',
+                                                                                style: TextStyle(color: Colors.black, fontSize: 14),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  borderRadius:
+                                                                      const BorderRadius
+                                                                          .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                  ),
+                                                                  child:
+                                                                      const ListTile(
+                                                                    titleAlignment:
+                                                                        ListTileTitleAlignment
+                                                                            .center,
+                                                                    tileColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius
+                                                                              .only(
+                                                                        topLeft:
+                                                                            Radius.circular(10),
+                                                                        topRight:
+                                                                            Radius.circular(10),
                                                                       ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                        child:
-                                                                            const Text(
-                                                                          'Hủy',
-                                                                          style: TextStyle(
-                                                                              color: Colors.black,
-                                                                              fontSize: 14),
-                                                                        ),
+                                                                    ),
+                                                                    minLeadingWidth:
+                                                                        10,
+                                                                    leading:
+                                                                        Icon(
+                                                                      Icons
+                                                                          .delete_forever,
+                                                                      size: 30,
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
+                                                                    title: Text(
+                                                                      'Xóa bài viết',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        fontSize:
+                                                                            16,
                                                                       ),
-                                                                    ],
-                                                                  );
-                                                                },
-                                                              );
-                                                            },
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                    .only(
-                                                              topLeft: Radius
-                                                                  .circular(10),
-                                                              topRight: Radius
-                                                                  .circular(10),
-                                                            ),
-                                                            child:
-                                                                const ListTile(
-                                                              titleAlignment:
-                                                                  ListTileTitleAlignment
-                                                                      .center,
-                                                              tileColor:
-                                                                  Colors.white,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .only(
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          10),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          10),
+                                                                    ),
+                                                                  ),
                                                                 ),
                                                               ),
-                                                              minLeadingWidth:
-                                                                  10,
-                                                              leading: Icon(
-                                                                Icons
-                                                                    .delete_forever,
-                                                                size: 30,
-                                                                color: Colors
-                                                                    .black,
-                                                              ),
-                                                              title: Text(
-                                                                'Xóa bài viết',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  fontSize: 16,
-                                                                ),
-                                                              ),
-                                                            ),
+                                                            ],
                                                           ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 20,
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      icon:
-                                          const Icon(Icons.more_horiz_rounded),
-                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: const Icon(
+                                                Icons.more_horiz_rounded),
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
+                              ),
 
-                        // Status
-                        Container(
-                          padding:
-                              const EdgeInsets.only(left: 16.0, right: 16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(post['described'],
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 16))
-                            ],
-                          ),
-                        ),
+                              // Status
+                              Container(
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, right: 16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(post['described'],
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 16))
+                                  ],
+                                ),
+                              ),
 
-                        //images of post
-                        const SizedBox(
-                          height: 10.0,
-                        ),
-                        if (post['image'] != null && post['image'].isNotEmpty)
-                          ..._splitImagesIntoPairs(post['image'])
-                              .map<Widget>((imagePair) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: imagePair.map<Widget>((image) {
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 5.0),
-                                  child: Image.network(
-                                    '${image['url']}',
-                                    height: 150,
-                                    width: 150,
-                                  ),
-                                );
-                              }).toList(),
-                            );
-                          }),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
 
-                        Material(
-                          color: Colors.white,
-                          child: InkWell(
-                              onTap: () {
-                                // Navigator.pushNamed(context, CommentScreen.routeName,
-                                //     arguments: widget.post);
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 10.0, top: 5.0),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 6.0, top: 5.0),
-                                          child: Row(
+                              //images of post
+                              if (post['image'] != null &&
+                                  post['image'].isNotEmpty)
+                                ..._splitImagesIntoPairs(post['image'])
+                                    .map<Widget>((imagePair) {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: imagePair.map<Widget>((image) {
+                                      return Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5.0, vertical: 5.0),
+                                        child: Image.network(
+                                          '${image['url']}',
+                                          height: 150,
+                                          width: 150,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+                                }),
+
+                              //video of post
+                              () {
+                                if (post['video'] != null &&
+                                    post['video'].isNotEmpty &&
+                                    post['video']['url'] != null &&
+                                    post['video']['url'].isNotEmpty) {
+                                  return FutureBuilder(
+                                    future: initializeVideoPlayerFutures[
+                                        int.parse(post['id'])],
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.done) {
+                                        if (snapshot.hasError) {
+                                          print(
+                                              "Lỗi khởi tạo trình phát video: ${snapshot.error}");
+                                          return const Text(
+                                              "Lỗi khởi tạo trình phát video");
+                                        }
+
+                                        if (videoPlayerControllers[
+                                                int.parse(post['id'])]!
+                                            .value
+                                            .isInitialized) {
+                                          return Stack(
+                                            alignment: Alignment.center,
                                             children: [
-                                              Image.asset(
-                                                'lib/src/assets/images/reactions/like.png',
-                                                width: 20,
-                                                height: 20,
-                                              ),
-                                              Image.asset(
-                                                'lib/src/assets/images/reactions/angry.png',
-                                                width: 20,
-                                                height: 20,
-                                              ),
                                               Container(
                                                 margin:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: Text(
-                                                  (feel[int.parse(post['id'] ??
-                                                              '0')] ??
-                                                          '0')
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 16),
+                                                        horizontal: 5.0),
+                                                height: 400,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: AspectRatio(
+                                                  aspectRatio:
+                                                      videoPlayerControllers[
+                                                              int.parse(
+                                                                  post['id'])]!
+                                                          .value
+                                                          .aspectRatio,
+                                                  child: VideoPlayer(
+                                                      videoPlayerControllers[
+                                                          int.parse(
+                                                              post['id'])]!),
                                                 ),
-                                              )
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .value
+                                                            .isPlaying
+                                                        ? videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .pause()
+                                                        : videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .play();
+                                                  });
+                                                },
+                                                child: Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  child: Icon(
+                                                    videoPlayerControllers[
+                                                                int.parse(post[
+                                                                    'id'])]!
+                                                            .value
+                                                            .isPlaying
+                                                        ? Icons.pause
+                                                        : Icons.play_arrow,
+                                                    size: 60.0,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        } else {
+                                          return const Text(
+                                              "Video is not initialized");
+                                        }
+                                      } else {
+                                        return const Text(
+                                            "Loading..."); // Hoặc một widget khác khi video vẫn đang khởi tạo
+                                      }
+                                    },
+                                  );
+                                } else {
+                                  return Container(); // Hoặc một widget khác khi không có video
+                                }
+                              }(),
+
+                              Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                    onTap: () {
+                                      // Navigator.pushNamed(context, CommentScreen.routeName,
+                                      //     arguments: widget.post);
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              left: 10.0, top: 5.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 6.0, top: 5.0),
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset(
+                                                      'lib/src/assets/images/reactions/like.png',
+                                                      width: 20,
+                                                      height: 20,
+                                                    ),
+                                                    Image.asset(
+                                                      'lib/src/assets/images/reactions/angry.png',
+                                                      width: 20,
+                                                      height: 20,
+                                                    ),
+                                                    Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8.0),
+                                                      child: Text(
+                                                        (feel[int.parse(post[
+                                                                        'id'] ??
+                                                                    '0')] ??
+                                                                '0')
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 16),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                              left: 16.0, top: 5.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    right: 12.0),
+                                                child: Text(
+                                                    "${post['comment_mark']} comments"),
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ),
+                                    )),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 5.0),
+                                child: const Divider(
+                                  color: Colors.black12,
+                                  thickness: 1,
+                                  height: 1,
+                                  indent: 15,
+                                  endIndent: 14,
+                                ),
+                              ),
+
+                              //options like comment share
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
                                   Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 16.0, top: 5.0),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                              right: 12.0),
-                                          child: Text(
-                                              "${post['comment_mark']} comments"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 5.0),
-                          child: const Divider(
-                            color: Colors.black12,
-                            thickness: 1,
-                            height: 1,
-                            indent: 15,
-                            endIndent: 14,
-                          ),
-                        ),
-
-                        //options like comment share
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(top: 10.0),
-                              child: InkWell(
-                                onTap: () async {
-                                  String? token =
-                                      await storage.read(key: 'token');
-                                  int postId = int.parse(post['id'] ?? "");
-                                  if (isFeltKudo.containsKey(postId) &&
-                                      (isFeltKudo[postId] == '1' ||
-                                          isFeltKudo[postId] == '0')) {
-                                    // xử lý delete feel
-                                    try {
-                                      var url = Uri.parse(ListAPI.deleteFeel);
-                                      Map body = {"id": '$postId'};
-                                      http.Response response = await http.post(
-                                        url,
-                                        headers: {
-                                          'Content-Type': 'application/json',
-                                          'Authorization': 'Bearer $token'
-                                        },
-                                        body: jsonEncode(body),
-                                      );
-
-                                      //cập nhật lại trạng thái của isFeltKudo
-                                      setState(() {
-                                        isFeltKudo[postId] = '-1';
-                                        feel[postId] = (feel[postId]! - 1)!;
-                                      });
-
-                                      // Chuyển chuỗi JSON thành một đối tượng Dart
-                                      var responseBody =
-                                          jsonDecode(response.body);
-                                      print(responseBody);
-                                    } catch (e) {
-                                      print('Error: $e');
-                                    }
-                                  } else {
-                                    // xử lý set feel kudo
-                                    try {
-                                      var url = Uri.parse(ListAPI.feel);
-                                      Map body = {"id": '$postId', "type": "1"};
-                                      http.Response response = await http.post(
-                                        url,
-                                        headers: {
-                                          'Content-Type': 'application/json',
-                                          'Authorization': 'Bearer $token'
-                                        },
-                                        body: jsonEncode(body),
-                                      );
-
-                                      //cập nhật lại trạng thái của isFeltKudo
-                                      setState(() {
-                                        isFeltKudo[postId] = '1';
-                                        feel[postId] = (feel[postId]! + 1)!;
-                                      });
-
-                                      // Chuyển chuỗi JSON thành một đối tượng Dart
-                                      var responseBody =
-                                          jsonDecode(response.body);
-                                      print(responseBody);
-                                    } catch (e) {
-                                      print('Error: $e');
-                                    }
-                                  }
-                                },
-                                onLongPress: () {
-                                  // Xử lý khi nhấn giữ nút like
-                                  showReactionMenu(
-                                      context, int.parse(post['id']));
-                                },
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      child: () {
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: InkWell(
+                                      onTap: () async {
+                                        String? token =
+                                            await storage.read(key: 'token');
                                         int postId =
                                             int.parse(post['id'] ?? "");
                                         if (isFeltKudo.containsKey(postId) &&
-                                            isFeltKudo[postId] == '-1') {
-                                          return Image.asset(
-                                            'lib/src/assets/images/like.png',
-                                            width: 20,
-                                            height: 20,
-                                          );
-                                        } else if (isFeltKudo
-                                                .containsKey(postId) &&
-                                            isFeltKudo[postId] == '0') {
-                                          return Image.asset(
-                                            'lib/src/assets/images/reactions/angry.png',
-                                            width: 20,
-                                            height: 20,
-                                          );
+                                            (isFeltKudo[postId] == '1' ||
+                                                isFeltKudo[postId] == '0')) {
+                                          // xử lý delete feel
+                                          try {
+                                            var url =
+                                                Uri.parse(ListAPI.deleteFeel);
+                                            Map body = {"id": '$postId'};
+                                            http.Response response =
+                                                await http.post(
+                                              url,
+                                              headers: {
+                                                'Content-Type':
+                                                    'application/json',
+                                                'Authorization': 'Bearer $token'
+                                              },
+                                              body: jsonEncode(body),
+                                            );
+
+                                            //cập nhật lại trạng thái của isFeltKudo
+                                            setState(() {
+                                              isFeltKudo[postId] = '-1';
+                                              feel[postId] =
+                                                  (feel[postId]! - 1)!;
+                                            });
+
+                                            // Chuyển chuỗi JSON thành một đối tượng Dart
+                                            var responseBody =
+                                                jsonDecode(response.body);
+                                            print(responseBody);
+                                          } catch (e) {
+                                            print('Error: $e');
+                                          }
                                         } else {
-                                          return Image.asset(
-                                            'lib/src/assets/images/reactions/like.png',
-                                            width: 20,
-                                            height: 20,
-                                          );
+                                          // xử lý set feel kudo
+                                          try {
+                                            var url = Uri.parse(ListAPI.feel);
+                                            Map body = {
+                                              "id": '$postId',
+                                              "type": "1"
+                                            };
+                                            http.Response response =
+                                                await http.post(
+                                              url,
+                                              headers: {
+                                                'Content-Type':
+                                                    'application/json',
+                                                'Authorization': 'Bearer $token'
+                                              },
+                                              body: jsonEncode(body),
+                                            );
+
+                                            //cập nhật lại trạng thái của isFeltKudo
+                                            setState(() {
+                                              isFeltKudo[postId] = '1';
+                                              feel[postId] =
+                                                  (feel[postId]! + 1)!;
+                                            });
+
+                                            // Chuyển chuỗi JSON thành một đối tượng Dart
+                                            var responseBody =
+                                                jsonDecode(response.body);
+                                            print(responseBody);
+                                          } catch (e) {
+                                            print('Error: $e');
+                                          }
                                         }
-                                      }(),
-                                    ),
-                                    () {
-                                      int postId = int.parse(post['id'] ?? "");
-                                      if (isFeltKudo.containsKey(postId) &&
-                                          isFeltKudo[postId] == '-1') {
-                                        return const Text(
-                                          "Like",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16),
-                                        );
-                                      } else if (isFeltKudo
-                                              .containsKey(postId) &&
-                                          isFeltKudo[postId] == '0') {
-                                        return const Text(
-                                          "Phẫn nộ",
-                                          style: TextStyle(
-                                              color: Colors.green,
-                                              fontSize: 16),
-                                        );
-                                      } else {
-                                        return const Text(
-                                          "Like",
-                                          style: TextStyle(
-                                              color: Colors.blue, fontSize: 16),
-                                        );
-                                      }
-                                    }(),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10.0),
-                              child: InkWell(
-                                onTap: () {
-                                  print("I commented this post");
-                                },
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      child: const Image(
-                                        image: AssetImage(
-                                            'lib/src/assets/images/comment.png'),
-                                        height: 20,
-                                        width: 20,
+                                      },
+                                      onLongPress: () {
+                                        // Xử lý khi nhấn giữ nút like
+                                        showReactionMenu(
+                                            context, int.parse(post['id']));
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(right: 5),
+                                            child: () {
+                                              int postId =
+                                                  int.parse(post['id'] ?? "");
+                                              if (isFeltKudo
+                                                      .containsKey(postId) &&
+                                                  isFeltKudo[postId] == '-1') {
+                                                return Image.asset(
+                                                  'lib/src/assets/images/like.png',
+                                                  width: 20,
+                                                  height: 20,
+                                                );
+                                              } else if (isFeltKudo
+                                                      .containsKey(postId) &&
+                                                  isFeltKudo[postId] == '0') {
+                                                return Image.asset(
+                                                  'lib/src/assets/images/reactions/angry.png',
+                                                  width: 20,
+                                                  height: 20,
+                                                );
+                                              } else {
+                                                return Image.asset(
+                                                  'lib/src/assets/images/reactions/like.png',
+                                                  width: 20,
+                                                  height: 20,
+                                                );
+                                              }
+                                            }(),
+                                          ),
+                                          () {
+                                            int postId =
+                                                int.parse(post['id'] ?? "");
+                                            if (isFeltKudo
+                                                    .containsKey(postId) &&
+                                                isFeltKudo[postId] == '-1') {
+                                              return const Text(
+                                                "Like",
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                              );
+                                            } else if (isFeltKudo
+                                                    .containsKey(postId) &&
+                                                isFeltKudo[postId] == '0') {
+                                              return const Text(
+                                                "Phẫn nộ",
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 16),
+                                              );
+                                            } else {
+                                              return const Text(
+                                                "Like",
+                                                style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 16),
+                                              );
+                                            }
+                                          }(),
+                                        ],
                                       ),
                                     ),
-                                    const Text(
-                                      "Comment",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10.0),
-                              child: InkWell(
-                                onTap: () {
-                                  print("I shared this post");
-                                },
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      child: const Image(
-                                        image: AssetImage(
-                                            'lib/src/assets/images/share.png'),
-                                        height: 20,
-                                        width: 20,
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        print("I commented this post");
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(right: 5),
+                                            child: const Image(
+                                              image: AssetImage(
+                                                  'lib/src/assets/images/comment.png'),
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                          ),
+                                          const Text(
+                                            "Comment",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    const Text(
-                                      "Share",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 16),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        print("I shared this post");
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(right: 5),
+                                            child: const Image(
+                                              image: AssetImage(
+                                                  'lib/src/assets/images/share.png'),
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                          ),
+                                          const Text(
+                                            "Share",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
+                                  )
+                                ],
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 20.0),
+                                child: const Divider(
+                                  height: 1,
+                                  color: Colors.black12,
+                                  thickness: 5,
                                 ),
                               ),
-                            )
-                          ],
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                          child: const Divider(
-                            height: 1,
-                            color: Colors.black12,
-                            thickness: 5,
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                );
-              }).toList() : [
-                const Center(
-                  child: Text("Bạn không có bài viết nào."),
-                )
-              ],
+                            ],
+                          )
+                        ],
+                      );
+                    }).toList()
+                  : [
+                      const Center(
+                        child: Text("Bạn không có bài viết nào."),
+                      )
+                    ],
             ),
           ),
         ),

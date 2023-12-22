@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:fakebook/src/api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class DetailPostPage extends StatefulWidget {
   final int postId;
@@ -34,9 +36,14 @@ class DetailPostPageState extends State<DetailPostPage> {
 
   @override
   void dispose() {
-    _commentFocusNode.dispose();
     super.dispose();
+    _commentFocusNode.dispose();
+    videoPlayerController.dispose();
   }
+
+  //xử lý video
+  late VideoPlayerController videoPlayerController;
+  late Future<void> initializeVideoPlayerFuture;
 
   //get post
   var post = {};
@@ -59,9 +66,16 @@ class DetailPostPageState extends State<DetailPostPage> {
 
       // Chuyển chuỗi JSON thành một đối tượng Dart
       responseBody = jsonDecode(response.body);
-      // print(responseBody['data']);
+      print(responseBody['data']);
       setState(() {
         post = responseBody['data'];
+        if (post['video'] != null && post['video']['url'] != null) {
+          var videoUrl = Uri.parse(post['video']['url']);
+          print(videoUrl);
+          videoPlayerController = VideoPlayerController.networkUrl(videoUrl);
+          initializeVideoPlayerFuture = videoPlayerController.initialize();
+          videoPlayerController.setLooping(true);
+        }
       });
     } catch (e) {
       print('Error: $e');
@@ -461,12 +475,14 @@ class DetailPostPageState extends State<DetailPostPage> {
                   ),
                 ),
 
-                //image of post
                 const SizedBox(
                   height: 10.0,
                 ),
+
+                //image and video of post
                 Column(
                   children: [
+                    //image of post
                     if (post['image'] != null && post['image'].isNotEmpty)
                       ...post['image'].map((image) => Column(
                             children: [
@@ -483,6 +499,77 @@ class DetailPostPageState extends State<DetailPostPage> {
                               ),
                             ],
                           )),
+
+                    //video of post
+                    () {
+                      if (post['video'] != null &&
+                          post['video'].isNotEmpty &&
+                          post['video']['url'] != null &&
+                          post['video']['url'].isNotEmpty) {
+                        return FutureBuilder(
+                          future: initializeVideoPlayerFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                print(
+                                    "Lỗi khởi tạo trình phát video: ${snapshot.error}");
+                                return const Text(
+                                    "Lỗi khởi tạo trình phát video");
+                              }
+
+                              if (videoPlayerController.value.isInitialized) {
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      height: 400,
+                                      width: MediaQuery.of(context).size.width,
+                                      child: AspectRatio(
+                                        aspectRatio: videoPlayerController
+                                            .value.aspectRatio,
+                                        child:
+                                            VideoPlayer(videoPlayerController),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          videoPlayerController.value.isPlaying
+                                              ? videoPlayerController.pause()
+                                              : videoPlayerController.play();
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors.transparent,
+                                        ),
+                                        child: Icon(
+                                          videoPlayerController.value.isPlaying
+                                              ? Icons.pause
+                                              : Icons.play_arrow,
+                                          size: 60.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return const Text("Video is not initialized");
+                              }
+                            } else {
+                              return const Text(
+                                  "Loading..."); // Hoặc một widget khác khi video vẫn đang khởi tạo
+                            }
+                          },
+                        );
+                      } else {
+                        return Container(); // Hoặc một widget khác khi không có video
+                      }
+                    }(),
                   ],
                 ),
 
@@ -733,13 +820,6 @@ class DetailPostPageState extends State<DetailPostPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        // ClipOval(
-                                        //     child: Image.network(
-                                        //   '${markComment['poster']['avatar']}',
-                                        //   height: 40,
-                                        //   width: 40,
-                                        //   fit: BoxFit.cover,
-                                        // )),
                                         () {
                                           if (markComment['poster']['avatar'] !=
                                               '') {
@@ -877,14 +957,6 @@ class DetailPostPageState extends State<DetailPostPage> {
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        // ClipOval(
-                                                        //     child:
-                                                        //         Image.network(
-                                                        //   '${comment['poster']['avatar']}',
-                                                        //   height: 40,
-                                                        //   width: 40,
-                                                        //   fit: BoxFit.cover,
-                                                        // )),
                                                         () {
                                                           if (comment['poster']
                                                                   ['avatar'] !=
