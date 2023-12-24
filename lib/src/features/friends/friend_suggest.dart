@@ -17,10 +17,15 @@ class FriendsSuggestScreen extends StatefulWidget {
 class FriendSuggest1 {
   final User user;
   final String mutualFriends;
+  int isFriend = 0;
   FriendSuggest1({
     required this.user,
     required this.mutualFriends,
   });
+
+  void updateIsFriend(int newStatus) {
+    isFriend = newStatus;
+  }
 }
 
 class _FriendsSuggestState extends State<FriendsSuggestScreen> {
@@ -224,69 +229,73 @@ class _FriendsSuggestState extends State<FriendsSuggestScreen> {
                                 '${FriendSuggest[i].mutualFriends} bạn chung',
                                 style: TextStyle(fontSize: 12),
                               ),
-                              //if (FriendSuggest[i].isFriend == 0)
-                              Row(
-                                children: [
-                                  //Chấp nhận kết bạn
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        requestFriend(context,
-                                            FriendSuggest[i].user.id, i);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shadowColor: Colors.transparent,
-                                        backgroundColor: Colors.blue[700],
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                              if (FriendSuggest[i].isFriend == 0)
+                                Row(
+                                  children: [
+                                    //Chấp nhận kết bạn
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          requestFriend(context,
+                                              FriendSuggest[i].user.id, i);
+                                          setState(() {
+                                            FriendSuggest[i].isFriend = 1;
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          shadowColor: Colors.transparent,
+                                          backgroundColor: Colors.blue[700],
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
                                         ),
-                                      ),
-                                      child: const Text(
-                                        'Thêm bạn bè',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  //Không chấp nhận kết bạn
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          FriendSuggest.removeWhere((friend) =>
-                                              friend.user.id ==
-                                              FriendSuggest[i].user.id);
-                                        });
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shadowColor: Colors.transparent,
-                                        backgroundColor: Colors.grey[300],
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Gỡ',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 15,
+                                        child: const Text(
+                                          'Thêm bạn bè',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 15,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              // if (friendRequests[i].isFriend == 1)
-                              //   const Text("Các bạn đã là bạn bè"),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    //Không chấp nhận kết bạn
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            FriendSuggest.removeWhere(
+                                                (friend) =>
+                                                    friend.user.id ==
+                                                    FriendSuggest[i].user.id);
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          shadowColor: Colors.transparent,
+                                          backgroundColor: Colors.grey[300],
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Gỡ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (FriendSuggest[i].isFriend == 1)
+                                const Text("Đã gửi lời mời kết bạn"),
                               // if (friendRequests[i].isFriend == 2)
                               //   const Text("Đã gỡ lời mời"),
                             ],

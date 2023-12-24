@@ -1,12 +1,20 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:fakebook/src/api/api.dart';
+import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/otherPages/edit_personal_info_page.dart';
 import 'package:fakebook/src/pages/otherPages/manage_posts_page.dart';
 import 'package:fakebook/src/pages/otherPages/post_page.dart';
 import 'package:fakebook/src/providers/user_data.dart';
+import 'package:fakebook/src/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class PersonalPageScreen extends StatefulWidget {
   const PersonalPageScreen({super.key});
@@ -18,10 +26,61 @@ class PersonalPageScreen extends StatefulWidget {
 class PersonalPageScreenState extends State<PersonalPageScreen> {
   static const storage = FlutterSecureStorage();
 
+  String coins = '0';
+
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
+
+  Future<void> getInfoUser(BuildContext context, String id) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.getUserInfo);
+        Map body = {
+          "user_id": id,
+        };
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 201) {
+          if (responseBody['code'] == '1000') {
+            setState(() {
+              coins = responseBody['data']['coins'];
+            });
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getCurrentUserData();
+    User? user = Provider.of<UserProvider>(context, listen: false).user;
+    getInfoUser(context, user!.id);
   }
 
   dynamic currentUser;
@@ -308,6 +367,49 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'lib/src/assets/images/dollar.png',
+                          width: 30,
+                          height: 30,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: RichText(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text:
+                                      '${coins ?? '2805'} coins',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.yellow),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (User_data.userData.educations != null)
                     for (int i = 0;
                         i < User_data.userData.educations!.length;
@@ -359,98 +461,146 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                           ],
                         ),
                       ),
-                  if (User_data.userData.address != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 10,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.house_rounded,
-                            size: 25,
-                            color: Colors.black54,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: RichText(
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  const TextSpan(
-                                    text: 'Sống tại ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: User_data.userData.address,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                  //if (User_data.userData.address != null)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.house_rounded,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: RichText(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
                               ),
+                              children: [
+                                const TextSpan(
+                                  text: 'Sống tại ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '${jsonDecode(currentUser)['address'] ?? 'Thu Phu, Thuong Tin'}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  if (User_data.userData.hometown != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 10,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.location_on_rounded,
-                            size: 25,
-                            color: Colors.black54,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: RichText(
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  const TextSpan(
-                                    text: 'Đến từ ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: User_data.userData.hometown,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                  ),
+                  //if (User_data.userData.hometown != null)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.location_on_rounded,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: RichText(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
                               ),
+                              children: [
+                                const TextSpan(
+                                  text: 'Đến từ ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '${jsonDecode(currentUser)['city'] ?? 'Ha Noi'}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Ionicons.flag_outline,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: RichText(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: 'Quốc gia ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '${jsonDecode(currentUser)['country'] ?? 'Viet Nam'}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (User_data.userData.type != 'page' &&
                       User_data.userData.followers != null)
                     Padding(
@@ -577,7 +727,6 @@ class PersonalPageScreenState extends State<PersonalPageScreen> {
                           ),
                       ],
                     ),
-
                 ],
               ),
             ),
