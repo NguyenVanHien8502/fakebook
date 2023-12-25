@@ -40,7 +40,7 @@ class _MessengerDetailState extends State<MessengerDetail> {
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       image: NetworkImage(
-                          "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"),
+                          "https://scontent.fhan1-1.fna.fbcdn.net/v/t39.30808-6/275048224_1292155641278748_3474397645157595508_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=dd5e9f&_nc_eui2=AeEU9kmkaaAwNb6Jw93c4lxTgbhTYwL4k9WBuFNjAviT1V0l_bqlMwYLwhsWGljmOYLw_FkPsqcddv2xoCfhwvZ8&_nc_ohc=PlPoRPxjAN0AX9NEfh-&_nc_ht=scontent.fhan1-1.fna&oh=00_AfCptmVtiYDXc2seKEfDk9oSpB1yuyJ3Dw8yoletK7hxBQ&oe=658E3AA1"),
                       fit: BoxFit.cover)),
             ),
             const SizedBox(
@@ -50,7 +50,7 @@ class _MessengerDetailState extends State<MessengerDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Tyler Nix",
+                  "Ngoc Linh",
                   style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold, color: black),
                 ),
@@ -58,7 +58,7 @@ class _MessengerDetailState extends State<MessengerDetail> {
                   height: 3,
                 ),
                 Text(
-                  "Active now",
+                  "Đang hoạt động",
                   style: TextStyle(color: black.withOpacity(0.4), fontSize: 14),
                 )
               ],
@@ -140,7 +140,7 @@ class _MessengerDetailState extends State<MessengerDetail> {
                   ),
                   Icon(
                     Icons.keyboard_voice,
-                    size: 35,
+                    size: 26,
                     color: primary,
                   ),
                 ],
