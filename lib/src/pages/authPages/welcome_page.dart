@@ -11,6 +11,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 class WelcomePage extends StatefulWidget {
   static const String routeName = '/welcome';
 
@@ -284,6 +286,11 @@ class WelcomePageState extends State<WelcomePage> {
             //Cập nhật trạng thái toàn cầu
             Provider.of<UserProvider>(context, listen: false).updateUse(user);
 
+            FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+            String? deviceToken = await _firebaseMessaging.getToken();
+            print(deviceToken);
+            sendTokendevice(deviceToken);
+
             print(token);
             await storage.write(key: 'token', value: token);
             Navigator.pushNamed(
@@ -358,6 +365,50 @@ class WelcomePageState extends State<WelcomePage> {
           },
         );
       }
+    }
+  }
+
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
+
+  Future<void> sendTokendevice(String? deviceToken) async {
+    try {
+      String? token = await getToken();
+      print(token);
+      if (token != null) {
+        var url = Uri.parse(ListAPI.setDevToken);
+        Map body = {"devtype": "1", "devtoken": deviceToken};
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            print('Đã lưu token thiết bị');
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
     }
   }
 }

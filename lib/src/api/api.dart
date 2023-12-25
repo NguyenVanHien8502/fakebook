@@ -50,6 +50,7 @@ class ListAPI {
 
 //Settings
   static const buyCoins = "$baseHost/buy_coins";
+  static const setDevToken = "$baseHost/set_devtoken";
 
 //Comment
   static const feel = "$baseHost/feel";
