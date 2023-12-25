@@ -556,11 +556,13 @@ class DetailPostPageState extends State<DetailPostPage> {
                       ...post['image'].map((image) => Column(
                             children: [
                               Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 5.0),
                                 color: const Color(0xFFFFF2EE),
+                                height: 800,
+                                width: w,
                                 child: Image.network(
                                   '${image['url']}',
-                                  height: 200,
-                                  width: w,
+                                  fit:BoxFit.contain,
                                 ),
                               ),
                               const SizedBox(
