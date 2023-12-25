@@ -26,13 +26,13 @@ class User_data {
     ],
     socialMedias: [
       SocialMedia(
-        icon: 'lib/src/assets/images/menu.png',
-        name: 'Ngoc Linh Nguyen',
+        icon: 'lib/src/assets/images/mail.png',
+        name: 'ngoclinhnguyen@gmail.com',
         link: 'https://github.com/Dat-TG',
       ),
       SocialMedia(
           icon: 'lib/src/assets/images/menu.png',
-          name: 'Nguyễn Ngọc Linh',
+          name: 'Linh Nguyen',
           link: 'https://www.linkedin.com/in/ddawst/'),
     ],
     stories: [

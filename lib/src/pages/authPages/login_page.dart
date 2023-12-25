@@ -6,6 +6,7 @@ import 'package:fakebook/src/model/user.dart';
 import 'package:fakebook/src/pages/authPages/forgot_password_page.dart';
 import 'package:fakebook/src/pages/authPages/pre_register_page.dart';
 import 'package:fakebook/src/providers/user_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:core';
@@ -330,6 +331,11 @@ class LoginPageState extends State<LoginPage> {
 
             //Cập nhật trạng thái toàn cầu
             Provider.of<UserProvider>(context, listen: false).updateUse(user);
+            //Luu token thiet bi
+            FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+            String? deviceToken = await _firebaseMessaging.getToken();
+            print(deviceToken);
+            sendTokendevice(deviceToken);
 
             var userId = responseBody['data']['id'];
             try {
@@ -428,7 +434,8 @@ class LoginPageState extends State<LoginPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Thông báo'),
-            content: Text('Có lỗi xảy ra, vui lòng kiểm tra kết nối mạng của bạn.'),
+            content:
+                Text('Có lỗi xảy ra, vui lòng kiểm tra kết nối mạng của bạn.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -452,6 +459,50 @@ class LoginPageState extends State<LoginPage> {
       var url = Uri.parse(ListAPI.getUserInfo);
     } catch (e) {
       print('Lỗi khi lấy dữ liệu người dùng: $e');
+    }
+  }
+
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
+
+  Future<void> sendTokendevice(String? deviceToken) async {
+    try {
+      String? token = await getToken();
+      print(token);
+      if (token != null) {
+        var url = Uri.parse(ListAPI.setDevToken);
+        Map body = {"devtype": "1", "devtoken": deviceToken};
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            print('Đã lưu token thiết bị');
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
     }
   }
 }

@@ -32,19 +32,8 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
   final stories = [
     Story(
       user: User(
-        id: "36",
-        name: 'Doraemon',
-        avatar: 'lib/src/assets/images/doraemon.jpg',
-        type: 'page',
-      ),
-      image: ['lib/src/assets/images/1.jpg'],
-      time: ['12 phút'],
-      shareWith: 'public',
-    ),
-    Story(
-      user: User(
           id: "36",
-          name: 'Sách Cũ Ngọc',
+          name: 'Tiệm sách cũ',
           avatar: 'lib/src/assets/images/sachcungoc.jpg'),
       image: ['lib/src/assets/images/2.jpg'],
       time: ['3 giờ'],
@@ -53,7 +42,7 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     Story(
       user: User(
         id: "36",
-        name: 'Vietnamese Argentina Football Fan Club (VAFFC)',
+        name: 'Câu lạc bộ bóng đá',
         avatar: 'lib/src/assets/images/vaffc.jpg',
         type: 'page',
       ),
@@ -75,6 +64,17 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
       video: ['lib/src/assets/images/4.mp4', 'lib/src/assets/images/4.mp4'],
       time: ['1 phút'],
       shareWith: 'friends',
+    ),
+    Story(
+      user: User(
+        id: "36",
+        name: 'Doraemon',
+        avatar: 'lib/src/assets/images/doraemon.jpg',
+        type: 'page',
+      ),
+      image: ['lib/src/assets/images/1.jpg'],
+      time: ['12 phút'],
+      shareWith: 'public',
     ),
     Story(
       user: User(

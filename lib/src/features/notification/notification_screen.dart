@@ -78,6 +78,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   textTitle =
                       '${item['user']['username']} đã bình luận bài viết của bạn';
                 }
+                if (item['type'] == '8') {
+                  textTitle = '${item['user']['username']} đã thêm video mới';
+                }
                 if (item['type'] == '9') {
                   textTitle =
                       '${item['user']['username']} đã trả lời một bình luận trong bài viết của bạn';

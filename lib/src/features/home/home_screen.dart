@@ -5,6 +5,10 @@ import 'package:fakebook/src/features/newfeeds/newfeeds_screen.dart';
 import 'package:fakebook/src/features/notification/notification_screen.dart';
 import 'package:fakebook/src/features/watch/watch_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -26,6 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
     NotificationScreen(),
     MenuScreen()
   ];
+
+  Future<String?> getToken() async {
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'token');
+  }
 
   @override
   void initState() {
@@ -250,6 +259,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                               width: 30,
                                               height: 30,
                                             ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      constraints: BoxConstraints(
+                                        minWidth: 16,
+                                        minHeight: 16,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "2",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   if (index == 3)
