@@ -33,8 +33,8 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     Story(
       user: User(
           id: "36",
-          name: 'Tiệm sách cũ',
-          avatar: 'lib/src/assets/images/sachcungoc.jpg'),
+          name: 'Nguyễn Văn Hiển',
+          avatar: 'lib/src/assets/images/hien.jpg'),
       image: ['lib/src/assets/images/2.jpg'],
       time: ['3 giờ'],
       shareWith: 'friends',
@@ -42,24 +42,24 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
     Story(
       user: User(
         id: "36",
-        name: 'Câu lạc bộ bóng đá',
-        avatar: 'lib/src/assets/images/vaffc.jpg',
+        name: 'Đỗ Minh Nghĩa',
+        avatar: 'lib/src/assets/images/nghia.jpg',
         type: 'page',
       ),
-      image: ['lib/src/assets/images/3.jpg'],
+      image: ['lib/src/assets/images/nghia2.jpg'],
       time: ['5 giờ'],
       shareWith: 'friends-of-friends',
     ),
     Story(
       user: User(
           id: "36",
-          name: 'Minh Hương',
-          avatar: 'lib/src/assets/images/minhhuong.jpg'),
+          name: 'Ngoc Linh',
+          avatar: 'lib/src/assets/images/linh.jpg'),
       image: [
-        'lib/src/assets/images/4.jpg',
-        'lib/src/assets/images/5.jpg',
-        'lib/src/assets/images/6.jpg',
-        'lib/src/assets/images/7.jpg',
+        'lib/src/assets/images/linh2.jpg',
+        'lib/src/assets/images/linh3.jpg',
+        'lib/src/assets/images/linh4.jpg',
+        'lib/src/assets/images/linh.jpg',
       ],
       video: ['lib/src/assets/images/4.mp4', 'lib/src/assets/images/4.mp4'],
       time: ['1 phút'],
@@ -69,19 +69,17 @@ class _NewfeedsScreenState extends State<NewfeedsScreen> {
       user: User(
         id: "36",
         name: 'Doraemon',
-        avatar: 'lib/src/assets/images/doraemon.jpg',
+        avatar: 'lib/src/assets/images/vinh.jpg',
         type: 'page',
       ),
-      image: ['lib/src/assets/images/1.jpg'],
+      image: ['lib/src/assets/images/vinh2.jpg'],
       time: ['12 phút'],
       shareWith: 'public',
     ),
     Story(
       user: User(
-          id: "36",
-          name: 'Khánh Vy',
-          avatar: 'lib/src/assets/images/khanhvy.jpg'),
-      video: ['lib/src/assets/images/4.mp4'],
+          id: "36", name: 'Bá Duy', avatar: 'lib/src/assets/images/duy.jpg'),
+      image: ['lib/src/assets/images/vinh3.jpg'],
       time: ['1 phút'],
       shareWith: 'friends',
     ),
