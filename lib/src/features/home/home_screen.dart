@@ -1,3 +1,4 @@
+import 'package:fakebook/src/api/api.dart';
 import 'package:fakebook/src/features/friends/friends_screen.dart';
 import 'package:fakebook/src/features/home/home_app_bar.dart';
 import 'package:fakebook/src/features/menu/menu_screen.dart';
@@ -7,6 +8,7 @@ import 'package:fakebook/src/features/watch/watch_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -36,9 +38,52 @@ class _HomeScreenState extends State<HomeScreen> {
     return await storage.read(key: 'token');
   }
 
+  String numberNoti = '0';
+
+  Future<void> getNewNofi(BuildContext context) async {
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        var url = Uri.parse(ListAPI.checkNewItems);
+        Map body = {"last_id": "3", "category_id": "3"};
+
+        print(body);
+
+        http.Response response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+
+        // Chuyển chuỗi JSON thành một đối tượng Dart
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          if (responseBody['code'] == '1000') {
+            setState(() {
+              numberNoti = responseBody['data']['new_items'];
+            });
+          } else {
+            print('API returned an error: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to load friends. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print("No token");
+      }
+    } catch (error) {
+      print('Error fetching friends: $error');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    getNewNofi(context);
   }
 
   @override
@@ -261,6 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                     ),
                                   ),
+                                  if(numberNoti != '0')
                                   Positioned(
                                     right: 0,
                                     child: Container(
@@ -275,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       child: Center(
                                         child: Text(
-                                          "2",
+                                          numberNoti,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 10,
