@@ -21,6 +21,20 @@ class PostPage extends StatefulWidget {
   PostPageState createState() => PostPageState();
 }
 
+class SelectedImage {
+  final String path;
+  bool shouldDelete;
+
+  SelectedImage(this.path, this.shouldDelete);
+}
+
+class SelectedVideo {
+  final File file;
+  bool shouldDelete;
+
+  SelectedVideo(this.file, this.shouldDelete);
+}
+
 class PostPageState extends State<PostPage> {
   static const storage = FlutterSecureStorage();
 
@@ -48,40 +62,47 @@ class PostPageState extends State<PostPage> {
   TextEditingController describedController = TextEditingController();
 
   final ImagePicker picker = ImagePicker();
+  int checkImageOrVideo =
+      0; //0: chưa chọn image hoặc video, 1: đã chọn image, 2: đã chọn video
 
   //get images
-  List<XFile>? images = [];
+  List<SelectedImage> images = [];
 
   Future<void> getImages() async {
-    if (images!.length > 4) {
-      return;
-    }
     final List<XFile> selectedImages = await picker.pickMultiImage();
-    if (selectedImages!.isNotEmpty) {
-      // images!.addAll(selectedImages.sublist(0, 4 - images!.length));
-      images = selectedImages.sublist(0, min(selectedImages.length, 4));
+    for (var selectedImage in selectedImages) {
+      images.add(SelectedImage(selectedImage.path, false));
     }
-    setState(() {});
+    setState(() {
+      checkImageOrVideo = 1;
+    });
   }
 
   //get video
   late VideoPlayerController _videoPlayerController =
       VideoPlayerController.file(File(''));
   late File _video = File('');
+  SelectedVideo? selectedVideo;
 
-  getVideo() async {
+  Future<void> getVideo() async {
     final selectedVideo = await picker.pickVideo(source: ImageSource.gallery);
     if (selectedVideo == null) {
       print("Người dùng hủy chọn video");
       return;
     }
     print("Người dùng đã chọn video");
-    _video = File(selectedVideo!.path);
+    _video = File(selectedVideo.path);
     _videoPlayerController = VideoPlayerController.file(_video)
       ..initialize().then((_) {
         setState(() {});
         _videoPlayerController.play();
       });
+
+    // Chỉ lưu trữ video đã chọn
+    setState(() {
+      checkImageOrVideo = 2;
+      this.selectedVideo = SelectedVideo(_video, false);
+    });
   }
 
   Future<void> handleAddPost(BuildContext context) async {
@@ -92,22 +113,27 @@ class PostPageState extends State<PostPage> {
       var request = http.MultipartRequest('POST', url);
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Content-Type'] = 'multipart/form-data';
-      request.fields['described'] = described;
+
+      if (described.trim() != "") {
+        request.fields['described'] = described.trim();
+      }
 
       //add image into request
-      if (images!.isNotEmpty) {
-        for (var selectedImage in images!) {
-          var stream =
-              http.ByteStream(DelegatingStream.typed(selectedImage.openRead()));
-          var length = await selectedImage.length();
-          var multipart = http.MultipartFile(
-            'image',
-            stream,
-            length,
-            filename: basename(selectedImage.path),
-            contentType: MediaType('image', 'jpg'),
-          );
-          request.files.add(multipart);
+      if (images.isNotEmpty) {
+        for (var selectedImage in images) {
+          if (!selectedImage.shouldDelete) {
+            var stream = http.ByteStream(
+                DelegatingStream.typed(File(selectedImage.path).openRead()));
+            var length = await File(selectedImage.path).length();
+            var multipart = http.MultipartFile(
+              'image',
+              stream,
+              length,
+              filename: basename(selectedImage.path),
+              contentType: MediaType('image', 'jpg'),
+            );
+            request.files.add(multipart);
+          }
         }
       }
 
@@ -155,36 +181,59 @@ class PostPageState extends State<PostPage> {
           },
         );
       } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Thông báo'),
-              content: Text('${decodedResponse['message']}'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => BuyCoins()));
-                  },
-                  child: const Text(
-                    'MUA COINS',
-                    style: TextStyle(color: Colors.blue, fontSize: 14),
+        if (decodedResponse['code'] == '2001') {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Thông báo'),
+                content: Text('${decodedResponse['message']}'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => BuyCoins()));
+                    },
+                    child: const Text(
+                      'MUA COINS',
+                      style: TextStyle(color: Colors.blue, fontSize: 14),
+                    ),
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
-        );
+                ],
+              );
+            },
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Thông báo'),
+                content: Text('${decodedResponse['message']}'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       }
     } catch (e) {
       print("Occur error when posting:: $e");
@@ -195,17 +244,21 @@ class PostPageState extends State<PostPage> {
   bool shouldEnableButton = false;
 
   Color? getButtonColor() {
-    bool hasText = describedController.text.isNotEmpty;
-    bool hasImages = images != null && images!.isNotEmpty;
-    return hasText || hasImages ? Colors.blueAccent : Colors.grey[200];
+    bool hasText = describedController.text.trim() != "";
+    bool hasImages = images.isNotEmpty;
+    bool hasVideo = _video.existsSync();
+    return hasText || hasImages || hasVideo
+        ? Colors.blueAccent
+        : Colors.grey[200];
   }
 
   // vô hiệu hóa nút Đăng nếu không có thông tin gì về post
   bool isButtonEnabled() {
-    bool hasText = describedController.text.isNotEmpty;
-    bool hasImages = images != null && images!.isNotEmpty;
+    bool hasText = describedController.text.trim() != "";
+    bool hasImages =images.isNotEmpty;
+    bool hasVideo = _video.existsSync();
 
-    return hasText || hasImages;
+    return hasText || hasImages || hasVideo;
   }
 
   @override
@@ -224,7 +277,9 @@ class PostPageState extends State<PostPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            if (describedController.text.isNotEmpty || images!.isNotEmpty) {
+            if (describedController.text.trim() != "" ||
+                images.isNotEmpty ||
+                _video.existsSync()) {
               showConfirmationBottomSheet(context);
             } else {
               Navigator.of(context).pop();
@@ -417,7 +472,10 @@ class PostPageState extends State<PostPage> {
                         children: [
                           InkWell(
                             borderRadius: BorderRadius.circular(5.0),
-                            onTap: getImages,
+                            onTap:
+                                checkImageOrVideo == 0 || checkImageOrVideo == 1
+                                    ? () => getImages()
+                                    : null,
                             child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
@@ -428,31 +486,40 @@ class PostPageState extends State<PostPage> {
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     Icon(
                                       Icons.add,
                                       size: 16.0,
-                                      color: Colors.blueAccent,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 1
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 3.0,
                                     ),
                                     Text(
                                       'Chọn ảnh',
                                       style: TextStyle(
-                                        color: Colors.blueAccent,
+                                        color: checkImageOrVideo == 0 ||
+                                                checkImageOrVideo == 1
+                                            ? Colors.blueAccent
+                                            : Colors.grey,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 3.0,
                                     ),
                                     Icon(
                                       Icons.arrow_drop_down,
                                       size: 16.0,
-                                      color: Colors.blueAccent,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 1
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
                                     ),
                                   ],
                                 )),
@@ -462,7 +529,10 @@ class PostPageState extends State<PostPage> {
                           ),
                           InkWell(
                             borderRadius: BorderRadius.circular(5.0),
-                            onTap: getVideo,
+                            onTap:
+                                checkImageOrVideo == 0 || checkImageOrVideo == 2
+                                    ? () => getVideo()
+                                    : null,
                             child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
@@ -473,31 +543,40 @@ class PostPageState extends State<PostPage> {
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     Icon(
                                       Icons.add,
                                       size: 16.0,
-                                      color: Colors.blueAccent,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 2
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 3.0,
                                     ),
                                     Text(
                                       'Chọn video',
                                       style: TextStyle(
-                                        color: Colors.blueAccent,
+                                        color: checkImageOrVideo == 0 ||
+                                                checkImageOrVideo == 2
+                                            ? Colors.blueAccent
+                                            : Colors.grey,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 3.0,
                                     ),
                                     Icon(
                                       Icons.arrow_drop_down,
                                       size: 16.0,
-                                      color: Colors.blueAccent,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 2
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
                                     ),
                                   ],
                                 )),
@@ -544,23 +623,55 @@ class PostPageState extends State<PostPage> {
                 ),
 
                 //hiển thị ảnh
-                images != null && images!.isNotEmpty
+                images.isNotEmpty
                     ? Container(
-                        height: 600,
+                        height: 1000,
                         margin: const EdgeInsets.all(25.0),
                         child: GridView.builder(
-                          itemCount: images!.length,
+                          itemCount: images.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2),
+                            crossAxisCount: 2,
+                          ),
                           itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: const EdgeInsets.all(5.0),
-                              child: Image.file(
-                                File(images![index].path).absolute,
-                                fit: BoxFit.cover,
-                              ),
-                            );
+                            if (!images[index].shouldDelete) {
+                              return Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.all(5.0),
+                                    child: Image.file(
+                                      File(images[index].path).absolute,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          images.removeAt(
+                                              index); // Loại bỏ ảnh khỏi danh sách
+                                          if (images.isEmpty) {
+                                            checkImageOrVideo = 0;
+                                          }
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5.0),
+                                        color: Colors.red,
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.yellow,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Container(); // Trả về container trống nếu ảnh đã bị xóa
+                            }
                           },
                         ),
                       )
@@ -569,48 +680,80 @@ class PostPageState extends State<PostPage> {
                       ),
 
                 // Hiển thị video
-                if (_video != null)
-                  _videoPlayerController.value.isInitialized
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              height: 400,
-                              width: MediaQuery.of(context).size.width,
-                              child: AspectRatio(
-                                aspectRatio:
-                                    _videoPlayerController.value.aspectRatio,
-                                child: VideoPlayer(_videoPlayerController),
+                () {
+                  if (_video != null &&
+                      selectedVideo != null &&
+                      !selectedVideo!.shouldDelete) {
+                    if (_videoPlayerController != null &&
+                        _videoPlayerController.value.isInitialized) {
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                            height: 400,
+                            width: MediaQuery.of(context).size.width,
+                            child: AspectRatio(
+                              aspectRatio:
+                                  _videoPlayerController.value.aspectRatio,
+                              child: VideoPlayer(_videoPlayerController),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _videoPlayerController.value.isPlaying
+                                    ? _videoPlayerController.pause()
+                                    : _videoPlayerController.play();
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                              child: Icon(
+                                _videoPlayerController.value.isPlaying
+                                    ? Icons.pause
+                                    : Icons.play_arrow,
+                                size: 60.0,
+                                color: Colors.white,
                               ),
                             ),
-                            GestureDetector(
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  _videoPlayerController.value.isPlaying
-                                      ? _videoPlayerController.pause()
-                                      : _videoPlayerController.play();
+                                  selectedVideo!.shouldDelete = true;
+                                  _videoPlayerController =
+                                      VideoPlayerController.file(File(''));
+                                  _video = File('');
+                                  checkImageOrVideo = 0;
                                 });
                               },
                               child: Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.transparent,
-                                ),
-                                child: Icon(
-                                  _videoPlayerController.value.isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                  size: 60.0,
-                                  color: Colors.white,
+                                padding: const EdgeInsets.all(5.0),
+                                color: Colors.red,
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.yellow,
                                 ),
                               ),
                             ),
-                          ],
-                        )
-                      : Container(
-                          height: 10,
-                        ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Container(
+                        height: 10,
+                      );
+                    }
+                  } else {
+                    return Container();
+                  }
+                }(),
               ],
             ),
           ),

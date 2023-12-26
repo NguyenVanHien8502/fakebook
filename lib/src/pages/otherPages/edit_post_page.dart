@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
+import 'package:video_player/video_player.dart';
 
 class EditPostPage extends StatefulWidget {
   final int postId;
@@ -22,6 +23,21 @@ class EditPostPage extends StatefulWidget {
 
   @override
   EditPostPageState createState() => EditPostPageState();
+}
+
+class SelectedImage {
+  final String
+      pathOrUrl; // Sử dụng một trường để chứa cả đường dẫn local và URL
+  bool shouldDelete;
+
+  SelectedImage({required this.pathOrUrl, required this.shouldDelete});
+}
+
+class SelectedVideo {
+  final File file;
+  bool shouldDelete;
+
+  SelectedVideo(this.file, this.shouldDelete);
 }
 
 class EditPostPageState extends State<EditPostPage> {
@@ -67,6 +83,16 @@ class EditPostPageState extends State<EditPostPage> {
       setState(() {
         post = responseBody['data'];
         describedController.text = post['described'];
+        if (post['image'].length > 0) {
+          checkImageOrVideo = 1;
+          for (var image in post['image']) {
+            images.add(
+                SelectedImage(pathOrUrl: image['url'], shouldDelete: false));
+          }
+        }
+        if (post['video'] != null) {
+          checkImageOrVideo = 2;
+        }
       });
     } catch (e) {
       print('Error: $e');
@@ -75,19 +101,51 @@ class EditPostPageState extends State<EditPostPage> {
 
   TextEditingController describedController = TextEditingController();
 
-  List<XFile>? images = [];
-  final ImagePicker imagePicker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
+  int checkImageOrVideo =
+      0; //0: chưa chọn image hoặc video, 1: đã chọn image, 2: đã chọn video
+
+  //get images
+  List<SelectedImage> images = [];
 
   Future<void> getImages() async {
-    if (images != null && images!.length > 4) {
+    final List<XFile> selectedImages = await picker.pickMultiImage();
+    for (var selectedImage in selectedImages) {
+      images.add(
+          SelectedImage(pathOrUrl: selectedImage.path, shouldDelete: false));
+    }
+    if (selectedImages != null && selectedImages.isNotEmpty) {
+      setState(() {
+        checkImageOrVideo = 1;
+      });
+    }
+  }
+
+  //get video
+  late VideoPlayerController _videoPlayerController =
+      VideoPlayerController.file(File(''));
+  late File _video = File('');
+  SelectedVideo? selectedVideo;
+
+  Future<void> getVideo() async {
+    final selectedVideo = await picker.pickVideo(source: ImageSource.gallery);
+    if (selectedVideo == null) {
+      print("Người dùng hủy chọn video");
       return;
     }
-    final List<XFile> selectedImages = await imagePicker.pickMultiImage();
-    if (selectedImages!.isNotEmpty) {
-      // images!.addAll(selectedImages.sublist(0, 4 - images!.length));
-      images = selectedImages.sublist(0, min(selectedImages.length, 4));
-    }
-    setState(() {});
+    print("Người dùng đã chọn video");
+    _video = File(selectedVideo.path);
+    _videoPlayerController = VideoPlayerController.file(_video)
+      ..initialize().then((_) {
+        setState(() {});
+        _videoPlayerController.play();
+      });
+
+    // Chỉ lưu trữ video đã chọn
+    setState(() {
+      checkImageOrVideo = 2;
+      this.selectedVideo = SelectedVideo(_video, false);
+    });
   }
 
   Future<void> handleEditPost(BuildContext context, postId) async {
@@ -98,33 +156,47 @@ class EditPostPageState extends State<EditPostPage> {
       var request = http.MultipartRequest('POST', url);
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Content-Type'] = 'multipart/form-data';
-      request.fields['described'] = described;
       request.fields['id'] = widget.postId.toString();
+      if (described.trim() != "") {
+        request.fields['described'] = described;
+      }
 
-      if (images != null && images!.isNotEmpty) {
-        //start delete image cũ
-        String imageDel = "1,2,3,4";
-        var requestDeleteOldImage = http.MultipartRequest('POST', url);
-        requestDeleteOldImage.headers['Authorization'] = 'Bearer $token';
-        requestDeleteOldImage.fields['id'] = widget.postId.toString();
-        requestDeleteOldImage.fields['image_del'] = imageDel;
-        await requestDeleteOldImage.send();
-        //finish delete image cũ
-
-        for (var selectedImage in images!) {
-          var stream =
-              http.ByteStream(DelegatingStream.typed(selectedImage.openRead()));
-          var length = await selectedImage.length();
-          var multipart = http.MultipartFile(
-            'image',
-            stream,
-            length,
-            filename: basename(selectedImage.path),
-            contentType: MediaType('image', 'jpg'),
-          );
-          request.files.add(multipart);
+      //add image into request
+      for (int i = 0; i < post['image'].length; i++) {
+        for (var selectedImage in images) {
+          if (selectedImage.pathOrUrl != post['image'][i]['url']) {
+            if (!selectedImage.shouldDelete) {
+              var stream = http.ByteStream(DelegatingStream.typed(
+                  File(selectedImage.pathOrUrl).openRead()));
+              var length = await File(selectedImage.pathOrUrl).length();
+              var multipart = http.MultipartFile(
+                'image',
+                stream,
+                length,
+                filename: basename(selectedImage.pathOrUrl),
+                contentType: MediaType('image', 'jpg'),
+              );
+              request.files.add(multipart);
+            }
+          }
         }
       }
+
+      //add video into request
+      if (_video.existsSync()) {
+        var videoStream =
+            http.ByteStream(DelegatingStream.typed(_video.openRead()));
+        var videoLength = await _video.length();
+        var videoMultipart = http.MultipartFile(
+          'video',
+          videoStream,
+          videoLength,
+          filename: basename(_video.path),
+          contentType: MediaType('video', 'mp4'),
+        );
+        request.files.add(videoMultipart);
+      }
+
       var response = await request.send();
       final responseBody = await response.stream.bytesToString();
       final decodedResponse = jsonDecode(responseBody);
@@ -167,17 +239,34 @@ class EditPostPageState extends State<EditPostPage> {
   bool shouldEnableButton = false;
 
   Color? getButtonColor() {
-    bool hasText = describedController.text.isNotEmpty;
-    bool hasImages = images != null && images!.isNotEmpty;
-    return hasText || hasImages ? Colors.blueAccent : Colors.grey[200];
+    bool hasText = describedController.text.trim() != "";
+    bool hasImages = images.isNotEmpty;
+    bool hasVideo = _video.existsSync();
+    return hasText || hasImages || hasVideo
+        ? Colors.blueAccent
+        : Colors.grey[200];
   }
 
   // vô hiệu hóa nút Đăng nếu không có thông tin gì về post
   bool isButtonEnabled() {
-    bool hasText = describedController.text.isNotEmpty;
-    bool hasImages = images != null && images!.isNotEmpty;
+    bool hasText = describedController.text.trim() != "";
+    bool hasImages = images.isNotEmpty;
+    bool hasVideo = _video.existsSync();
+    return hasText || hasImages || hasVideo;
+  }
 
-    return hasText || hasImages;
+  bool hasImageChanges() {
+    if (images.length != post['image'].length) {
+      return true;
+    }
+
+    for (int i = 0; i < images.length; i++) {
+      if (images[i].pathOrUrl != post['image'][i]['url']) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @override
@@ -196,7 +285,9 @@ class EditPostPageState extends State<EditPostPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            if (describedController.text.isNotEmpty || images!.isNotEmpty) {
+            if (describedController.text.trim() != post['described'] ||
+                hasImageChanges() ||
+                _video.existsSync()) {
               showConfirmationBottomSheet(context);
             } else {
               Navigator.of(context).pop();
@@ -290,146 +381,215 @@ class EditPostPageState extends State<EditPostPage> {
                     ],
                   ),
                 ),
+
+                //options when post
                 Container(
                   margin: const EdgeInsets.only(left: 70.0, top: 5.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 5.0),
-                        child: Row(
-                          children: [
-                            InkWell(
-                              borderRadius: BorderRadius.circular(5.0),
-                              onTap: () {},
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.public,
-                                        size: 12.0,
+                      Row(
+                        children: [
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap: () {},
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.public,
+                                      size: 12.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Công khai',
+                                      style: TextStyle(
                                         color: Colors.blueAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
                                       ),
-                                      SizedBox(
-                                        width: 3.0,
-                                      ),
-                                      Text(
-                                        'Công khai',
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                            const SizedBox(
-                              width: 8.0,
-                            ),
-                            InkWell(
-                              borderRadius: BorderRadius.circular(5.0),
-                              onTap: getImages,
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.add,
-                                        size: 16.0,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap: () {},
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Chọn cảm xúc',
+                                      style: TextStyle(
                                         color: Colors.blueAccent,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
                                       ),
-                                      SizedBox(
-                                        width: 3.0,
-                                      ),
-                                      Text(
-                                        'Album',
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 3.0,
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 16.0,
-                                        color: Colors.blueAccent,
-                                      ),
-                                    ],
-                                  )),
-                            ),
-                          ],
-                        ),
+                                    ),
+                                    SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 16.0,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ],
                       ),
                       const SizedBox(
-                        height: 5.0,
+                        height: 10.0,
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 130.0),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(5.0),
-                          onTap: () {},
-                          child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.add,
-                                    size: 16.0,
-                                    color: Colors.blueAccent,
-                                  ),
-                                  SizedBox(
-                                    width: 3.0,
-                                  ),
-                                  Text(
-                                    'Chọn cảm xúc',
-                                    style: TextStyle(
-                                      color: Colors.blueAccent,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
+                      Row(
+                        children: [
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap:
+                                checkImageOrVideo == 0 || checkImageOrVideo == 1
+                                    ? () => getImages()
+                                    : null,
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 16.0,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 1
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 3.0,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_drop_down,
-                                    size: 16.0,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ],
-                              )),
-                        ),
-                      )
+                                    const SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Chọn ảnh',
+                                      style: TextStyle(
+                                        color: checkImageOrVideo == 0 ||
+                                                checkImageOrVideo == 1
+                                            ? Colors.blueAccent
+                                            : Colors.grey,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 16.0,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 1
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(5.0),
+                            onTap:
+                                checkImageOrVideo == 0 || checkImageOrVideo == 2
+                                    ? () => getVideo()
+                                    : null,
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: 16.0,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 2
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
+                                    ),
+                                    const SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Text(
+                                      'Chọn video',
+                                      style: TextStyle(
+                                        color: checkImageOrVideo == 0 ||
+                                                checkImageOrVideo == 2
+                                            ? Colors.blueAccent
+                                            : Colors.grey,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 3.0,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 16.0,
+                                      color: checkImageOrVideo == 0 ||
+                                              checkImageOrVideo == 2
+                                          ? Colors.blueAccent
+                                          : Colors.grey,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -441,6 +601,8 @@ class EditPostPageState extends State<EditPostPage> {
                   thickness: 0.1,
                   color: Colors.grey,
                 ),
+
+                //description of post
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: TextField(
@@ -464,48 +626,205 @@ class EditPostPageState extends State<EditPostPage> {
                         height: 1.4),
                   ),
                 ),
-                images != null && images!.isNotEmpty
-                    ? Container(
-                        height: 600,
-                        margin: const EdgeInsets.all(25.0),
-                        child: GridView.builder(
-                          itemCount: images!.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2),
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: const EdgeInsets.all(5.0),
-                              child: Image.file(
-                                File(images![index].path).absolute,
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    : (post['image'] != null && post['image'].isNotEmpty
-                        ? Container(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 15.0),
-                            height:
-                                600, // Điều chỉnh độ cao của container theo ý muốn
-                            child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2),
-                              itemCount: post['image'].length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Image.network(
-                                  '${post['image'][index]['url']}',
-                                  fit: BoxFit.cover,
-                                );
-                              },
+
+                // Hiển thị ảnh
+                () {
+                  return Container(
+                    height: 1000,
+                    margin: const EdgeInsets.all(25.0),
+                    child: GridView.builder(
+                      itemCount: images.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      itemBuilder: (BuildContext context, int index) {
+                        if (images.isNotEmpty) {
+                          if (images[index].pathOrUrl.startsWith('https')) {
+                            if (!images[index].shouldDelete) {
+                              return Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.all(5.0),
+                                    child:
+                                        Image.network(images[index].pathOrUrl),
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          images.removeAt(index);
+                                          if (images.isEmpty) {
+                                            checkImageOrVideo = 0;
+                                          }
+                                        });
+
+                                        //xóa image gửi lên server
+                                        try {
+                                          String? token =
+                                              await storage.read(key: 'token');
+                                          var url = Uri.parse(ListAPI.editPost);
+                                          var request = http.MultipartRequest(
+                                              'POST', url);
+                                          request.headers['Authorization'] =
+                                              'Bearer $token';
+                                          request.headers['Content-Type'] =
+                                              'multipart/form-data';
+                                          request.fields['id'] =
+                                              "${post['id']}";
+                                          request.fields['image_del'] =
+                                              "${index + 1}";
+
+                                          var response = await request.send();
+                                          final responseBody = await response
+                                              .stream
+                                              .bytesToString();
+                                          final decodedResponse =
+                                              jsonDecode(responseBody);
+                                          print("abc: $decodedResponse");
+                                        } catch (e) {
+                                          print("Error when editing post: $e");
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5.0),
+                                        color: Colors.red,
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.yellow,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Container(); // Trả về container trống nếu ảnh đã bị xóa
+                            }
+                          } else {
+                            if (!images[index].shouldDelete) {
+                              return Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.all(5.0),
+                                    child: Image.file(
+                                      File(images[index].pathOrUrl).absolute,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          images.removeAt(index);
+                                          if (images.isEmpty) {
+                                            checkImageOrVideo = 0;
+                                          }
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5.0),
+                                        color: Colors.red,
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.yellow,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Container(); // Trả về container trống nếu ảnh đã bị xóa
+                            }
+                          }
+                        } else {
+                          return Container(); // Trả về container trống nếu danh sách ảnh rỗng
+                        }
+                      },
+                    ),
+                  );
+                }(),
+
+                // Hiển thị video
+                () {
+                  if (_video != null &&
+                      selectedVideo != null &&
+                      !selectedVideo!.shouldDelete) {
+                    if (_videoPlayerController != null &&
+                        _videoPlayerController.value.isInitialized) {
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                            height: 400,
+                            width: MediaQuery.of(context).size.width,
+                            child: AspectRatio(
+                              aspectRatio:
+                                  _videoPlayerController.value.aspectRatio,
+                              child: VideoPlayer(_videoPlayerController),
                             ),
-                          )
-                        : const SizedBox(
-                            height: 200,
-                          ))
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _videoPlayerController.value.isPlaying
+                                    ? _videoPlayerController.pause()
+                                    : _videoPlayerController.play();
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                              child: Icon(
+                                _videoPlayerController.value.isPlaying
+                                    ? Icons.pause
+                                    : Icons.play_arrow,
+                                size: 60.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedVideo!.shouldDelete = true;
+                                  _videoPlayerController =
+                                      VideoPlayerController.file(File(''));
+                                  _video = File('');
+                                  checkImageOrVideo = 0;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(5.0),
+                                color: Colors.red,
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.yellow,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Container(
+                        height: 10,
+                      );
+                    }
+                  } else {
+                    return Container();
+                  }
+                }(),
               ],
             ),
           ),
