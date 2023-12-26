@@ -60,5 +60,6 @@ class ListAPI {
   static const deleteFeel = "$baseHost/delete_feel";
 
 //Notification
+  static const checkNewItems = "$baseHost/check_new_items";
   static const getNotification = "$baseHost/get_notification";
 }

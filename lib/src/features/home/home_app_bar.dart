@@ -20,60 +20,60 @@ class HomeAppbarScreen extends StatefulWidget {
 }
 
 class _HomeAppbarScreenState extends State<HomeAppbarScreen> {
-  String coins = '0';
-
-  Future<String?> getToken() async {
-    const storage = FlutterSecureStorage();
-    return await storage.read(key: 'token');
-  }
-
-  Future<void> getInfoUser(BuildContext context, String id) async {
-    try {
-      String? token = await getToken();
-      if (token != null) {
-        var url = Uri.parse(ListAPI.getUserInfo);
-        Map body = {
-          "user_id": id,
-        };
-
-        print(body);
-
-        http.Response response = await http.post(
-          url,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-          body: jsonEncode(body),
-        );
-
-        // Chuyển chuỗi JSON thành một đối tượng Dart
-        final responseBody = jsonDecode(response.body);
-
-        if (response.statusCode == 201) {
-          if (responseBody['code'] == '1000') {
-            setState(() {
-              coins = responseBody['data']['coins'];
-            });
-          } else {
-            print('API returned an error: ${responseBody['message']}');
-          }
-        } else {
-          print('Failed to load friends. Status Code: ${response.statusCode}');
-        }
-      } else {
-        print("No token");
-      }
-    } catch (error) {
-      print('Error fetching friends: $error');
-    }
-  }
+  // String coins = '0';
+  //
+  // Future<String?> getToken() async {
+  //   const storage = FlutterSecureStorage();
+  //   return await storage.read(key: 'token');
+  // }
+  //
+  // Future<void> getInfoUser(BuildContext context, String id) async {
+  //   try {
+  //     String? token = await getToken();
+  //     if (token != null) {
+  //       var url = Uri.parse(ListAPI.getUserInfo);
+  //       Map body = {
+  //         "user_id": id,
+  //       };
+  //
+  //       print(body);
+  //
+  //       http.Response response = await http.post(
+  //         url,
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': 'Bearer $token',
+  //         },
+  //         body: jsonEncode(body),
+  //       );
+  //
+  //       // Chuyển chuỗi JSON thành một đối tượng Dart
+  //       final responseBody = jsonDecode(response.body);
+  //
+  //       if (response.statusCode == 201) {
+  //         if (responseBody['code'] == '1000') {
+  //           setState(() {
+  //             coins = responseBody['data']['coins'];
+  //           });
+  //         } else {
+  //           print('API returned an error: ${responseBody['message']}');
+  //         }
+  //       } else {
+  //         print('Failed to load friends. Status Code: ${response.statusCode}');
+  //       }
+  //     } else {
+  //       print("No token");
+  //     }
+  //   } catch (error) {
+  //     print('Error fetching friends: $error');
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    User? user = Provider.of<UserProvider>(context, listen: false).user;
-    getInfoUser(context, user!.id);
+    //User? user = Provider.of<UserProvider>(context, listen: false).user;
+    //getInfoUser(context, user!.id);
   }
 
   @override
@@ -97,22 +97,22 @@ class _HomeAppbarScreenState extends State<HomeAppbarScreen> {
             ),
           ],
         ),
-        Row(
-          children: [
-            Image.asset(
-              'lib/src/assets/images/dollar.png',
-              width: 30,
-              height: 30,
-            ),
-            const SizedBox(
-              width: 6,
-            ),
-            Text(
-              "${coins}",
-              style: TextStyle(fontSize: 18, color: Colors.yellow),
-            )
-          ],
-        ),
+        // Row(
+        //   children: [
+        //     Image.asset(
+        //       'lib/src/assets/images/dollar.png',
+        //       width: 30,
+        //       height: 30,
+        //     ),
+        //     const SizedBox(
+        //       width: 6,
+        //     ),
+        //     Text(
+        //       "${coins}",
+        //       style: TextStyle(fontSize: 18, color: Colors.yellow),
+        //     )
+        //   ],
+        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
